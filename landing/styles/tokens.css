@@ -1,0 +1,64 @@
+:root {
+  /* ── Paleta Finance Mind (heredada de la app) ── */
+  --color-bg:          #0a0a0a;
+  --color-bg-alt:      #111111;
+  --color-surface:     #1a1a1a;
+  --color-surface-2:   #222222;
+  --color-border:      rgba(255, 255, 255, 0.08);
+  --color-border-2:    rgba(255, 255, 255, 0.12);
+
+  --color-accent:      #1C8AFF;
+  --color-accent-rgb:  28, 138, 255;
+  --color-accent-2:    #00BCD4;
+  --color-accent-2-rgb: 0, 188, 212;
+  --color-accent-dim:  rgba(28, 138, 255, 0.12);
+
+  --color-green:       #00E676;
+  --color-green-rgb:   0, 230, 118;
+  --color-red:         #FF1744;
+  --color-red-rgb:     255, 23, 68;
+
+  --color-text-1:      #f5f5f5;
+  --color-text-2:      #a0a0a0;
+  --color-text-3:      #555555;
+
+  --gradient-gemini: linear-gradient(135deg, #4285F4, #0F9D58, #F4B400, #DB4437);
+  --gradient-gemini-line: linear-gradient(90deg, transparent, #4285F4, #0F9D58, #F4B400, #DB4437, transparent);
+  --gradient-gemini-text: linear-gradient(90deg, #4285F4, #0F9D58, #F4B400, #DB4437, #1C8AFF, #4285F4);
+
+  /* ── Tipografía ── */
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body:    'Space Grotesk', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+
+  --text-xs:    clamp(0.68rem, 1vw, 0.78rem);
+  --text-sm:    clamp(0.82rem, 1.2vw, 0.92rem);
+  --text-base:  clamp(0.95rem, 1.4vw, 1.05rem);
+  --text-lg:    clamp(1.1rem, 2vw, 1.3rem);
+  --text-xl:    clamp(1.4rem, 3vw, 2rem);
+  --text-2xl:   clamp(1.9rem, 4.2vw, 3rem);
+  --text-3xl:   clamp(2.4rem, 5.5vw, 4.2rem);
+  --text-hero:  clamp(2.6rem, 6.5vw, 5.6rem);
+  --text-mega:  clamp(3rem, 9vw, 8.5rem);
+
+  /* ── Espaciado (escala 8px) ── */
+  --s1: 8px;   --s2: 16px;  --s3: 24px;  --s4: 32px;
+  --s5: 48px;  --s6: 64px;  --s7: 80px;  --s8: 96px;
+  --s9: 120px; --s10: 140px;
+
+  /* ── Radios ── */
+  --r-sm: 6px;  --r-md: 10px;  --r-lg: 16px;  --r-xl: 24px;  --r-full: 9999px;
+
+  /* ── Easing ── */
+  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-expo:   cubic-bezier(0.87, 0, 0.13, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ── Sombras con color ── */
+  --shadow-sm: 0 4px 16px rgba(var(--color-accent-rgb), 0.10);
+  --shadow-md: 0 8px 32px rgba(var(--color-accent-rgb), 0.15);
+  --shadow-lg: 0 20px 60px rgba(var(--color-accent-rgb), 0.20);
+  --glow-accent: 0 0 32px rgba(var(--color-accent-rgb), 0.35);
+
+  --nav-h: 68px;
+}

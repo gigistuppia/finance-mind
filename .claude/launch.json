@@ -1,0 +1,24 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "finance-app",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "finance-app"],
+      "port": 5173
+    },
+    {
+      "name": "landing",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["landing/server.js"],
+      "port": 4173
+    }
+    ,
+    {
+      "name": "app",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["app/server.js"],
+      "port": 4174
+    }
+  ]
+}

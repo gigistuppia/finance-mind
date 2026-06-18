@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s http://localhost:5173)",
+      "Bash(mkdir \"C:\\\\Users\\\\franf\\\\Desktop\\\\proyecto-finance-mind\\\\.claude\" 2>nul; echo done)",
+      "PowerShell(try { \\(Invoke-WebRequest -Uri \"http://localhost:4173/\" -UseBasicParsing -TimeoutSec 8\\).StatusCode } catch { $_.Exception.Message })",
+      "WebSearch",
+      "WebFetch(domain:cdn.prod.website-files.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.rankia.com.ar)",
+      "WebFetch(domain:logos-serviciosfinancieros.com.ar)",
+      "Bash(node landing/db/update-cedears.js)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(gh api *)",
+      "PowerShell(gh api repos/franco-lamas/PyOBD/contents/pyobd --jq '.[].name')",
+      "mcp__Claude_Preview__preview_start"
+    ]
+  }
+}
