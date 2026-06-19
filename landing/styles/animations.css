@@ -1,3 +1,79 @@
+/* ════════ LOGO ANIMATION ════════ */
+.logo-icon {
+  overflow: visible;
+  cursor: pointer;
+}
+
+.logo-frame {
+  stroke-dasharray: 160;
+  stroke-dashoffset: 160;
+  animation: logoDraw 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.logo-pulse {
+  stroke-dasharray: 80;
+  stroke-dashoffset: 80;
+  animation: logoDraw 1.8s cubic-bezier(0.22, 1, 0.36, 1) 0.5s forwards;
+}
+
+.logo-area {
+  opacity: 0;
+  animation: logoFade 0.8s cubic-bezier(0.22, 1, 0.36, 1) 1.6s forwards;
+}
+
+.logo-peak {
+  opacity: 0;
+  transform-origin: 31px 9px;
+  animation:
+    logoPeakPop 0.6s cubic-bezier(0.22, 1, 0.36, 1) 2s forwards,
+    logoPeakBreathe 3s ease-in-out 2.6s infinite;
+}
+
+.logo-icon:hover .logo-frame {
+  stroke-width: 1.6;
+  transition: stroke-width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.logo-icon:hover .logo-pulse {
+  filter: url(#logo-glow);
+  transition: filter 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.logo-icon:hover .logo-peak {
+  animation:
+    logoPeakPop 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+    logoPeakBreathe 1.5s ease-in-out 0.4s infinite;
+}
+
+.logo-icon:hover .logo-area {
+  opacity: 1;
+  animation: logoAreaPulse 2s ease-in-out infinite;
+}
+
+@keyframes logoDraw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes logoFade {
+  to { opacity: 1; }
+}
+
+@keyframes logoPeakPop {
+  0% { opacity: 0; transform: scale(0); }
+  50% { opacity: 1; transform: scale(1.6); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes logoPeakBreathe {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.35); opacity: 1; }
+}
+
+@keyframes logoAreaPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
 /* ════════ GRAIN ════════ */
 .grain::after {
   content: '';

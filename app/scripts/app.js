@@ -126,22 +126,30 @@
         return;
       }
 
-      portfolio.push({
-        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-        ticker,
-        name: cedear.name,
-        buyPrice,
-        quantity,
-        buyDate,
-        sector: cedear.sector,
-        ratio: cedear.ratio
-      });
+      var existing = portfolio.find(function (p) { return p.ticker === ticker; });
+      if (existing) {
+        var totalQty = existing.quantity + quantity;
+        existing.buyPrice = (existing.buyPrice * existing.quantity + buyPrice * quantity) / totalQty;
+        existing.quantity = totalQty;
+        existing.buyDate = buyDate;
+      } else {
+        portfolio.push({
+          id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+          ticker,
+          name: cedear.name,
+          buyPrice,
+          quantity,
+          buyDate,
+          sector: cedear.sector,
+          ratio: cedear.ratio
+        });
+      }
 
       savePortfolio();
       render();
       form.reset();
       dateInput.value = new Date().toISOString().split('T')[0];
-      showToast(`${ticker} agregado al portfolio`, 'success');
+      showToast(existing ? `${ticker} actualizado: ${quantity} unidades sumadas` : `${ticker} agregado al portfolio`, 'success');
     });
   }
 
