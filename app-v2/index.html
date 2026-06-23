@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finance Mind 2.0 — Portfolio Global</title>
+  <meta name="description" content="Trackeá acciones, crypto, ETFs, forex, índices y commodities en un solo lugar. Datos en vivo, exportación profesional, 100% privado." />
+  <meta name="theme-color" content="#0a0a0a" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles/tokens.css" />
+  <link rel="stylesheet" href="styles/app.css" />
+  <link rel="stylesheet" href="styles/animations.css" />
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%234285F4'/%3E%3Cstop offset='0.33' stop-color='%230F9D58'/%3E%3Cstop offset='0.66' stop-color='%23F4B400'/%3E%3Cstop offset='1' stop-color='%23DB4437'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='6' fill='url(%23g)'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='14' font-weight='700' fill='%230a0a0a' text-anchor='middle'%3EFM%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-mark">FM</div>
+        <span>Finance Mind</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-item active">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9"/><path d="M5 10v10h14V10"/></svg>
+          Dashboard
+        </div>
+        <div class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg>
+          Mercados
+        </div>
+        <div class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/><path d="M3 9h18M9 21V9"/></svg>
+          Watchlist
+        </div>
+        <div class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 008 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H2a2 2 0 010-4h.09A1.65 1.65 0 003.6 8a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 008 3.6 1.65 1.65 0 009 2.09V2a2 2 0 014 0v.09A1.65 1.65 0 0015 3.6a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 8a1.65 1.65 0 001.51 1H22a2 2 0 010 4h-.09A1.65 1.65 0 0019.4 15z"/></svg>
+          Ajustes
+        </div>
+      </nav>
+
+      <div class="sidebar-footer" id="trial-badge">
+        <div class="trial-badge">TRIAL · 30 días</div>
+        <div>Probando Finance Mind</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="header">
+        <button class="search-trigger" id="search-trigger">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <span>Buscar acciones, crypto, ETFs…</span>
+          <span class="kbd">Ctrl K</span>
+        </button>
+
+        <div class="ccl-input">
+          <span>CCL</span>
+          <input type="number" id="ccl-input" min="1" step="1" />
+        </div>
+
+        <button class="btn primary" id="add-trigger">+ Agregar</button>
+      </header>
+
+      <div class="content">
+        <div class="page-head">
+          <div>
+            <div class="sub">Dashboard</div>
+            <h1>Tu portfolio en vivo</h1>
+          </div>
+        </div>
+
+        <section class="summary">
+          <div class="summary-card">
+            <div class="label">Valor ARS</div>
+            <div class="value mono" id="sum-value-ars">$0</div>
+          </div>
+          <div class="summary-card">
+            <div class="label">Valor USD</div>
+            <div class="value mono" id="sum-value-usd">$0</div>
+          </div>
+          <div class="summary-card">
+            <div class="label">P&amp;L Total</div>
+            <div class="value mono" id="sum-pnl">$0</div>
+            <div class="delta mono" id="sum-pnl-pct">0%</div>
+          </div>
+          <div class="summary-card">
+            <div class="label">Activos</div>
+            <div class="value mono" id="sum-count">0</div>
+          </div>
+        </section>
+
+        <section class="charts">
+          <div class="chart-card">
+            <h3>Distribución</h3>
+            <div class="chart-canvas-wrap"><canvas id="chart-pie"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <h3>Rendimiento por activo</h3>
+            <div class="chart-canvas-wrap"><canvas id="chart-bar"></canvas></div>
+          </div>
+        </section>
+
+        <section class="holdings">
+          <div class="holdings-head">
+            <h3>Tenencias</h3>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Activo</th>
+                <th>Tipo</th>
+                <th>Cantidad</th>
+                <th>Precio compra</th>
+                <th>Precio actual</th>
+                <th>Valor ARS</th>
+                <th>Peso</th>
+                <th>P&amp;L</th>
+                <th>Día</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="holdings-body"></tbody>
+          </table>
+          <div class="empty" id="holdings-empty">
+            <h4>Tu portfolio está vacío</h4>
+            <p>Buscá un activo (Ctrl+K) y agregalo para empezar.</p>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- SEARCH OVERLAY -->
+  <div class="search-overlay" id="search-overlay">
+    <div class="search-modal">
+      <input
+        type="text"
+        class="search-modal-input"
+        id="search-modal-input"
+        placeholder="Buscá acciones, crypto, ETFs, forex, índices…"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <div class="search-results" id="search-results"></div>
+    </div>
+  </div>
+
+  <!-- ADD ASSET MODAL -->
+  <div class="modal-overlay" id="add-asset-modal">
+    <div class="modal">
+      <h3>Agregar al portfolio</h3>
+      <div class="selected-asset" id="selected-asset"></div>
+      <div class="field">
+        <label>Cantidad</label>
+        <input type="number" id="add-qty" min="0" step="any" placeholder="0" />
+      </div>
+      <div class="field">
+        <label>Precio de compra</label>
+        <input type="number" id="add-price" min="0" step="any" placeholder="0" />
+      </div>
+      <div class="field">
+        <label>Fecha</label>
+        <input type="date" id="add-date" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn" id="add-cancel">Cancelar</button>
+        <button class="btn primary" id="add-confirm">Agregar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAYWALL -->
+  <div class="paywall" id="paywall">
+    <div class="paywall-card">
+      <h2>Tu prueba gratuita terminó</h2>
+      <p style="color:var(--color-text-2);">Activá tu plan para seguir trackeando tu portfolio.</p>
+      <div class="price">USD 4,99<span style="font-size:0.6em;color:var(--color-text-2);"> /mes</span></div>
+      <ul>
+        <li>Portfolio global ilimitado</li>
+        <li>Acciones, crypto, ETFs, forex y más</li>
+        <li>Exportación profesional (CSV, Excel, PDF)</li>
+        <li>Datos en vivo cada 60s</li>
+        <li>100% privado, sin servidores</li>
+      </ul>
+      <a href="#" class="btn primary" style="width:100%;justify-content:center;margin-bottom:8px;">Suscribirme</a>
+      <div class="field" style="margin-top:16px;">
+        <label>¿Ya tenés un código de activación?</label>
+        <input type="text" id="paywall-code" placeholder="FM-XXXX-XXXX" />
+      </div>
+      <button class="btn" id="paywall-activate" style="width:100%;justify-content:center;">Activar</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script type="module" src="scripts/app.js"></script>
+  <script>
+    document.getElementById('add-trigger').addEventListener('click', () => {
+      document.getElementById('search-trigger').click();
+    });
+  </script>
+</body>
+</html>
