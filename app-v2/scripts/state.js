@@ -98,5 +98,31 @@ export function setLoading(flag) {
   emit();
 }
 
+export function addToWatchlist(item) {
+  if (state.watchlist.find(w => w.symbol === item.symbol)) return;
+  state.watchlist.push({
+    symbol: item.symbol,
+    name: item.name,
+    quoteType: item.quoteType,
+    exchange: item.exchange,
+  });
+  persist();
+  emit();
+}
+
+export function removeFromWatchlist(symbol) {
+  state.watchlist = state.watchlist.filter(w => w.symbol !== symbol);
+  persist();
+  emit();
+}
+
+export function clearAll() {
+  state.portfolio = [];
+  state.watchlist = [];
+  state.quotes = {};
+  persist();
+  emit();
+}
+
 window.addEventListener('online', () => { state.online = true; emit(); });
 window.addEventListener('offline', () => { state.online = false; emit(); });
