@@ -95,20 +95,6 @@
 .fade-in { animation: fadeIn 300ms var(--ease-smooth) both; }
 .fade-scale-in { animation: fadeScaleIn 400ms var(--ease-smooth) both; }
 
-/* ── Sparkle component ── */
-.sparkle-icon {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  background: var(--gradient-gemini);
-  background-size: 200% 200%;
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1L14.5 8.5L22 12L14.5 15.5L12 23L9.5 15.5L2 12L9.5 8.5Z'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1L14.5 8.5L22 12L14.5 15.5L12 23L9.5 15.5L2 12L9.5 8.5Z'/%3E%3C/svg%3E");
-  -webkit-mask-size: contain;
-  mask-size: contain;
-  animation: sparkle-rotate 4s linear infinite, sparkle-pulse 2s ease-in-out infinite, gradient-shift 3s ease infinite;
-}
-
 /* ── Gradient text utility ── */
 .gradient-text {
   background: var(--gradient-gemini-text);

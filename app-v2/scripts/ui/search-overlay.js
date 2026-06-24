@@ -6,7 +6,10 @@ export function initSearchOverlay({ onSelect }) {
   const results = document.getElementById('search-results');
   const trigger = document.getElementById('search-trigger');
 
-  function open() {
+  let activeCallback = onSelect;
+
+  function open(customCallback) {
+    activeCallback = customCallback || onSelect;
     overlay.classList.add('open');
     input.value = '';
     results.innerHTML = '';
@@ -14,9 +17,10 @@ export function initSearchOverlay({ onSelect }) {
   }
   function close() {
     overlay.classList.remove('open');
+    activeCallback = onSelect;
   }
 
-  trigger.addEventListener('click', open);
+  trigger.addEventListener('click', () => open());
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) close();
   });
@@ -30,10 +34,12 @@ export function initSearchOverlay({ onSelect }) {
     if (!q) { results.innerHTML = ''; return; }
     results.innerHTML = '<div class="search-group-label">Buscando…</div>';
     debouncedSearch(q, (groups) => renderResults(results, groups, (item) => {
-      onSelect(item);
+      activeCallback(item);
       close();
     }));
   });
+
+  return { open };
 }
 
 function renderResults(container, groups, onPick) {

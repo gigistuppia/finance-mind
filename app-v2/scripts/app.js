@@ -46,7 +46,7 @@ function init() {
 
   addAssetUI = initAddAsset({ onAdd: refreshQuotes });
 
-  initSearchOverlay({ onSelect: (item) => addAssetUI.open(item) });
+  const searchUI = initSearchOverlay({ onSelect: (item) => addAssetUI.open(item) });
 
   initMarkets({
     onSelect: (item) => addAssetUI.open(item),
@@ -56,7 +56,10 @@ function init() {
   initSettings();
 
   document.getElementById('watchlist-add')?.addEventListener('click', () => {
-    document.getElementById('search-trigger')?.click();
+    searchUI.open((item) => {
+      addToWatchlist(item);
+      refreshWatchlistQuotes();
+    });
   });
 
   initRouter();
