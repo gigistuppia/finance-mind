@@ -3,9 +3,25 @@ const PAID_KEY = 'fm2_paid';
 const TRIAL_DAYS = 30;
 const DAY_MS = 86_400_000;
 
+const MASTER_CODE = 'FM-GROW-MARK';
+const VALID_CODES = new Set([
+  MASTER_CODE,
+  'FM-PRO1-2026',
+  'FM-PRO2-2026',
+  'FM-PRO3-2026',
+  'FM-PRO4-2026',
+  'FM-PRO5-2026',
+  'FM-BETA-VIP1',
+  'FM-BETA-VIP2',
+  'FM-BETA-VIP3',
+  'FM-BETA-VIP4',
+  'FM-BETA-VIP5',
+]);
+
 export function getTrialStatus() {
-  if (localStorage.getItem(PAID_KEY)) {
-    return { status: 'paid', daysLeft: Infinity };
+  const paidCode = localStorage.getItem(PAID_KEY);
+  if (paidCode) {
+    return { status: 'paid', daysLeft: Infinity, code: paidCode };
   }
 
   let start = localStorage.getItem(TRIAL_KEY);
@@ -24,9 +40,16 @@ export function getTrialStatus() {
 const CODE_PATTERN = /^FM-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
 
 export function activatePaid(code) {
-  if (!code || !CODE_PATTERN.test(code.trim().toUpperCase())) return false;
-  localStorage.setItem(PAID_KEY, code.trim().toUpperCase());
+  if (!code) return false;
+  const clean = code.trim().toUpperCase();
+  if (!CODE_PATTERN.test(clean)) return false;
+  if (!VALID_CODES.has(clean)) return false;
+  localStorage.setItem(PAID_KEY, clean);
   return true;
+}
+
+export function isMaster() {
+  return localStorage.getItem(PAID_KEY) === MASTER_CODE;
 }
 
 export function isBlocked() {

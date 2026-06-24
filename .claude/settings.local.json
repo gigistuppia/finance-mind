@@ -13,7 +13,11 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(gh api *)",
       "PowerShell(gh api repos/franco-lamas/PyOBD/contents/pyobd --jq '.[].name')",
-      "mcp__Claude_Preview__preview_start"
+      "mcp__Claude_Preview__preview_start",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }

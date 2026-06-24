@@ -1,349 +1,467 @@
-# CLAUDE.md — Plan Maestro: Landing Finance Mind
+# CLAUDE.md — Finance Mind: Guía de Diseño y Desarrollo
 
-> Plan de diseño y construcción de la landing page de **Finance Mind**.
-> Estado: **APROBADO Y CONSTRUIDO** (junio 2026) — la landing vive en `/landing` (HTML + CSS + JS vanilla).
-> La app existente en `/finance-app` no se toca. Servir la landing con preview_start "landing" (puerto 4173).
-
----
-
-## 1. Brief del proyecto
-
-**Qué es:** Landing page de marketing para Finance Mind, la app de portfolio tracking de CEDEARs que ya existe en `/finance-app` (React + Recharts, dark, estética Gemini). La landing presenta el producto, demuestra su valor en vivo y empuja un único objetivo: que el visitante abra la app.
-
-**Para quién:** Inversores minoristas argentinos (25–45) que operan CEDEARs en brokers como BALANZ y hoy trackean su cartera en Excel o en la cabeza. Saben de mercado, detectan el humo a kilómetros, valoran datos duros y velocidad.
-
-**Emoción en 3 segundos:** **Precisión + control.** El visitante tiene que sentir que está mirando un instrumento de precisión financiera — no un folleto. La landing debe *comportarse* como la app: números que laten, verde/rojo en vivo, data por todos lados.
-
-**Elemento inolvidable (layout anchor):** Un **ticker marquee full-bleed de CEDEARs en vivo** cruzando la pantalla con precios simulados que varían en tiempo real (verde/rojo), igual que en la app — la landing demuestra el producto antes de explicarlo. Más el mockup del dashboard reconstruido en HTML/CSS puro flotando en el hero con tilt 3D y números que cambian cada segundo.
-
-**Objetivo de conversión:** CTA único "Abrir Finance Mind" → app. CTA secundario: scroll a la demo.
+> Fuente de verdad para toda sesión de Claude Code en este proyecto.
+> Última actualización: junio 2026.
 
 ---
 
-## 2. Dirección estética
+## 1. Visión del proyecto
 
-**Elegida: Tech Neo-Futurista** (ejecutada al 100%, sin mezclas).
+**Finance Mind** es un portfolio tracker multi-activo global (acciones, crypto, ETFs, forex, índices, commodities) con identidad visual **"AI futurista multicolor"** — claramente inspirada en el lenguaje visual de Google Gemini pero con código 100% original.
 
-**Por qué esta y no otra:**
-- Es la dirección que ya define al producto: la app usa dark `#0a0a0a`, acento azul-cyan Gemini, glassmorphism sutil y JetBrains Mono para datos. Una landing Dark Luxury o Editorial rompería la continuidad marca→producto; el usuario haría clic en "Abrir la app" y sentiría que cambió de empresa.
-- El research lo confirma: en 2026 el dark mode con acentos vivos y glow sutil es casi un requisito para productos data-heavy/fintech (Mercury, Stripe, Cash App — Site of the Day en Awwwards), y la tipografía oversized con datos tabulares es el patrón dominante en fintech SaaS.
-- Emoción target (precisión/control/asombro) ↔ Tech Neo-Futurista es el match exacto de la tabla de direcciones.
+### Principios de diseño
 
-**Referencias tomadas (Fase 0.2):**
-- [Awwwards — Fintech Design](https://www.awwwards.com/inspiration/fintech-design-basis) — dark + acentos vibrantes, producto mostrado en vivo, no ilustraciones.
-- [DesignRevision — Fintech SaaS Landing Pages 2026](https://designrevision.com/blog/fintech-saas-landing-pages) — mostrar el producto real, social proof cuantificado, tipografía maximalista en hero.
-- [Tubik — UI Design Trends 2026](https://blog.tubikstudio.com/ui-design-trends-2026/) — dark mode con glow sutil para interfaces de uso prolongado.
-- [Figma — Web Design Trends 2026](https://www.figma.com/resource-library/web-design-trends/) — tipografía cinética/oversized como storytelling.
-- [Webstacks — Fintech Websites](https://www.webstacks.com/blog/fintech-websites) — fuentes tabulares para columnas de cifras alineadas.
+- **Inteligencia visible**: el sitio debe transmitir que hay una mente detrás de los datos — movimiento fluido, gradientes vivos, microinteracciones que respiran.
+- **Minimalismo vibrante**: mucho espacio negro/vacío + acentos de color en movimiento. Nunca recargado, nunca plano.
+- **Precisión instrumental**: tipografía monoespaciada para datos, números que laten, verde/rojo real. El usuario siente que mira un instrumento financiero de precisión, no un folleto.
+- **Sofisticación tecnológica**: glassmorphism, glows sutiles, partículas discretas. Cada detalle debe sentirse intencional y pulido.
 
----
-
-## 3. Paleta definitiva (heredada de la app — coherencia marca→producto)
-
-| Token | HEX | Rol | Psicología aplicada |
-|---|---|---|---|
-| `--color-bg` | `#0a0a0a` | Fondo base | Negro profundo: foco total en los datos, lectura prolongada sin fatiga |
-| `--color-bg-alt` | `#111111` | Secciones alternas | Ritmo visual entre secciones sin romper el dark |
-| `--color-surface` | `#1a1a1a` | Cards, mockups | Capa elevada, jerarquía de profundidad |
-| `--color-accent` | `#1C8AFF` | Acento primario, CTAs, links | Azul Gemini: confianza + tecnología — el color que el fintech usa para señalizar estabilidad |
-| `--color-accent-2` | `#00BCD4` | Acento secundario, glows | Cyan: precisión instrumental, frialdad de dato |
-| `--color-green` | `#00E676` | Rendimiento positivo | Verde señal: ganancia, crecimiento — gatillo emocional del inversor |
-| `--color-red` | `#FF1744` | Rendimiento negativo | Rojo señal: pérdida — credibilidad (un tracker que solo muestra verde miente) |
-| `--color-border` | `rgba(255,255,255,0.08)` | Bordes | Separación sutil sin pelear con los datos |
-| `--color-text-1/2/3` | `#f5f5f5` / `#a0a0a0` / `#555` | Jerarquía de texto | Contraste AA garantizado en text-1 y text-2 |
-| `--gradient-gemini` | `linear-gradient(135deg, #4285F4, #0F9D58, #F4B400, #DB4437)` | Momentos de marca (logo, headline hero, borde header) | Firma visual única de Finance Mind — multicolor, jamás purple→blue |
-
-Sombras siempre con color del acento: `0 8px 32px rgba(28,138,255,0.15)`. Nada de gris plano.
-
----
-
-## 4. Tipografías (Google Fonts CDN, con preconnect)
-
-| Rol | Fuente | Pesos | Por qué |
-|---|---|---|---|
-| Display + body | **Space Grotesk** | 300/400/500/700 | La fuente de la app — identidad ya establecida. Geométrica con carácter, headlines con `letter-spacing: -.03em` |
-| Datos / labels / ticker | **JetBrains Mono** | 400/500/700 | Tabular: las cifras alinean perfecto en columnas. Refuerza el lenguaje "terminal financiera" |
-
-Escala fluida con `clamp()`: `--text-hero: clamp(2.8rem, 8vw, 7rem)`. Prohibido Inter/Roboto/Arial en cualquier parte.
-
----
-
-## 5. Arquitectura de secciones (Layout Map — Regla #0)
-
-Validación: 8 layouts distintos, ninguno repetido en secciones consecutivas. Padding vertical alternado denso (~48–64px) / espaciado (~120–140px).
-
-| # | Sección | Layout específico | Cómo rompe la linealidad | Padding |
-|---|---|---|---|---|
-| 0 | **Loader** | Contador 0→100% estilo terminal: logo Finance Mind + cifra mono + barra con gradiente Gemini | Intro screen obligatoria, reveal del hero en cascada | — |
-| 1 | **Hero** | **Split asimétrico 60/40**: texto izquierda (tag mono + H1 oversized con palabra en gradiente Gemini + sub + 2 CTAs), derecha mockup del dashboard en HTML/CSS con tilt 3D y números latiendo | Fondo: orbs aurora Gemini + canvas de partículas conectadas (constelación de datos). El mockup sangra fuera de la grilla por la derecha | 140px |
-| 2 | **Ticker marquee** ⚓ | **Full-bleed breakout** (`100vw`): marquee infinito de CEDEARs (AAPL, NVDA, MSFT…) con precio ARS y variación % verde/roja actualizándose en vivo | Elemento anchor — la landing ES el producto. Doble fila, direcciones opuestas | 48px |
-| 3 | **Features** | **Bento Grid** (`grid-template-areas`, celda 2×2 + 1×2 + 1×1s): cada card con micro-demo viva — mini pie chart SVG animado, sparkline, contador, badge export | Densidad controlada, celdas de tamaños distintos, hover lift + glow azul | 120px |
-| 4 | **Stats** | **Data Immersive**: "+XX,X%" gigante de fondo (15vw, opacity 0.04) + 4 contadores animados en primer plano (count-up con ScrollTrigger) | El número ES el fondo. Sin cards iguales en fila | 64px |
-| 5 | **Cómo funciona** | **Z-Pattern numerado** (3 pasos alternando lados, línea conectora vertical con gradiente que se dibuja al scroll) | Alterna izquierda/derecha, números 01/02/03 oversized en mono | 120px |
-| 6 | **Exportación** | **Asimétrico 65/35 con offset**: texto a la derecha (35), pila de 3 documentos mock (Excel/PDF/Word) superpuestos en abanico a la izquierda (65), desfasados verticalmente | Los documentos se despliegan en abanico al entrar en viewport | 96px |
-| 7 | **Privacidad** | **Full-bleed con texto superpuesto**: fondo de grid de celdas tipo planilla apagándose, headline centrado superpuesto "Tus datos nunca salen de tu navegador" | Única sección centrada — el contraste con todo lo anterior es el efecto | 120px |
-| 8 | **Testimonios** | **Sticky sidebar + scroll de cards**: columna izquierda fija (título + rating), derecha 3 cards glass que scrollean | Sin carrusel. Cards con borde que se enciende al pasar | 96px |
-| 9 | **CTA final** | **Full-bleed dramático a sangre**: headline gigante (clamp hasta 9rem) con gradiente Gemini animado, orbs intensificados, un solo botón | Sin box, sin borde — tipografía como diseño | 140px |
-| 10 | **Footer** | Magazine 3 columnas: logo+claim / nav / legal+stack | Libre | 64px |
-
----
-
-## 6. Copywriting completo (es-AR rioplatense, cero lorem ipsum)
-
-### Loader
-`FINANCE MIND` · `Cargando mercado… {n}%`
-
-### Hero
-- **Tag (mono):** `PORTFOLIO TRACKER · CEDEARS · TIEMPO REAL`
-- **H1:** "Tus CEDEARs, **en vivo**. Tu estrategia, bajo control." *(«en vivo» con gradiente Gemini animado)*
-- **Sub:** "Finance Mind sigue cada activo de tu cartera al segundo: rendimiento, peso, evolución y exportación profesional. Sin registros, sin servidores, sin humo — todo corre en tu navegador."
-- **CTA primario:** `Abrir Finance Mind →`
-- **CTA secundario:** `Ver cómo funciona ↓`
-- **Microcopy bajo CTA (mono):** `Gratis · Sin cuenta · Tus datos quedan en tu dispositivo`
-
-### Ticker marquee
-Tickers con datos simulados: `AAPL Apple $24.350 ▲ +1,24%` · `NVDA NVIDIA $31.820 ▲ +2,67%` · `TSLA Tesla $18.940 ▼ -0,83%` · `MSFT Microsoft $28.115 ▲ +0,45%` · `GOOGL Alphabet $9.870 ▼ -0,21%` · `META Meta $22.480 ▲ +1,02%` · `AMZN Amazon $15.230 ▲ +0,67%` · `JPM JPMorgan $12.940 ▲ +0,12%`
-
-### Features (Bento)
-- **Tag de sección:** `EL PRODUCTO`
-- **H2:** "Todo lo que tu Excel no puede hacer"
-- **Card 1 (2×2) — Dashboard en vivo:** "Tu cartera, latiendo. Torta de pesos, barras de valor y cada activo actualizándose segundo a segundo. Verde cuando ganás, rojo cuando no — sin maquillaje." *(micro-demo: mini pie chart SVG animado + fila de activo con número vivo)*
-- **Card 2 (1×2) — Estadísticas que importan:** "Volatilidad, máximo drawdown, mejor y peor activo del período. Diario, semanal o mensual — vos elegís la lupa." *(micro-demo: sparkline SVG dibujándose)*
-- **Card 3 (1×1) — Carga en segundos:** "Ticker, precio de compra, cantidad, fecha. Cuatro campos y tu activo ya está trackeado."
-- **Card 4 (1×1) — Exportación pro:** "Excel, PDF o Word con un clic. Tu planilla, lista para el contador." *(badges .xlsx .pdf .docx)*
-- **Card 5 (1×1) — CEDEARs nativos:** "Apple, NVIDIA, Tesla y los tickers más operados de BALANZ, mapeados de fábrica."
-
-### Stats (Data Immersive — fondo gigante: `+24,7%`)
-- **Tag:** `EN NÚMEROS`
-- `1 seg` — frecuencia de actualización de precios
-- `3` — formatos de exportación profesional
-- `9+` — CEDEARs soportados de fábrica
-- `0` — datos enviados a servidores. Cero.
-
-### Cómo funciona (Z-Pattern)
-- **Tag:** `EL FLUJO` / **H2:** "De cero a portfolio en tres pasos"
-- **01 — Cargá tus activos.** "Buscá el ticker, poné precio de compra y cantidad. El autocomplete hace el resto."
-- **02 — Mirá el mercado moverse.** "Dashboard en tiempo real: rendimiento en %, en pesos y el peso de cada activo en tu cartera."
-- **03 — Exportá y listo.** "Bajá tu planilla en Excel, PDF o Word. Historial completo de movimientos, formateado como corresponde."
-
-### Exportación (65/35)
-- **Tag:** `LA PLANILLA` / **H2:** "Tu cartera también existe fuera de la app"
-- **Body:** "Cada compra y cada venta queda registrada en la planilla de movimientos. Cuando la necesités — para tu contador, para tu registro, para vos — la exportás en el formato que quieras. Excel con hoja resumen, PDF estilizado o Word editable."
-- **CTA terciario:** `Probar la exportación →`
-
-### Privacidad (Full-bleed)
-- **H2:** "Tus datos nunca salen de tu navegador"
-- **Body:** "Finance Mind no tiene cuentas, no tiene servidores y no tiene curiosidad. Tu portfolio vive en el localStorage de tu dispositivo: nadie más lo ve, nadie más lo toca. Cerrás la pestaña y sigue ahí. Lo borrás vos, cuando quieras."
-
-### Testimonios (sticky + cards) — *testimonios ilustrativos, redactados como reales*
-- **Tag:** `QUIENES YA LO USAN` / **H2 (columna fija):** "Inversores que dejaron el Excel"
-- "Llevaba mi cartera en una planilla con fórmulas rotas desde 2022. Esto la reemplazó en una tarde." — **Martín G., inversor minorista, CABA**
-- "Lo que más valoro: abro la app y en dos segundos sé si voy ganando o perdiendo. Sin login, sin esperas." — **Carolina R., analista contable, Rosario**
-- "La exportación a Excel me ahorra armar el resumen para mi contador todos los meses." — **Federico L., desarrollador, Córdoba**
-
-### CTA final (Full-bleed)
-- **H2 gigante:** "Empezá a trackear **hoy**."
-- **Sub:** "Gratis. Sin registro. Sin vueltas."
-- **CTA:** `Abrir Finance Mind →`
-
-### Footer
-- Claim: "Finance Mind — precisión para tu portfolio."
-- Nav: Producto · Cómo funciona · Privacidad
-- Legal: "Los precios mostrados en esta página son simulados con fines demostrativos. Finance Mind no es asesoramiento financiero." · `© 2026 Finance Mind`
-
----
-
-## 7. SEO (on-page)
-
-**Keywords:**
-
-| Keyword | Tipo | Intención | Prioridad |
-|---|---|---|---|
-| portfolio tracker CEDEARs | Primaria | Transaccional | Alta |
-| seguimiento de cartera CEDEARs | Secundaria | Comercial | Alta |
-| app para trackear inversiones Argentina | Secundaria | Comercial | Media |
-| exportar portfolio a Excel | Soporte | Transaccional | Media |
-| rendimiento CEDEARs en tiempo real | Soporte | Informacional | Media |
-
-**Meta tags:**
-- `<title>` (58 ch): `Finance Mind — Portfolio Tracker de CEDEARs en Tiempo Real`
-- `<meta description>` (155 ch): `Seguí tus CEDEARs en tiempo real: rendimiento, estadísticas y exportación a Excel, PDF y Word. Gratis, sin registro y 100% privado. Abrí Finance Mind.`
-- Open Graph completo (og:title, og:description, og:image 1200×630 — placeholder SVG→PNG documentado), canonical, `lang="es-AR"`.
-- **JSON-LD:** `SoftwareApplication` (applicationCategory: FinanceApplication, offers price 0, operatingSystem: Web).
-- Un solo H1 (hero). H2 por sección con keywords secundarias naturales. HTML semántico: `header / nav / main / section / footer`, ARIA labels y roles.
-
----
-
-## 8. Plan de assets
-
-**Cero imágenes externas — todo SVG inline y HTML/CSS.** Sin requests de imagen = sin layout shift, peso mínimo, calidad infinita en retina.
-
-| Asset | Técnica | Notas |
-|---|---|---|
-| Logo Finance Mind | SVG inline, monograma "FM" con gradiente Gemini | Mismo lenguaje que el logo de la app |
-| Mockup dashboard (hero) | HTML/CSS puro: header mini, pie chart en `conic-gradient`, barras CSS, 3 filas de activos con números JS en vivo | Es el "screenshot" del producto, pero vivo |
-| Mini-charts del Bento | SVG inline (pie, sparkline con `stroke-dashoffset`) | Animados con ScrollTrigger |
-| Documentos export (sección 6) | Cards HTML/CSS con ícono SVG por formato | Verde Excel `#1D6F42`, rojo PDF, azul Word — colores de marca de cada formato |
-| Fondo hero | Canvas partículas + orbs CSS blur | `prefers-reduced-motion`: orbs estáticos, canvas off |
-| og:image | Placeholder: generar a futuro screenshot 1200×630 del hero | Comentado en el HTML con prompt sugerido |
-| Favicon | SVG data-URI con el monograma | — |
-
----
-
-## 9. Stack y estructura de archivos
-
-GSAP 3.12.5 + ScrollTrigger (cdnjs) · Lenis 1.0.42 (jsdelivr) · Vanilla JS para ticker/contadores/partículas.
+### Estructura del proyecto
 
 ```
-landing/
-├── index.html
-├── styles/
-│   ├── tokens.css        ← design tokens (paleta, tipo, easing, sombras)
-│   ├── main.css          ← layout de las 10 secciones + componentes
-│   └── animations.css    ← keyframes, reveals, loader, marquee
-└── scripts/
-    ├── main.js           ← init, Lenis, nav inteligente, reveals
-    ├── loader.js         ← contador + reveal hero
-    ├── ticker.js         ← simulador de precios (marquee + mockup hero)
-    └── particles.js      ← canvas constelación
+proyecto-finance-mind/
+├── landing/               ← Landing page de marketing (HTML + CSS + JS vanilla, puerto 4173)
+├── app-v2/                ← App principal v2 (HTML + CSS + JS vanilla, puerto 4175)
+│   ├── index.html         ← SPA principal
+│   ├── styles/
+│   │   ├── tokens.css     ← Design tokens (paleta, tipo, easing, sombras, gradientes)
+│   │   ├── app.css        ← Layout y componentes
+│   │   └── animations.css ← Keyframes, transiciones, shimmer, sparkle
+│   ├── scripts/
+│   │   ├── app.js         ← Entry point, init, router
+│   │   ├── state.js       ← Store reactivo (localStorage + subscribe/emit)
+│   │   ├── api.js         ← Yahoo Finance proxy, cache, rate limiting
+│   │   ├── dolar.js       ← Cotización dólar CCL en vivo (dolarapi.com)
+│   │   ├── search.js      ← Buscador universal
+│   │   ├── portfolio.js   ← CRUD portfolio, cálculos
+│   │   ├── auth.js        ← Trial 30 días + paywall
+│   │   ├── router.js      ← Hash-based SPA routing
+│   │   └── ui/            ← Módulos de cada vista
+│   └── icons/             ← PWA icons
+├── netlify/functions/     ← Proxy serverless Yahoo Finance (search + quote)
+├── finance-app/           ← App v1 (legacy, no tocar)
+└── app/                   ← App v1 vanilla (legacy, no tocar)
 ```
 
-**Easing:** `--ease-smooth: cubic-bezier(0.22,1,0.36,1)` (el de la app) + `--ease-expo: cubic-bezier(0.87,0,0.13,1)` para fills de botón. Prohibido `transition: all .3s ease`.
+### Servidores de desarrollo
+
+| Nombre | Comando | Puerto | Uso |
+|--------|---------|--------|-----|
+| `landing` | preview_start "landing" | 4173 | Landing page |
+| `app-v2` | preview_start "app-v2" / `node app-v2/server.js` | 4175 | App principal |
+
+### Deploy
+
+- **Hosting**: Netlify (https://finance-mind.netlify.app/)
+- **Landing**: `/` → `landing/index.html`
+- **App v2**: `/app-v2/` → `app-v2/index.html`
+- **Proxy Yahoo**: Netlify Functions (`/api/search`, `/api/quote`)
+- **Push = deploy**: `git push` a `main` despliega automáticamente
 
 ---
 
-## 10. Checklist de ejecución
+## 2. Paleta de colores
 
-1. [ ] `landing/` + `tokens.css` (paleta, tipografía, spacing 8px, easing, sombras con color)
-2. [ ] `index.html`: head SEO completo (meta, OG, JSON-LD, preconnect fonts, favicon SVG)
-3. [ ] Loader terminal (contador + barra Gemini) con reveal en cascada del hero
-4. [ ] Hero split 60/40: copy + mockup dashboard vivo + orbs + canvas partículas
-5. [ ] Ticker marquee full-bleed con simulador de precios compartido
-6. [ ] Bento Grid de features con micro-demos SVG
-7. [ ] Stats Data Immersive con count-up por ScrollTrigger
-8. [ ] Z-Pattern "Cómo funciona" con línea conectora dibujándose
-9. [ ] Exportación 65/35 con abanico de documentos
-10. [ ] Privacidad full-bleed + Testimonios sticky + CTA final dramático + Footer
-11. [ ] Microinteracciones: botón fill desde abajo, links underline animado, cards lift + glow azul, cursor custom desktop, nav inteligente
-12. [ ] `prefers-reduced-motion` global
-13. [ ] Responsive 375px: hamburger, ticker simplificado, bento 1 col, sin overflow-x
-14. [ ] QA: checklist de entrega web-designer-elite completo + verificación en preview (375/768/1440)
+### Filosofía cromática
 
----
+Gradiente multicolor inspirado en Gemini: azul eléctrico → verde → amarillo → rojo. Nunca colores planos en elementos hero — siempre degradados diagonales o radiales con movimiento.
 
-## Reglas heredadas (no negociables)
+### Tokens de color (CSS custom properties)
 
-- Anti-layout lineal: ninguna sección consecutiva repite patrón (validado en §5)
-- Solo animar `transform`/`opacity` · CDNs solo cdnjs/jsdelivr · spacing escala 8px
-- Sin Inter/Roboto/Arial · sin gradiente purple→blue · sombras siempre con color de acento
-- Contraste WCAG AA, focus visibles, ARIA, HTML semántico · sin `console.log` en producción
+```css
+:root {
+  /* ── Fondos ── */
+  --color-bg:         #0a0a0a;     /* Negro profundo — fondo base */
+  --color-bg-alt:     #111111;     /* Secciones alternas */
+  --color-surface:    #1a1a1a;     /* Cards, paneles elevados */
+  --color-surface-hi: #222222;     /* Hover de surface */
 
----
+  /* ── Acentos ── */
+  --color-accent:     #1C8AFF;     /* Azul Gemini — CTAs, links, foco */
+  --color-accent-2:   #00BCD4;     /* Cyan — glows, acentos secundarios */
+  --color-green:      #00E676;     /* Rendimiento positivo */
+  --color-red:        #FF1744;     /* Rendimiento negativo */
+  --color-yellow:     #F4B400;     /* Warnings, trial badge */
 
-## 11. Base de Datos de CEDEARs — Plan y Especificación
+  /* ── Bordes ── */
+  --color-border:     rgba(255,255,255,0.08);
+  --color-border-hi:  rgba(255,255,255,0.16);
 
-> Estado: **EN CONSTRUCCIÓN** (junio 2026)
-> Ubicación: `/landing/db/`
+  /* ── Texto (jerarquía 3 niveles) ── */
+  --color-text-1:     #f5f5f5;     /* Texto principal — contraste AA */
+  --color-text-2:     #a0a0a0;     /* Texto secundario — contraste AA */
+  --color-text-3:     #555555;     /* Texto terciario — labels discretos */
 
-### Objetivo
+  /* ── Gradientes Gemini (la firma visual) ── */
+  --gradient-gemini:   linear-gradient(135deg, #4285F4, #0F9D58, #F4B400, #DB4437);
+  --gradient-primary:  linear-gradient(135deg, #4285F4 0%, #0F9D58 35%, #F4B400 65%, #DB4437 100%);
+  --gradient-accent:   linear-gradient(135deg, #1C8AFF 0%, #00BCD4 50%, #0F9D58 100%);
+  --gradient-shimmer:  linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 50%, transparent 100%);
+  --gradient-glow:     radial-gradient(circle, rgba(28,138,255,0.15) 0%, transparent 70%);
 
-Base de datos JSON local con los **342+ CEDEARs habilitados en BYMA** (que son los mismos que ofrece Balanz). Datos estáticos (ticker, nombre, ratio, sector) + estructura para datos dinámicos (precio, variación) actualizables vía API pública gratuita.
-
-### Fuente de datos oficial
-
-| Recurso | URL | Auth | Delay | Uso |
-|---------|-----|------|-------|-----|
-| Open BYMA Data | `open.bymadata.com.ar` | No | 20 min | Cotizaciones gratuitas |
-| PyOBD (Python) | `pip install pyobd` → `BymaData().get_cedears()` | No | 20 min | Wrapper para consumir Open BYMA Data |
-| BYMA PDF oficial | `byma.com.ar` → Productos → CEDEARs | No | Estático | Lista oficial de tickers + ratios |
-| BYMA API pagada | `api-mgr.byma.com.ar` | Sí | Real-time | Snapshot/Delayed/EndOfDay (requiere `client_id`+`client_secret`) |
-
-### Estructura de archivos
-
-```
-landing/db/
-├── cedears-db.json        ← DB completa: 342+ registros (ticker, nombre, ratio, mercado, sector, país)
-├── update-cedears.js      ← Script Node.js: fetch Open BYMA Data → actualiza precios en el JSON
-└── README-db.md           ← Instrucciones de uso y actualización
-```
-
-### Schema de cada registro
-
-```json
-{
-  "ticker": "AAPL",
-  "name": "Apple Inc.",
-  "ratio": "20:1",
-  "market": "NASDAQ",
-  "sector": "Technology",
-  "country": "US"
+  /* ── Sombras (siempre con color del acento, nunca gris plano) ── */
+  --shadow-sm:   0 2px 8px rgba(28,138,255,0.08);
+  --shadow-md:   0 4px 16px rgba(28,138,255,0.12);
+  --shadow-lg:   0 8px 32px rgba(28,138,255,0.15);
+  --shadow-glow: 0 0 20px rgba(28,138,255,0.25);
 }
 ```
 
-Campos dinámicos (agregados por `update-cedears.js`): `lastPrice`, `change`, `changePercent`, `volume`, `lastUpdate`.
+### Reglas de uso
 
-### Script de actualización
-
-`update-cedears.js` consume `open.bymadata.com.ar` (endpoint CEDEARs, sin auth), parsea el JSON y actualiza `cedears-db.json` con precios frescos. Se corre con `node landing/db/update-cedears.js`.
-
-### Categorías de CEDEARs incluidos
-
-- **Acciones US** (~300): AAPL, NVDA, TSLA, MSFT, GOOGL, AMZN, META, JPM, etc.
-- **Acciones BR/otros** (~20): PBR, VALE, ABEV, BABA, etc.
-- **ETFs** (~25): SPY, QQQ, EEM, IWM, ACWI, XLE, SMH, ARKK, etc.
-- **Nuevos 2025-2026**: HOOD (29:1), CRWV (27:1), SMH (50:1), SPXL (25:1), URA (5:1), CIBR (10:1), XLU (15:1)
+- **Fondos**: `--color-bg` para base, `--color-surface` para cards. Nunca `#000000` puro.
+- **Gradientes animados**: los gradientes hero deben poder animarse con `background-position` shift o `hue-rotate` sutil para dar sensación de "vivo".
+- **Verde/rojo**: exclusivamente para P&L y variación de precios. Verde = ganancia, rojo = pérdida. Un tracker que solo muestra verde miente.
+- **Sombras**: siempre con color del acento (`rgba(28,138,255,...)`) — nunca gris plano (`rgba(0,0,0,...)`).
+- **Colores hardcodeados**: PROHIBIDO. Siempre usar `var(--color-*)`. Nunca hex directos en CSS de componentes.
 
 ---
 
-## 12. App Portfolio Tracker — Especificación
+## 3. Tipografía
 
-> Estado: **CONSTRUIDA** (junio 2026)
-> Ubicación: `/app/` (HTML + CSS + JS vanilla + Chart.js)
-> La landing linkea a `/app/` desde todos los CTAs "Abrir Finance Mind".
+### Fuentes (Google Fonts CDN con preconnect)
 
-### Objetivo
+| Rol | Fuente | Pesos | Por qué |
+|-----|--------|-------|---------|
+| Display + body | **Space Grotesk** | 300/400/500/700 | Geométrica con carácter, identidad establecida de la app |
+| Datos / labels / ticker / precios | **JetBrains Mono** | 400/500/700 | Tabular: cifras alinean perfecto en columnas. Lenguaje "terminal financiera" |
 
-App de portfolio tracking de CEDEARs que consume la base de datos de `/landing/db/cedears-db.json`. El usuario carga sus activos, ve gráficos de torta y barras generados automáticamente, y exporta en CSV/Excel/PDF.
+### Carga obligatoria
 
-### Arquitectura
-
-```
-app/
-├── index.html          ← App completa (SPA vanilla)
-├── styles/
-│   ├── tokens.css      ← Mismos design tokens que la landing
-│   └── app.css         ← Layout de la app, tabla, forms, charts
-└── scripts/
-    └── app.js          ← Lógica: portfolio CRUD, charts (Chart.js), export, autocomplete
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
 ```
 
-### Funcionalidades
+### Escala tipográfica fluida
 
-1. **Resumen del portfolio**: 4 cards (valor ARS, valor USD, P&L, cantidad de activos)
-2. **Gráfico de torta (doughnut)**: distribución porcentual por activo — se genera automáticamente al agregar posiciones
-3. **Gráfico de barras**: valor por activo con colores por P&L — horizontal si >6 activos
-4. **Formulario de carga**: autocomplete desde la DB de 422 CEDEARs, precio de compra, cantidad, fecha
-5. **Tabla de tenencias**: ticker, nombre, cantidad, precio compra/actual, valor ARS/USD, peso %, P&L, variación diaria, botón eliminar
-6. **Dólar CCL configurable**: input para que el usuario ponga su tipo de cambio — se persiste en localStorage
-7. **Exportación**: CSV (UTF-8 con BOM), Excel (XML SpreadsheetML), PDF (HTML con window.print)
-8. **Persistencia**: portfolio en localStorage (`fm_portfolio`), CCL en localStorage (`fm_ccl`)
-9. **Precios actualizados**: lee `cedears-db.json` que se actualiza con `node landing/db/update-cedears.js`
+```css
+--text-xs:   clamp(0.65rem, 0.6rem + 0.2vw, 0.75rem);
+--text-sm:   clamp(0.78rem, 0.7rem + 0.3vw, 0.85rem);
+--text-base: clamp(0.88rem, 0.82rem + 0.3vw, 1rem);
+--text-lg:   clamp(1.1rem, 1rem + 0.5vw, 1.3rem);
+--text-xl:   clamp(1.4rem, 1.2rem + 0.8vw, 1.8rem);
+--text-2xl:  clamp(1.8rem, 1.5rem + 1.2vw, 2.4rem);
+--text-hero: clamp(2.8rem, 2rem + 3vw, 5rem);
+```
+
+### Reglas tipográficas
+
+- Headlines: `letter-spacing: -0.03em` o más negativo para tensión visual.
+- Mono labels: `text-transform: uppercase; letter-spacing: 0.08em–0.1em`.
+- **Texto con gradiente** para títulos hero: `background-clip: text; -webkit-text-fill-color: transparent; background-image: var(--gradient-gemini)`.
+- **PROHIBIDO**: Inter, Roboto, Arial, `system-ui`, `font-family: sans-serif` sin especificar fuente.
+
+---
+
+## 4. Componentes e interacciones
+
+### 4.1 Indicador "thinking" / sparkle
+
+Orbe o estrella de 4 puntas que pulsa y rota suavemente con gradiente animado. Simula "IA procesando".
+
+```css
+@keyframes sparkle-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes sparkle-pulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50%      { opacity: 1; transform: scale(1.15); }
+}
+.sparkle {
+  background: var(--gradient-gemini);
+  animation: sparkle-rotate 4s linear infinite, sparkle-pulse 2s ease-in-out infinite;
+}
+```
+
+### 4.2 Botones pill
+
+- `border-radius: 999px` (full pill).
+- Estado default: fondo `var(--color-accent)`, texto blanco.
+- Hover: gradiente animado que se revela + glow sutil (`box-shadow: var(--shadow-glow)`).
+- Fill-from-bottom en hover para CTAs primarios.
+- Transición: `cubic-bezier(0.22,1,0.36,1)` — nunca `ease` genérico.
+
+```css
+.btn.primary {
+  background: var(--color-accent);
+  border-radius: 999px;
+  transition: all 300ms cubic-bezier(0.22,1,0.36,1);
+}
+.btn.primary:hover {
+  background: var(--gradient-accent);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-1px);
+}
+```
+
+### 4.3 Inputs con borde gradiente en foco
+
+```css
+.input-field:focus {
+  border-color: transparent;
+  background-image: linear-gradient(var(--color-surface), var(--color-surface)),
+                    var(--gradient-gemini);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: 0 0 12px rgba(66,133,244,0.2);
+}
+```
+
+### 4.4 Efecto shimmer (loading placeholder)
+
+Brillo que recorre la superficie en loop para estados de carga.
+
+```css
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg,
+    var(--color-surface) 25%,
+    var(--color-surface-hi) 50%,
+    var(--color-surface) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+```
+
+### 4.5 Cards glassmorphism
+
+```css
+.glass-card {
+  background: rgba(26,26,26,0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--r-lg);
+  transition: border-color 300ms cubic-bezier(0.22,1,0.36,1),
+              transform 300ms cubic-bezier(0.22,1,0.36,1);
+}
+.glass-card:hover {
+  border-color: var(--color-border-hi);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+```
+
+### 4.6 Transiciones entre estados
+
+- Contenido aparece con `fade + scale-up`: `opacity: 0; transform: scale(0.97)` → `opacity: 1; transform: scale(1)`.
+- Duración: 200–400ms con `ease-in-out` o `cubic-bezier(0.22,1,0.36,1)`.
+- **NUNCA** apariciones instantáneas (`display: none/block` sin transición).
+
+### 4.7 Partículas de fondo (opcional, hero)
+
+Canvas con puntos conectados tipo constelación — muy discreto, `opacity: 0.3`, no compite con contenido. Solo en hero o full-bleed sections.
+
+```js
+// particles.js — constelación de datos, 60fps, requestAnimationFrame
+// Respetar prefers-reduced-motion: si activo, no renderizar canvas
+```
+
+---
+
+## 5. Animaciones
+
+### Técnicas permitidas (por orden de prioridad)
+
+1. **CSS puro** (`@keyframes`, `transitions`) — primera opción siempre.
+2. **GSAP 3.12+** + ScrollTrigger (cdnjs.cloudflare.com) — para scroll-triggered y secuencias complejas. Ya en uso en la landing.
+3. **Lenis** (cdn.jsdelivr.net) — smooth scroll. Ya en uso en la landing.
+4. **Chart.js 4.4.7** (cdn.jsdelivr.net) — gráficos con animación de entrada built-in.
+
+### Easing tokens
+
+```css
+--ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);    /* Default para todo */
+--ease-expo:   cubic-bezier(0.87, 0, 0.13, 1);     /* Fills de botón, reveals */
+--ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);  /* Micro-bounces puntuales */
+```
+
+### Reglas de animación
+
+- **Solo animar** `transform` y `opacity`. NUNCA `top`, `left`, `width`, `height`, `margin`, `padding`.
+- **PROHIBIDO**: `transition: all 0.3s ease` — siempre especificar propiedades y usar cubic-bezier personalizado.
+- **PROHIBIDO**: `animation: fadeIn 0.5s ease` como única animación del sitio.
+- **Hover states**: nunca solo cambiar `opacity` o `brightness`. Usar fill/morph, glow, translateY, scale.
+- **`prefers-reduced-motion`**: OBLIGATORIO. Toda animación debe desactivarse o reducirse.
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+---
+
+## 6. Estructura técnica
 
 ### Stack
 
-- HTML semántico + CSS variables (mismo design system que landing)
-- Chart.js 4.4.7 desde cdnjs.cloudflare.com
-- Vanilla JS (IIFE, sin framework)
-- Datos en localStorage (sin servidor, sin auth, privacidad total)
+- **HTML semántico** + **CSS variables** + **Vanilla JS ES modules** (sin framework, sin build step).
+- **Chart.js 4.4.7** para gráficos (via `cdn.jsdelivr.net`).
+- **CDNs permitidos**: solo `cdnjs.cloudflare.com` y `cdn.jsdelivr.net`. Ningún otro.
+- **Datos**: localStorage (sin servidor, sin auth para el portfolio).
+- **Cotizaciones**: Yahoo Finance via Netlify Functions proxy + dolarapi.com para CCL.
 
-### Estilo visual
+### Mobile-first, responsive
 
-Hereda 100% de la landing: dark `#0a0a0a`, Space Grotesk, JetBrains Mono, acento `#1C8AFF`, sombras con color, glassmorphism en header, responsive 480/768/1024.
+| Breakpoint | Target |
+|------------|--------|
+| `< 480px` | Mobile (1 columna, sidebar oculto, hamburger) |
+| `480–768px` | Tablet portrait |
+| `768–1024px` | Tablet landscape |
+| `> 1024px` | Desktop (sidebar visible, grids multi-columna) |
 
-### Reglas
+### Spacing (escala 8px — OBLIGATORIA)
 
-- Sin Inter/Roboto/Arial — solo Space Grotesk + JetBrains Mono
-- Colores solo via CSS variables — nunca hex hardcodeado
-- Spacing escala 8px — sin valores inventados
-- `prefers-reduced-motion` implementado
-- Sin `console.log` en producción
+```css
+--s0: 4px;   --s1: 8px;   --s2: 16px;  --s3: 24px;
+--s4: 32px;  --s5: 48px;  --s6: 64px;  --s7: 80px;  --s8: 96px;
+```
+
+**PROHIBIDO**: valores inventados (`padding: 37px 22px`, `gap: 6px`, `margin: 90px`). Todo spacing debe usar `var(--s*)`.
+
+### Border radius tokens
+
+```css
+--r-sm: 8px;   --r-md: 12px;  --r-lg: 16px;  --r-xl: 24px;  --r-full: 999px;
+```
+
+### Organización CSS
+
+| Archivo | Contenido |
+|---------|-----------|
+| `tokens.css` | Variables: colores, gradientes, tipografía, spacing, easing, sombras, radii |
+| `app.css` | Layout, componentes, estados |
+| `animations.css` | @keyframes, shimmer, sparkle, reveals, reducción de movimiento |
+
+---
+
+## 7. Tono de copywriting
+
+- **Idioma**: español rioplatense (vos, te, contanos). Nunca español neutro ni formal.
+- **Frases**: cortas, seguras, con foco en "precisión" y "control".
+- **Tono**: optimista y directo — nunca corporativo rígido ni marketinero hueco.
+- **Datos**: siempre concretos. "1 seg de actualización", no "actualización rápida".
+- **Ejemplo**: "Tus CEDEARs, en vivo. Tu estrategia, bajo control." — no "La mejor plataforma para gestionar sus inversiones de manera eficiente."
+
+---
+
+## 8. Restricciones explícitas
+
+### NUNCA hacer
+
+| Categoría | Prohibición | Por qué |
+|-----------|-------------|---------|
+| **Marca** | NO usar el logotipo de Google ni de Gemini | Propiedad intelectual |
+| **Marca** | NO nombrar "Gemini" en texto visible del producto | Marca registrada |
+| **Código** | NO copiar código de repositorios de Google | Copyright. Solo inspirarse en la SENSACIÓN visual |
+| **Tipografía** | NO usar Inter, Roboto, Arial, system-ui | Genéricas, sin carácter — regla global |
+| **Colores** | NO hardcodear hex en CSS de componentes | Siempre `var(--color-*)` |
+| **Colores** | NO usar gradiente `#7c3aed → #3b82f6` (purple→blue genérico) | El gradiente más generado por IA |
+| **Sombras** | NO usar sombras grises planas | Siempre con color del acento |
+| **Spacing** | NO usar valores fuera de la escala 8px | Consistencia visual |
+| **Animación** | NO animar `top`, `left`, `width`, `height` | Performance — solo `transform` y `opacity` |
+| **Animación** | NO usar `transition: all 0.3s ease` | Genérico, sin intención |
+| **Layout** | NO repetir el mismo patrón en secciones consecutivas | Monotonía visual |
+| **CDN** | NO usar CDNs no verificados | Solo cdnjs.cloudflare.com y cdn.jsdelivr.net |
+| **JS** | NO dejar `console.log` en producción | Código limpio |
+| **Assets** | NO usar imágenes externas para UI — todo SVG inline o HTML/CSS | Peso mínimo, sin layout shift |
+
+### SIEMPRE hacer
+
+- Importar fuentes con `preconnect`
+- `prefers-reduced-motion` implementado en cada archivo de animación
+- Contraste WCAG AA en `--color-text-1` y `--color-text-2`
+- ARIA labels y roles en elementos interactivos
+- HTML semántico: `header / nav / main / section / footer`
+- Focus visible en todos los elementos interactivos
+- Variables CSS para todo color, spacing, radius, sombra
+
+---
+
+## 9. Datos y APIs
+
+### Yahoo Finance (cotizaciones globales)
+
+- **Search**: `/api/search?q=query` → Netlify Function → Yahoo Search API
+- **Quote**: `/api/quote?symbols=X,Y,Z` → Netlify Function → Yahoo `/v8/finance/chart/SYMBOL`
+- **Cache**: quotes 60s en memoria, search 5min en sessionStorage
+- **Local proxy**: `node app-v2/server.js` (puerto 4175) para desarrollo
+
+### Dólar CCL (cotización argentina)
+
+- **Fuente**: `https://dolarapi.com/v1/dolares/contadoconliqui` (API pública, sin auth)
+- **Refresh**: cada 5 minutos automático
+- **Módulo**: `app-v2/scripts/dolar.js`
+- El valor se usa para TODAS las conversiones ARS↔USD del portfolio
+
+### Instrumentos soportados
+
+| Tipo | Símbolo Yahoo | Ejemplo |
+|------|---------------|---------|
+| Acciones US | `AAPL`, `NVDA` | Directo |
+| Acciones globales | `SAP.DE`, `7203.T` | Con sufijo de exchange |
+| CEDEARs BYMA | `AAPL.BA` | Sufijo `.BA` |
+| Crypto | `BTC-USD`, `ETH-USD` | Sufijo `-USD` |
+| Forex | `EURUSD=X` | Sufijo `=X` |
+| ETFs | `SPY`, `QQQ` | Directo |
+| Índices | `^GSPC`, `^IXIC` | Prefijo `^` |
+| Commodities | `GC=F`, `CL=F` | Sufijo `=F` |
+
+---
+
+## 10. Modelo de negocio
+
+- **Trial**: 30 días gratis desde primer uso (`fm2_trial_start` en localStorage)
+- **Activación**: código ingresado en Ajustes → `fm2_paid` en localStorage
+- **Paywall**: overlay glassmorphism cuando el trial expira, bloquea la app
+- **Badge**: header muestra días restantes (verde > 7d, amarillo 3–7d, rojo < 3d)
+
+---
+
+## 11. Checklist de entrega
+
+### Fundación visual
+- [ ] Paleta y gradientes definidos como variables reutilizables en `tokens.css`
+- [ ] Tipografía Space Grotesk + JetBrains Mono cargada vía CDN con preconnect
+- [ ] Gradiente Gemini animado aplicado en al menos 1 elemento hero
+- [ ] Sombras con color del acento en todas las cards
+
+### Componentes interactivos
+- [ ] Al menos 1 componente con animación "thinking/sparkle" (orbe rotando con gradiente)
+- [ ] Botones pill con hover: gradiente + glow + translateY
+- [ ] Inputs con borde gradiente animado en focus
+- [ ] Cards con glassmorphism, hover lift + glow
+- [ ] Efecto shimmer en estados de carga / skeleton
+
+### Animaciones
+- [ ] Transiciones suaves (200–400ms, cubic-bezier personalizado) en todo hover/click
+- [ ] Contenido aparece con fade + scale-up, nunca instantáneo
+- [ ] `prefers-reduced-motion` respetado globalmente
+- [ ] Solo `transform` y `opacity` animados — nunca propiedades layout
+
+### Técnico
+- [ ] Responsive verificado en 375px, 768px, 1024px, 1440px
+- [ ] Spacing 100% en escala 8px
+- [ ] Colores 100% via CSS variables
+- [ ] Sin `console.log` en producción
+- [ ] ARIA labels en elementos interactivos
+- [ ] Sin assets ni nombres de marca de Google/Gemini
+
+### Funcional
+- [ ] Dólar CCL en vivo desde dolarapi.com
+- [ ] Portfolio CRUD con persistencia localStorage
+- [ ] Cotizaciones Yahoo Finance actualizándose cada 60s
+- [ ] Exportación CSV/Excel/PDF
+- [ ] Navegación por hash (#/dashboard, #/mercados, #/watchlist, #/ajustes)
+- [ ] Trial badge + paywall funcional
