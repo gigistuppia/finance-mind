@@ -8,7 +8,7 @@
   50%      { opacity: 1; transform: scale(1.18); }
 }
 
-/* ── Gradient shift (hero elements, logo glow) ── */
+/* ── Gradient shift (USO LIMITADO: solo en gradient-text y barra superior del header) ── */
 @keyframes gradient-shift {
   0%   { background-position: 0% 50%; }
   50%  { background-position: 100% 50%; }
@@ -21,39 +21,35 @@
   100% { background-position: 200% 0; }
 }
 
-/* ── Orb float (background decorative) ── */
-@keyframes orb-float {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33%      { transform: translate(30px, -20px) scale(1.05); }
-  66%      { transform: translate(-20px, 15px) scale(0.95); }
-}
-
-/* ── Border glow pulse ── */
-@keyframes border-glow {
-  0%, 100% { opacity: 0.4; }
-  50%      { opacity: 1; }
-}
-
 /* ── Content entry ── */
 @keyframes fadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
 @keyframes fadeScaleIn {
-  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  from { opacity: 0; transform: scale(0.97) translateY(6px); }
   to   { opacity: 1; transform: scale(1) translateY(0); }
 }
 @keyframes modalIn {
-  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 @keyframes rowIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(24px); }
+  from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(-100%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(-6px); }
+  75%      { transform: translateX(6px); }
 }
 
 /* ── Price flash ── */
@@ -82,18 +78,21 @@
 /* ── Scroll reveal ── */
 .reveal {
   opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 600ms var(--ease-smooth), transform 600ms var(--ease-smooth);
+  transform: translateY(12px);
+  transition: opacity 500ms var(--ease-smooth), transform 500ms var(--ease-smooth);
+  will-change: opacity, transform;
 }
 .reveal.in {
   opacity: 1;
   transform: translateY(0);
+  will-change: auto;
 }
 
 /* ── Utility classes ── */
 .price-flash { animation: pricePulse 1.2s var(--ease-smooth); }
-.fade-in { animation: fadeIn 300ms var(--ease-smooth) both; }
-.fade-scale-in { animation: fadeScaleIn 400ms var(--ease-smooth) both; }
+.fade-in { animation: fadeIn 240ms var(--ease-smooth) both; }
+.fade-scale-in { animation: fadeScaleIn 320ms var(--ease-smooth) both; }
+.shake { animation: shake 380ms var(--ease-smooth); }
 
 /* ── Gradient text utility ── */
 .gradient-text {
@@ -102,10 +101,10 @@
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: gradient-shift 6s ease infinite;
+  animation: gradient-shift 8s ease infinite;
 }
 
-/* ── Animated gradient border ── */
+/* ── Animated gradient border (solo en hover/focus, NO siempre activo) ── */
 .gradient-border {
   position: relative;
 }
@@ -116,17 +115,27 @@
   border-radius: inherit;
   padding: 1px;
   background: var(--gradient-primary);
-  background-size: 300% 300%;
-  animation: gradient-shift 4s ease infinite;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: 0;
-  transition: opacity 300ms var(--ease-smooth);
+  transition: opacity 280ms var(--ease-smooth);
   pointer-events: none;
 }
 .gradient-border:hover::before,
 .gradient-border:focus-within::before {
   opacity: 1;
+}
+
+/* ── Spinner ── */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.15);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
 }

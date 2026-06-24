@@ -2,14 +2,14 @@
 <html lang="es-AR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Finance Mind 2.0 — Portfolio Global</title>
   <meta name="description" content="Trackeá acciones, crypto, ETFs, forex, índices y commodities en un solo lugar. Datos en vivo, exportación profesional, 100% privado." />
-  <meta name="theme-color" content="#0a0a0a" />
+  <meta name="theme-color" content="#0a0a0f" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="styles/tokens.css" />
@@ -25,7 +25,7 @@
 <body>
   <div class="app-shell">
     <aside class="sidebar" id="sidebar">
-      <a href="/" class="sidebar-logo logo-glow">
+      <a href="#/dashboard" class="sidebar-logo logo-glow">
         <svg class="logo-icon" width="32" height="32" viewBox="0 0 40 40" fill="none" aria-hidden="true">
           <defs>
             <linearGradient id="lg-logo" x1="0" y1="36" x2="40" y2="0" gradientUnits="userSpaceOnUse">
@@ -38,15 +38,11 @@
               <stop offset="0" stop-color="#4285F4" stop-opacity="0.18"/>
               <stop offset="1" stop-color="#4285F4" stop-opacity="0"/>
             </linearGradient>
-            <filter id="logo-glow">
-              <feGaussianBlur stdDeviation="2" result="b"/>
-              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
           </defs>
           <rect x="1.5" y="1.5" width="37" height="37" rx="10" fill="#0a0a0a" stroke="url(#lg-logo)" stroke-width="1.2"/>
           <path d="M7 26 L11 26 L12.5 31 L15 16 L17 22 L21 18 L25 13 L31 9 L31 34 L7 34 Z" fill="url(#lg-area)"/>
           <path d="M7 26 L11 26 L12.5 31 L15 16 L17 22 L21 18 L25 13 L31 9" stroke="url(#lg-logo)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          <circle cx="31" cy="9" r="2.5" fill="url(#lg-logo)" filter="url(#logo-glow)"/>
+          <circle cx="31" cy="9" r="2.5" fill="url(#lg-logo)"/>
         </svg>
         <span>Finance Mind</span>
       </a>
@@ -76,21 +72,39 @@
       </div>
     </aside>
 
+    <div class="sidebar-backdrop" id="sidebar-backdrop" aria-hidden="true"></div>
+
     <main class="main">
-      <header class="header">
+      <header class="header" id="app-header">
         <div class="header-gradient-bar"></div>
-        <button class="search-trigger gradient-border" id="search-trigger">
+
+        <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menú">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+
+        <a class="header-logo" href="#/dashboard" aria-label="Finance Mind">
+          <svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
+            <rect x="1.5" y="1.5" width="37" height="37" rx="10" fill="#0a0a0a" stroke="url(#lg-logo)" stroke-width="1.2"/>
+            <path d="M7 26 L11 26 L12.5 31 L15 16 L17 22 L21 18 L25 13 L31 9" stroke="url(#lg-logo)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+          <span>FM</span>
+        </a>
+
+        <button class="search-trigger" id="search-trigger" aria-label="Buscar activos">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
           <span>Buscar acciones, crypto, ETFs…</span>
           <span class="kbd">Ctrl K</span>
         </button>
 
         <button class="dolar-btn" id="dolar-btn" title="Cotización del dólar CCL en vivo">
+          <span class="live-dot" aria-hidden="true"></span>
           <span class="dolar-label">DÓLAR CCL</span>
           <span class="dolar-value mono" id="dolar-value">…</span>
         </button>
 
-        <button class="btn primary" id="add-trigger">+ Agregar</button>
+        <button class="btn primary" id="add-trigger" aria-label="Agregar activo">
+          <span class="add-icon">+</span><span class="add-label"> Agregar</span>
+        </button>
       </header>
 
       <div class="content">
@@ -103,19 +117,19 @@
           </div>
         </div>
 
-        <section class="summary">
+        <section class="summary" id="summary-section">
           <div class="summary-card">
             <div class="label">Valor ARS</div>
-            <div class="value mono" id="sum-value-ars">$0</div>
+            <div class="value mono" id="sum-value-ars">—</div>
           </div>
           <div class="summary-card">
             <div class="label">Valor USD</div>
-            <div class="value mono" id="sum-value-usd">$0</div>
+            <div class="value mono" id="sum-value-usd">—</div>
           </div>
           <div class="summary-card">
             <div class="label">P&amp;L Total</div>
-            <div class="value mono" id="sum-pnl">$0</div>
-            <div class="delta mono" id="sum-pnl-pct">0%</div>
+            <div class="value mono" id="sum-pnl">—</div>
+            <div class="delta mono" id="sum-pnl-pct"></div>
           </div>
           <div class="summary-card">
             <div class="label">Activos</div>
@@ -138,23 +152,26 @@
           <div class="holdings-head">
             <h3>Tenencias</h3>
           </div>
-          <table>
-            <thead>
-              <tr>
-                <th>Activo</th>
-                <th>Tipo</th>
-                <th>Cantidad</th>
-                <th>Precio compra</th>
-                <th>Precio actual</th>
-                <th>Valor ARS</th>
-                <th>Peso</th>
-                <th>P&amp;L</th>
-                <th>Día</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="holdings-body"></tbody>
-          </table>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Activo</th>
+                  <th>Tipo</th>
+                  <th>Cantidad</th>
+                  <th>Precio compra</th>
+                  <th>Precio actual</th>
+                  <th>Valor ARS</th>
+                  <th>Peso</th>
+                  <th>P&amp;L</th>
+                  <th>Día</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="holdings-body"></tbody>
+            </table>
+          </div>
+          <div class="holdings-cards" id="holdings-cards"></div>
           <div class="empty" id="holdings-empty">
             <h4>Tu portfolio está vacío</h4>
             <p>Buscá un activo (Ctrl+K) y agregalo para empezar.</p>
@@ -186,20 +203,23 @@
           </div>
 
           <div class="holdings">
-            <table>
-              <thead>
-                <tr>
-                  <th>Activo</th>
-                  <th>Tipo</th>
-                  <th>Precio</th>
-                  <th>Variación</th>
-                  <th>Día (alto/bajo)</th>
-                  <th>52w</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody id="watchlist-body"></tbody>
-            </table>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Activo</th>
+                    <th>Tipo</th>
+                    <th>Precio</th>
+                    <th>Variación</th>
+                    <th>Día (alto/bajo)</th>
+                    <th>52w</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="watchlist-body"></tbody>
+              </table>
+            </div>
+            <div class="holdings-cards" id="watchlist-cards"></div>
             <div class="empty" id="watchlist-empty">
               <h4>Tu watchlist está vacía</h4>
               <p>Agregá activos para seguirlos sin agregarlos al portfolio.</p>
@@ -222,7 +242,7 @@
               <p>Usado para convertir activos en USD a pesos argentinos.</p>
               <div class="field">
                 <label>Dólar CCL (ARS)</label>
-                <input type="number" id="settings-ccl" min="1" step="1" />
+                <input type="number" id="settings-ccl" min="1" step="1" inputmode="decimal" />
               </div>
             </div>
 
@@ -254,33 +274,67 @@
     </main>
   </div>
 
-  <!-- SEARCH OVERLAY -->
-  <div class="search-overlay" id="search-overlay">
+  <!-- BOTTOM NAV (solo mobile) -->
+  <nav class="bottom-nav" id="bottom-nav" aria-label="Navegación principal">
+    <a class="bnav-item" href="#/dashboard" data-route="dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9"/><path d="M5 10v10h14V10"/></svg>
+      <span>Dashboard</span>
+    </a>
+    <a class="bnav-item" href="#/mercados" data-route="mercados">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg>
+      <span>Mercados</span>
+    </a>
+    <button class="bnav-item bnav-fab" id="bnav-search" aria-label="Buscar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    </button>
+    <a class="bnav-item" href="#/watchlist" data-route="watchlist">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14l-7 7-7-7"/><path d="M19 3l-7 7-7-7"/></svg>
+      <span>Watchlist</span>
+    </a>
+    <a class="bnav-item" href="#/ajustes" data-route="ajustes">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 008 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H2a2 2 0 010-4h.09A1.65 1.65 0 003.6 8a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 008 3.6 1.65 1.65 0 009 2.09V2a2 2 0 014 0v.09A1.65 1.65 0 0015 3.6a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 8a1.65 1.65 0 001.51 1H22a2 2 0 010 4h-.09A1.65 1.65 0 0019.4 15z"/></svg>
+      <span>Ajustes</span>
+    </a>
+  </nav>
+
+  <!-- SEARCH OVERLAY (estilo TradingView) -->
+  <div class="search-overlay" id="search-overlay" role="dialog" aria-label="Buscador de activos">
     <div class="search-modal">
-      <input
-        type="text"
-        class="search-modal-input"
-        id="search-modal-input"
-        placeholder="Buscá acciones, crypto, ETFs, forex, índices…"
-        autocomplete="off"
-        spellcheck="false"
-      />
+      <div class="search-modal-head">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input
+          type="text"
+          class="search-modal-input"
+          id="search-modal-input"
+          placeholder="Buscá acciones, crypto, ETFs, forex, índices…"
+          autocomplete="off"
+          spellcheck="false"
+          inputmode="search"
+        />
+        <button class="search-modal-close" id="search-modal-close">ESC</button>
+      </div>
+      <div class="search-tabs" id="search-tabs"></div>
       <div class="search-results" id="search-results"></div>
+      <div class="search-modal-footer">
+        <span><span class="kbd">↑</span><span class="kbd">↓</span> Navegar</span>
+        <span><span class="kbd">↵</span> Seleccionar</span>
+        <span><span class="kbd">Esc</span> Cerrar</span>
+      </div>
     </div>
   </div>
 
   <!-- ADD ASSET MODAL -->
-  <div class="modal-overlay" id="add-asset-modal">
+  <div class="modal-overlay" id="add-asset-modal" role="dialog" aria-label="Agregar al portfolio">
     <div class="modal">
       <h3>Agregar al portfolio</h3>
       <div class="selected-asset" id="selected-asset"></div>
       <div class="field">
         <label>Cantidad</label>
-        <input type="number" id="add-qty" min="0" step="any" placeholder="0" />
+        <input type="number" id="add-qty" min="0" step="any" placeholder="0" inputmode="decimal" />
       </div>
       <div class="field">
         <label>Precio de compra</label>
-        <input type="number" id="add-price" min="0" step="any" placeholder="0" />
+        <input type="number" id="add-price" min="0" step="any" placeholder="0" inputmode="decimal" />
       </div>
       <div class="field">
         <label>Fecha</label>
@@ -297,30 +351,50 @@
   <div class="paywall" id="paywall">
     <div class="paywall-card">
       <h2><span class="gradient-text">Tu prueba gratuita terminó</span></h2>
-      <p style="color:var(--color-text-2);">Activá tu plan para seguir trackeando tu portfolio.</p>
-      <div class="price">USD 4,99<span style="font-size:0.6em;color:var(--color-text-2);"> /mes</span></div>
+      <p style="color:var(--color-text-2);">Activá el plan Pro para seguir trackeando tu portfolio.</p>
+      <div class="price">USD 1,99<span style="font-size:0.6em;color:var(--color-text-2);"> /mes</span></div>
       <ul>
         <li>Portfolio global ilimitado</li>
         <li>Acciones, crypto, ETFs, forex y más</li>
         <li>Exportación profesional (CSV, Excel, PDF)</li>
-        <li>Datos en vivo cada 60s</li>
-        <li>100% privado, sin servidores</li>
+        <li>Cotizaciones en vivo cada 60s</li>
+        <li>100% privado — tus datos nunca salen del navegador</li>
       </ul>
-      <a href="#" class="btn primary" style="width:100%;justify-content:center;margin-bottom:8px;">Suscribirme</a>
-      <div class="field" style="margin-top:16px;">
-        <label>¿Ya tenés un código de activación?</label>
+
+      <div class="paywall-steps">
+        <h3 style="font-size:0.92rem;margin-bottom:var(--s2);">¿Cómo activar?</h3>
+        <div class="paywall-step">
+          <span class="step-number">1</span>
+          <div>
+            <strong>Transferí USD 1,99</strong> (o equivalente en ARS) al alias:
+            <div class="alias-box mono">growthmark.mp</div>
+          </div>
+        </div>
+        <div class="paywall-step">
+          <span class="step-number">2</span>
+          <div>
+            <strong>Enviá el comprobante</strong> por mail a:
+            <div class="alias-box mono">gigistuppia@gmail.com</div>
+          </div>
+        </div>
+        <div class="paywall-step">
+          <span class="step-number">3</span>
+          <div>
+            <strong>Recibís tu código</strong> de activación (FM-XXXX-XXXX) y lo ingresás abajo.
+          </div>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:var(--s3);">
+        <label>Código de activación</label>
         <input type="text" id="paywall-code" placeholder="FM-XXXX-XXXX" />
       </div>
-      <button class="btn" id="paywall-activate" style="width:100%;justify-content:center;">Activar</button>
+      <button class="btn primary" id="paywall-activate" style="width:100%;justify-content:center;">Activar plan Pro</button>
+      <p id="paywall-error" style="color:var(--color-red);font-size:0.82rem;margin-top:var(--s1);display:none;">Código inválido. Verificá que sea el formato FM-XXXX-XXXX correcto.</p>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <!-- Chart.js se carga lazy desde dashboard.js cuando se necesita -->
   <script type="module" src="scripts/app.js"></script>
-  <script>
-    document.getElementById('add-trigger').addEventListener('click', () => {
-      document.getElementById('search-trigger').click();
-    });
-  </script>
 </body>
 </html>

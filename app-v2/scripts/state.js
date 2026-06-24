@@ -23,11 +23,30 @@ function load(key, fallback) {
   }
 }
 
-function persist() {
-  localStorage.setItem(PORTFOLIO_KEY, JSON.stringify(state.portfolio));
-  localStorage.setItem(WATCHLIST_KEY, JSON.stringify(state.watchlist));
-  localStorage.setItem(CCL_KEY, String(state.ccl));
-  localStorage.setItem(QUOTES_CACHE_KEY, JSON.stringify(state.quotes));
+/* Persist crítico (portfolio, watchlist, CCL) — sincrónico inmediato */
+function persistCritical() {
+  try {
+    localStorage.setItem(PORTFOLIO_KEY, JSON.stringify(state.portfolio));
+    localStorage.setItem(WATCHLIST_KEY, JSON.stringify(state.watchlist));
+    localStorage.setItem(CCL_KEY, String(state.ccl));
+  } catch {}
+}
+
+/* Persist quotes cache — diferido (idle/timeout) para no bloquear render */
+let quotesPersistTimer = null;
+function persistQuotesDeferred() {
+  if (quotesPersistTimer) return;
+  const doIt = () => {
+    quotesPersistTimer = null;
+    try {
+      localStorage.setItem(QUOTES_CACHE_KEY, JSON.stringify(state.quotes));
+    } catch {}
+  };
+  if ('requestIdleCallback' in window) {
+    quotesPersistTimer = requestIdleCallback(doIt, { timeout: 2000 });
+  } else {
+    quotesPersistTimer = setTimeout(doIt, 1500);
+  }
 }
 
 export function getState() {
@@ -63,13 +82,13 @@ export function addAsset(asset) {
       date: asset.date || new Date().toISOString().slice(0, 10),
     });
   }
-  persist();
+  persistCritical();
   emit();
 }
 
 export function removeAsset(id) {
   state.portfolio = state.portfolio.filter(p => p.id !== id);
-  persist();
+  persistCritical();
   emit();
 }
 
@@ -77,19 +96,19 @@ export function updateAsset(id, patch) {
   const asset = state.portfolio.find(p => p.id === id);
   if (!asset) return;
   Object.assign(asset, patch);
-  persist();
+  persistCritical();
   emit();
 }
 
 export function setQuotes(quotesBySymbol) {
   Object.assign(state.quotes, quotesBySymbol);
-  persist();
+  persistQuotesDeferred();
   emit();
 }
 
 export function setCCL(value) {
   state.ccl = value;
-  persist();
+  persistCritical();
   emit();
 }
 
@@ -106,13 +125,13 @@ export function addToWatchlist(item) {
     quoteType: item.quoteType,
     exchange: item.exchange,
   });
-  persist();
+  persistCritical();
   emit();
 }
 
 export function removeFromWatchlist(symbol) {
   state.watchlist = state.watchlist.filter(w => w.symbol !== symbol);
-  persist();
+  persistCritical();
   emit();
 }
 
@@ -120,7 +139,8 @@ export function clearAll() {
   state.portfolio = [];
   state.watchlist = [];
   state.quotes = {};
-  persist();
+  persistCritical();
+  try { localStorage.removeItem(QUOTES_CACHE_KEY); } catch {}
   emit();
 }
 

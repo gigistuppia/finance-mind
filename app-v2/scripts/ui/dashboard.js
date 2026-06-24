@@ -1,44 +1,151 @@
 import { computeHoldings } from '../portfolio.js';
 import { removeAsset } from '../state.js';
+import { toast } from './toast.js';
 
 let pieChart = null;
 let barChart = null;
+let lastChartSignature = '';
+let chartLibPromise = null;
+let prevPrices = new Map(); // symbol -> last seen price (for flash effect)
 
 const CHART_COLORS = [
   '#1C8AFF', '#00BCD4', '#00E676', '#F4B400', '#DB4437',
   '#9C27B0', '#FF6D00', '#00B0FF', '#76FF03', '#FF4081'
 ];
 
+const SORTABLE_COLS = [
+  { key: 'symbol',        label: 'Activo',       th: 0, type: 'str',  default: 'asc' },
+  { key: 'quoteType',     label: 'Tipo',         th: 1, type: 'str' },
+  { key: 'quantity',      label: 'Cantidad',     th: 2, type: 'num' },
+  { key: 'avgPrice',      label: 'Precio compra',th: 3, type: 'num' },
+  { key: 'price',         label: 'Precio actual',th: 4, type: 'num' },
+  { key: 'valueARS',      label: 'Valor ARS',    th: 5, type: 'num', default: 'desc' },
+  { key: 'weight',        label: 'Peso',         th: 6, type: 'num' },
+  { key: 'pnlPct',        label: 'P&L',          th: 7, type: 'num' },
+  { key: 'changePercent', label: 'Día',          th: 8, type: 'num' },
+];
+
+let sortKey = 'valueARS';
+let sortDir = 'desc';
+let sortableBound = false;
+
+function bindSortable() {
+  if (sortableBound) return;
+  const ths = document.querySelectorAll('.holdings thead th');
+  SORTABLE_COLS.forEach(col => {
+    const th = ths[col.th];
+    if (!th) return;
+    th.classList.add('sortable');
+    th.innerHTML = `${col.label}<span class="sort-arrow"></span>`;
+    th.addEventListener('click', () => {
+      if (sortKey === col.key) {
+        sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortKey = col.key;
+        sortDir = col.default || (col.type === 'num' ? 'desc' : 'asc');
+      }
+      // Trigger re-render via state subscribe (no-op directly, dashboard.renderDashboard handles it)
+      renderDashboard();
+    });
+  });
+  sortableBound = true;
+}
+
+function updateSortIndicators() {
+  document.querySelectorAll('.holdings thead th.sortable').forEach((th, i) => {
+    th.classList.remove('sort-asc', 'sort-desc');
+  });
+  const col = SORTABLE_COLS.find(c => c.key === sortKey);
+  if (col) {
+    const ths = document.querySelectorAll('.holdings thead th');
+    ths[col.th]?.classList.add(sortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+  }
+}
+
+function sortRows(rows) {
+  const col = SORTABLE_COLS.find(c => c.key === sortKey);
+  if (!col) return rows;
+  const sorted = [...rows].sort((a, b) => {
+    let va = a[col.key];
+    let vb = b[col.key];
+    if (col.type === 'str') {
+      va = String(va || '').toLowerCase();
+      vb = String(vb || '').toLowerCase();
+      return va < vb ? -1 : va > vb ? 1 : 0;
+    }
+    return (va || 0) - (vb || 0);
+  });
+  if (sortDir === 'desc') sorted.reverse();
+  return sorted;
+}
+
 export function renderDashboard() {
   const { rows, summary } = computeHoldings();
+  const isEmpty = rows.length === 0;
+
+  // Skeleton mientras no haya cotizaciones para ningún row
+  const allMissing = rows.length > 0 && rows.every(r => !r.price);
+  toggleSummarySkeleton(allMissing);
+
+  const sorted = sortRows(rows);
+
+  bindSortable();
+  updateSortIndicators();
+
   renderSummary(summary);
-  renderHoldings(rows);
-  renderCharts(rows);
+  renderHoldings(sorted);
+  renderCards(sorted);
+  trackPriceFlash(sorted);
+  renderCharts(sorted);
+}
+
+function toggleSummarySkeleton(loading) {
+  document.querySelectorAll('.summary-card').forEach(c => {
+    c.classList.toggle('is-skeleton', loading);
+  });
 }
 
 function renderSummary(s) {
-  document.getElementById('sum-value-ars').textContent = formatARS(s.totalValueARS);
-  document.getElementById('sum-value-usd').textContent = formatUSD(s.totalValueUSD);
+  setText('sum-value-ars', s.count > 0 ? formatARS(s.totalValueARS) : '$0');
+  setText('sum-value-usd', s.count > 0 ? formatUSD(s.totalValueUSD) : '$0');
   const pnl = document.getElementById('sum-pnl');
-  pnl.textContent = `${s.totalPnL >= 0 ? '+' : ''}${formatARS(s.totalPnL)}`;
-  pnl.className = 'value mono ' + (s.totalPnL >= 0 ? 'pnl-pos' : 'pnl-neg');
+  if (pnl) {
+    pnl.textContent = s.count > 0 ? `${s.totalPnL >= 0 ? '+' : ''}${formatARS(s.totalPnL)}` : '$0';
+    pnl.className = 'value mono ' + (s.count > 0 ? (s.totalPnL >= 0 ? 'pnl-pos' : 'pnl-neg') : '');
+  }
   const pct = document.getElementById('sum-pnl-pct');
-  pct.textContent = `${s.totalPnLPct >= 0 ? '+' : ''}${s.totalPnLPct.toFixed(2)}%`;
-  pct.className = 'delta mono ' + (s.totalPnL >= 0 ? 'pos' : 'neg');
-  document.getElementById('sum-count').textContent = String(s.count);
+  if (pct) {
+    pct.textContent = s.count > 0 ? `${s.totalPnLPct >= 0 ? '+' : ''}${s.totalPnLPct.toFixed(2)}%` : '';
+    pct.className = 'delta mono ' + (s.count > 0 ? (s.totalPnL >= 0 ? 'pos' : 'neg') : '');
+  }
+  setText('sum-count', String(s.count));
 }
 
 function renderHoldings(rows) {
   const tbody = document.getElementById('holdings-body');
   const emptyState = document.getElementById('holdings-empty');
+  if (!tbody) return;
+
   if (rows.length === 0) {
     tbody.innerHTML = '';
-    emptyState.style.display = 'block';
+    if (emptyState) {
+      emptyState.style.display = 'block';
+      if (!emptyState.querySelector('.empty-cta')) {
+        const cta = document.createElement('div');
+        cta.className = 'empty-cta';
+        cta.innerHTML = `<button class="btn primary" id="empty-add-btn">+ Agregar primer activo</button>`;
+        emptyState.appendChild(cta);
+        cta.querySelector('#empty-add-btn').addEventListener('click', () => {
+          document.getElementById('search-trigger').click();
+        });
+      }
+    }
     return;
   }
-  emptyState.style.display = 'none';
+  if (emptyState) emptyState.style.display = 'none';
+
   tbody.innerHTML = rows.map(r => `
-    <tr>
+    <tr data-symbol="${r.symbol}">
       <td>
         <div class="ticker-cell">
           <div>
@@ -50,7 +157,7 @@ function renderHoldings(rows) {
       <td><span class="type-badge" data-type="${r.quoteType || 'EQUITY'}">${shortType(r.quoteType)}</span></td>
       <td>${formatNum(r.quantity)}</td>
       <td>${formatPrice(r.avgPrice, r.currency)}</td>
-      <td>${formatPrice(r.price, r.currency)}</td>
+      <td class="price-cell" data-symbol="${r.symbol}">${r.price ? formatPrice(r.price, r.currency) : '<span class="skeleton" style="display:inline-block;width:60px;height:14px;"></span>'}</td>
       <td>${formatARS(r.valueARS)}</td>
       <td>${r.weight.toFixed(1)}%</td>
       <td class="${r.pnlNative >= 0 ? 'pnl-pos' : 'pnl-neg'}">
@@ -59,19 +166,103 @@ function renderHoldings(rows) {
       <td class="${r.changePercent >= 0 ? 'pnl-pos' : 'pnl-neg'}">
         ${r.changePercent >= 0 ? '+' : ''}${r.changePercent.toFixed(2)}%
       </td>
-      <td><button class="delete-btn" data-id="${r.id}" aria-label="Eliminar">×</button></td>
+      <td><button class="delete-btn" data-id="${r.id}" data-symbol="${r.symbol}" aria-label="Eliminar">×</button></td>
     </tr>
   `).join('');
 
   tbody.querySelectorAll('.delete-btn').forEach(btn => {
-    btn.addEventListener('click', () => removeAsset(btn.dataset.id));
+    btn.addEventListener('click', () => {
+      const sym = btn.dataset.symbol;
+      removeAsset(btn.dataset.id);
+      toast(`${sym} eliminado del portfolio`, 'info');
+    });
   });
 }
 
-function renderCharts(rows) {
-  const Chart = window.Chart;
-  if (!Chart) return;
+function renderCards(rows) {
+  const cards = document.getElementById('holdings-cards');
+  if (!cards) return;
+  if (rows.length === 0) { cards.innerHTML = ''; return; }
+  cards.innerHTML = rows.map(r => `
+    <div class="holding-card" data-symbol="${r.symbol}">
+      <div class="holding-card-head">
+        <div>
+          <div class="ticker-symbol mono">${r.symbol}</div>
+          <div class="ticker-name">${escapeHTML(r.name || '')}</div>
+        </div>
+        <span class="type-badge" data-type="${r.quoteType || 'EQUITY'}">${shortType(r.quoteType)}</span>
+      </div>
+      <div class="holding-card-row">
+        <span class="label">Valor</span>
+        <span class="v">${formatARS(r.valueARS)}</span>
+      </div>
+      <div class="holding-card-row">
+        <span class="label">Precio</span>
+        <span class="v price-cell" data-symbol="${r.symbol}">${r.price ? formatPrice(r.price, r.currency) : '—'}</span>
+      </div>
+      <div class="holding-card-row">
+        <span class="label">Cantidad</span>
+        <span class="v">${formatNum(r.quantity)}</span>
+      </div>
+      <div class="holding-card-row">
+        <span class="label">P&amp;L</span>
+        <span class="v ${r.pnlNative >= 0 ? 'pnl-pos' : 'pnl-neg'}">
+          ${r.pnlNative >= 0 ? '+' : ''}${r.pnlPct.toFixed(2)}%
+        </span>
+      </div>
+      <div class="holding-card-row">
+        <span class="label">Día</span>
+        <span class="v ${r.changePercent >= 0 ? 'pnl-pos' : 'pnl-neg'}">
+          ${r.changePercent >= 0 ? '+' : ''}${r.changePercent.toFixed(2)}%
+        </span>
+      </div>
+      <div class="holding-card-row" style="justify-content:flex-end;">
+        <button class="delete-btn" data-id="${r.id}" data-symbol="${r.symbol}" aria-label="Eliminar">× Eliminar</button>
+      </div>
+    </div>
+  `).join('');
 
+  cards.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const sym = btn.dataset.symbol;
+      removeAsset(btn.dataset.id);
+      toast(`${sym} eliminado del portfolio`, 'info');
+    });
+  });
+}
+
+function trackPriceFlash(rows) {
+  rows.forEach(r => {
+    if (!r.price) return;
+    const prev = prevPrices.get(r.symbol);
+    if (prev != null && prev !== r.price) {
+      const dir = r.price > prev ? 'up' : 'down';
+      document.querySelectorAll(`.price-cell[data-symbol="${r.symbol}"]`).forEach(el => {
+        el.classList.remove('cell-flash-up', 'cell-flash-down');
+        // restart animation
+        void el.offsetWidth;
+        el.classList.add(`cell-flash-${dir}`);
+      });
+    }
+    prevPrices.set(r.symbol, r.price);
+  });
+}
+
+async function ensureChartLib() {
+  if (window.Chart) return window.Chart;
+  if (chartLibPromise) return chartLibPromise;
+  chartLibPromise = new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js';
+    s.async = true;
+    s.onload = () => resolve(window.Chart);
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+  return chartLibPromise;
+}
+
+async function renderCharts(rows) {
   const pieCanvas = document.getElementById('chart-pie');
   const barCanvas = document.getElementById('chart-bar');
   if (!pieCanvas || !barCanvas) return;
@@ -79,8 +270,18 @@ function renderCharts(rows) {
   if (rows.length === 0) {
     pieChart?.destroy(); pieChart = null;
     barChart?.destroy(); barChart = null;
+    lastChartSignature = '';
     return;
   }
+
+  // Firma para evitar rebuilds innecesarios
+  const signature = rows.map(r => `${r.symbol}:${r.valueARS.toFixed(0)}:${r.pnlPct.toFixed(2)}`).join('|');
+  if (signature === lastChartSignature && pieChart && barChart) return;
+  lastChartSignature = signature;
+
+  let Chart;
+  try { Chart = await ensureChartLib(); } catch { return; }
+  if (!Chart) return;
 
   const labels = rows.map(r => r.symbol);
   const values = rows.map(r => r.valueARS);
@@ -89,12 +290,13 @@ function renderCharts(rows) {
   if (pieChart) pieChart.destroy();
   pieChart = new Chart(pieCanvas, {
     type: 'doughnut',
-    data: { labels, datasets: [{ data: values, backgroundColor: colors, borderColor: '#15161a', borderWidth: 2 }] },
+    data: { labels, datasets: [{ data: values, backgroundColor: colors, borderColor: '#13141c', borderWidth: 2 }] },
     options: {
       responsive: true, maintainAspectRatio: false,
+      animation: { duration: 360 },
       cutout: '65%',
       plugins: {
-        legend: { position: 'right', labels: { color: '#a0a0a0', font: { family: 'Space Grotesk' } } },
+        legend: { position: 'right', labels: { color: '#a0a0a0', font: { family: 'Space Grotesk' }, boxWidth: 12 } },
         tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${formatARS(ctx.parsed)}` } }
       }
     }
@@ -115,6 +317,7 @@ function renderCharts(rows) {
     },
     options: {
       responsive: true, maintainAspectRatio: false,
+      animation: { duration: 360 },
       indexAxis: rows.length > 6 ? 'y' : 'x',
       plugins: { legend: { display: false } },
       scales: {
@@ -125,6 +328,10 @@ function renderCharts(rows) {
   });
 }
 
+function setText(id, v) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = v;
+}
 function formatARS(n) {
   return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n || 0);
 }

@@ -1,5 +1,6 @@
 import { getState, setCCL, clearAll } from '../state.js';
 import { getTrialStatus, activatePaid } from '../auth.js';
+import { toast } from './toast.js';
 
 export function initSettings() {
   const ccl = document.getElementById('settings-ccl');
@@ -13,7 +14,10 @@ export function initSettings() {
     ccl.value = getState().ccl;
     ccl.addEventListener('change', () => {
       const v = parseFloat(ccl.value);
-      if (v > 0) setCCL(v);
+      if (v > 0) {
+        setCCL(v);
+        toast(`Dólar CCL actualizado a ${Math.round(v).toLocaleString('es-AR')}`, 'success');
+      }
     });
   }
 
@@ -30,6 +34,9 @@ export function initSettings() {
     if (activatePaid(c)) {
       planStatus.textContent = '✓ Plan Pro activo';
       code.value = '';
+      toast('Plan Pro activado. Gracias!', 'success', 4000);
+    } else {
+      toast('Código inválido', 'error');
     }
   });
 
@@ -47,11 +54,13 @@ export function initSettings() {
     a.download = `finance-mind-backup-${Date.now()}.json`;
     a.click();
     URL.revokeObjectURL(url);
+    toast('Backup descargado', 'success');
   });
 
   clearBtn?.addEventListener('click', () => {
     if (confirm('¿Borrar todos los datos? Esta acción no se puede deshacer.')) {
       clearAll();
+      toast('Datos borrados', 'info');
     }
   });
 }

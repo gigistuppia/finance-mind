@@ -24,7 +24,6 @@ export async function searchInstruments(query) {
     searchCache.set(q.toLowerCase(), { ts: Date.now(), data: quotes });
     return quotes;
   } catch (e) {
-    console.error('search failed', e);
     return cached?.data || [];
   }
 }
@@ -75,7 +74,7 @@ export async function getQuotes(symbols) {
         result[q.symbol] = normalized;
       }
     } catch (e) {
-      console.error('quote batch failed', e);
+      // network failure — cached values remain
     }
   }));
 
