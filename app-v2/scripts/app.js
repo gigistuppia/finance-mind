@@ -1,4 +1,4 @@
-import { getState, subscribe, setQuotes, setCCL, addToWatchlist } from './state.js';
+import { getState, subscribe, setQuotes, addToWatchlist } from './state.js';
 import { getQuotes } from './api.js';
 import { initRouter, onRouteChange, currentRoute } from './router.js';
 import { initSearchOverlay } from './ui/search-overlay.js';
@@ -8,6 +8,7 @@ import { renderTrialBadge, checkPaywall, initPaywall } from './ui/paywall.js';
 import { initMarkets, loadMarkets } from './ui/markets.js';
 import { renderWatchlist, refreshWatchlistQuotes } from './ui/watchlist.js';
 import { initSettings } from './ui/settings.js';
+import { initDolar } from './dolar.js';
 
 const REFRESH_MS = 60_000;
 let addAssetUI = null;
@@ -19,16 +20,6 @@ async function refreshQuotes() {
   if (symbols.length === 0) return;
   const quotes = await getQuotes(symbols);
   if (Object.keys(quotes).length > 0) setQuotes(quotes);
-}
-
-function initCCL() {
-  const input = document.getElementById('ccl-input');
-  if (!input) return;
-  input.value = getState().ccl;
-  input.addEventListener('change', () => {
-    const v = parseFloat(input.value);
-    if (v > 0) setCCL(v);
-  });
 }
 
 function renderForRoute(route) {
@@ -51,7 +42,7 @@ function init() {
   initPaywall();
   renderTrialBadge();
   checkPaywall();
-  initCCL();
+  initDolar();
 
   addAssetUI = initAddAsset({ onAdd: refreshQuotes });
 
