@@ -25,7 +25,7 @@
 <body>
   <div class="app-shell">
     <aside class="sidebar" id="sidebar">
-      <a href="/" class="sidebar-logo">
+      <a href="/" class="sidebar-logo logo-glow">
         <svg class="logo-icon" width="32" height="32" viewBox="0 0 40 40" fill="none" aria-hidden="true">
           <defs>
             <linearGradient id="lg-logo" x1="0" y1="36" x2="40" y2="0" gradientUnits="userSpaceOnUse">
@@ -78,7 +78,8 @@
 
     <main class="main">
       <header class="header">
-        <button class="search-trigger" id="search-trigger">
+        <div class="header-gradient-bar"></div>
+        <button class="search-trigger gradient-border" id="search-trigger">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
           <span>Buscar acciones, crypto, ETFs…</span>
           <span class="kbd">Ctrl K</span>
@@ -89,7 +90,10 @@
           <span class="dolar-value mono" id="dolar-value">…</span>
         </button>
 
-        <button class="btn primary" id="add-trigger">+ Agregar</button>
+        <button class="btn primary" id="add-trigger">
+          <span class="sparkle-icon" style="width:14px;height:14px;"></span>
+          Agregar
+        </button>
       </header>
 
       <div class="content">
@@ -98,7 +102,7 @@
         <div class="page-head">
           <div>
             <div class="sub">Dashboard</div>
-            <h1>Tu portfolio en vivo</h1>
+            <h1><span class="gradient-text">Tu portfolio en vivo</span></h1>
           </div>
         </div>
 
@@ -155,6 +159,7 @@
             <tbody id="holdings-body"></tbody>
           </table>
           <div class="empty" id="holdings-empty">
+            <div class="sparkle-icon" style="width:32px;height:32px;margin:0 auto var(--s2);"></div>
             <h4>Tu portfolio está vacío</h4>
             <p>Buscá un activo (Ctrl+K) y agregalo para empezar.</p>
           </div>
@@ -167,7 +172,7 @@
           <div class="page-head">
             <div>
               <div class="sub">Mercados</div>
-              <h1>Explorar instrumentos</h1>
+              <h1><span class="gradient-text">Explorar instrumentos</span></h1>
             </div>
           </div>
 
@@ -179,7 +184,7 @@
           <div class="page-head">
             <div>
               <div class="sub">Watchlist</div>
-              <h1>Tu lista de seguimiento</h1>
+              <h1><span class="gradient-text">Tu lista de seguimiento</span></h1>
             </div>
             <button class="btn primary" id="watchlist-add">+ Agregar</button>
           </div>
@@ -200,6 +205,7 @@
               <tbody id="watchlist-body"></tbody>
             </table>
             <div class="empty" id="watchlist-empty">
+              <div class="sparkle-icon" style="width:32px;height:32px;margin:0 auto var(--s2);"></div>
               <h4>Tu watchlist está vacía</h4>
               <p>Agregá activos para seguirlos sin agregarlos al portfolio.</p>
             </div>
@@ -211,7 +217,7 @@
           <div class="page-head">
             <div>
               <div class="sub">Ajustes</div>
-              <h1>Configuración</h1>
+              <h1><span class="gradient-text">Configuración</span></h1>
             </div>
           </div>
 
@@ -295,7 +301,8 @@
   <!-- PAYWALL -->
   <div class="paywall" id="paywall">
     <div class="paywall-card">
-      <h2>Tu prueba gratuita terminó</h2>
+      <div class="sparkle-icon" style="width:40px;height:40px;margin:0 auto var(--s3);"></div>
+      <h2><span class="gradient-text">Tu prueba gratuita terminó</span></h2>
       <p style="color:var(--color-text-2);">Activá tu plan para seguir trackeando tu portfolio.</p>
       <div class="price">USD 4,99<span style="font-size:0.6em;color:var(--color-text-2);"> /mes</span></div>
       <ul>
