@@ -12,9 +12,10 @@ html, body {
 
 body {
   background:
-    radial-gradient(900px 600px at 8% -5%, rgba(66,133,244,0.08), transparent 60%),
-    radial-gradient(700px 500px at 95% 5%, rgba(168,85,247,0.06), transparent 55%),
-    radial-gradient(500px 400px at 50% 100%, rgba(236,64,122,0.04), transparent 50%),
+    radial-gradient(1000px 700px at 5% -10%, rgba(66,133,244,0.22), transparent 55%),
+    radial-gradient(900px 600px at 100% 0%, rgba(168,85,247,0.18), transparent 50%),
+    radial-gradient(700px 500px at 50% 100%, rgba(236,64,122,0.14), transparent 45%),
+    radial-gradient(600px 400px at 70% 40%, rgba(244,180,0,0.06), transparent 50%),
     var(--color-bg);
   background-attachment: fixed;
   position: relative;
@@ -24,8 +25,9 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(600px 400px at 15% 30%, rgba(66,133,244,0.05), transparent 60%),
-    radial-gradient(500px 350px at 85% 70%, rgba(168,85,247,0.04), transparent 55%);
+    radial-gradient(700px 500px at 20% 25%, rgba(66,133,244,0.15), transparent 55%),
+    radial-gradient(600px 450px at 80% 65%, rgba(168,85,247,0.12), transparent 50%),
+    radial-gradient(500px 400px at 40% 80%, rgba(236,64,122,0.08), transparent 50%);
   animation: orb-float 20s ease-in-out infinite;
   pointer-events: none;
   z-index: 0;
@@ -161,10 +163,11 @@ a { color: inherit; text-decoration: none; }
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
+  height: 3px;
   background: var(--gradient-gemini);
-  background-size: 200% 100%;
-  animation: gradient-shift 4s ease infinite;
+  background-size: 300% 100%;
+  animation: gradient-shift 3s ease infinite;
+  box-shadow: 0 0 12px rgba(66,133,244,0.30), 0 0 24px rgba(168,85,247,0.15);
 }
 
 /* ── SEARCH TRIGGER ── */
@@ -320,7 +323,7 @@ a { color: inherit; text-decoration: none; }
 .summary-card {
   padding: var(--s3);
   background:
-    radial-gradient(ellipse at 20% 0%, rgba(var(--color-accent-rgb), 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 0%, rgba(var(--color-accent-rgb), 0.14) 0%, transparent 60%),
     var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--r-lg);
@@ -341,14 +344,14 @@ a { color: inherit; text-decoration: none; }
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  opacity: 0.35;
+  opacity: 0.6;
   transition: opacity 400ms var(--ease-smooth);
   pointer-events: none;
 }
 .summary-card:hover {
   border-color: transparent;
   transform: translateY(-3px);
-  box-shadow: var(--shadow-md), 0 0 24px rgba(var(--color-accent-rgb), 0.10);
+  box-shadow: var(--shadow-md), 0 0 32px rgba(var(--color-accent-rgb), 0.15);
 }
 .summary-card:hover::before { opacity: 1; }
 .summary-card .label {
@@ -382,7 +385,7 @@ a { color: inherit; text-decoration: none; }
 .chart-card {
   padding: var(--s3);
   background:
-    radial-gradient(ellipse at 80% 100%, rgba(168,85,247,0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(168,85,247,0.12) 0%, transparent 50%),
     var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--r-lg);
@@ -414,7 +417,8 @@ a { color: inherit; text-decoration: none; }
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
-.chart-card:hover::before { opacity: 0.8; }
+.chart-card::before { opacity: 0.5; }
+.chart-card:hover::before { opacity: 1; }
 .chart-card h3 {
   font-size: 0.95rem;
   font-weight: 500;
@@ -426,7 +430,7 @@ a { color: inherit; text-decoration: none; }
 /* ── HOLDINGS TABLE ── */
 .holdings {
   background:
-    radial-gradient(ellipse at 0% 50%, rgba(var(--color-accent-rgb), 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 0% 50%, rgba(var(--color-accent-rgb), 0.10) 0%, transparent 50%),
     var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--r-lg);
@@ -446,7 +450,7 @@ a { color: inherit; text-decoration: none; }
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  opacity: 0.2;
+  opacity: 0.5;
   pointer-events: none;
 }
 .holdings-head {
@@ -759,7 +763,7 @@ a { color: inherit; text-decoration: none; }
 }
 .market-cat {
   background:
-    radial-gradient(ellipse at 100% 0%, rgba(var(--color-accent-rgb), 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 0%, rgba(var(--color-accent-rgb), 0.12) 0%, transparent 50%),
     var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--r-lg);
@@ -788,7 +792,8 @@ a { color: inherit; text-decoration: none; }
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
-.market-cat:hover::before { opacity: 0.7; }
+.market-cat::before { opacity: 0.4; }
+.market-cat:hover::before { opacity: 1; }
 .market-cat-head {
   padding: var(--s2) var(--s3);
   border-bottom: 1px solid var(--color-border);
@@ -866,7 +871,7 @@ a { color: inherit; text-decoration: none; }
 .settings-card {
   padding: var(--s3);
   background:
-    radial-gradient(ellipse at 50% 0%, rgba(168,85,247,0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 0%, rgba(168,85,247,0.12) 0%, transparent 50%),
     var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--r-lg);
@@ -898,7 +903,8 @@ a { color: inherit; text-decoration: none; }
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
-.settings-card:hover::before { opacity: 0.7; }
+.settings-card::before { opacity: 0.4; }
+.settings-card:hover::before { opacity: 1; }
 .settings-card h3 {
   font-size: 0.98rem;
   font-weight: 500;
