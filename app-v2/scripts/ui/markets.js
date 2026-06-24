@@ -65,10 +65,10 @@ export function initMarkets({ onSelect, onWatch }) {
 
 export async function loadMarkets() {
   if (!initialized) return;
-  for (const cat of CATEGORIES) {
+  await Promise.all(CATEGORIES.map(async (cat) => {
     const quotes = await getQuotes(cat.symbols);
     renderCategory(cat, quotes);
-  }
+  }));
 }
 
 function renderCategory(cat, quotes) {

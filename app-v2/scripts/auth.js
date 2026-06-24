@@ -21,9 +21,11 @@ export function getTrialStatus() {
   return { status: 'expired', daysLeft: 0 };
 }
 
+const CODE_PATTERN = /^FM-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
+
 export function activatePaid(code) {
-  if (!code) return false;
-  localStorage.setItem(PAID_KEY, code);
+  if (!code || !CODE_PATTERN.test(code.trim().toUpperCase())) return false;
+  localStorage.setItem(PAID_KEY, code.trim().toUpperCase());
   return true;
 }
 

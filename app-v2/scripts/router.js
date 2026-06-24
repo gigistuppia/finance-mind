@@ -25,5 +25,5 @@ function apply() {
 export function initRouter() {
   window.addEventListener('hashchange', apply);
   if (!location.hash) location.hash = '#/dashboard';
-  apply();
+  queueMicrotask(apply);
 }

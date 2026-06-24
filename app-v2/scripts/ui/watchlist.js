@@ -1,4 +1,4 @@
-import { getState, removeFromWatchlist } from '../state.js';
+import { getState, removeFromWatchlist, setQuotes } from '../state.js';
 import { getQuotes } from '../api.js';
 
 export function renderWatchlist() {
@@ -33,8 +33,8 @@ export function renderWatchlist() {
         <td><span class="type-badge" data-type="${w.quoteType || 'EQUITY'}">${shortType(w.quoteType)}</span></td>
         <td>${price != null ? formatPrice(price, q.currency) : '—'}</td>
         <td class="${chgClass}">${q ? sign + chg.toFixed(2) + '%' : '—'}</td>
-        <td>${q ? formatPrice(q.dayLow, q.currency) + ' / ' + formatPrice(q.dayHigh, q.currency) : '—'}</td>
-        <td>${q ? formatPrice(q.low52, q.currency) + ' / ' + formatPrice(q.high52, q.currency) : '—'}</td>
+        <td>${q && q.dayLow ? formatPrice(q.dayLow, q.currency) + ' / ' + formatPrice(q.dayHigh, q.currency) : '—'}</td>
+        <td>${q && q.low52 ? formatPrice(q.low52, q.currency) + ' / ' + formatPrice(q.high52, q.currency) : '—'}</td>
         <td><button class="delete-btn" data-sym="${w.symbol}" aria-label="Quitar">×</button></td>
       </tr>
     `;
@@ -50,7 +50,6 @@ export async function refreshWatchlistQuotes() {
   if (watchlist.length === 0) return;
   const symbols = watchlist.map(w => w.symbol);
   const quotes = await getQuotes(symbols);
-  const { setQuotes } = await import('../state.js');
   if (Object.keys(quotes).length > 0) setQuotes(quotes);
 }
 
