@@ -2,7 +2,9 @@ import { debouncedSearch } from '../search.js';
 import { getState } from '../state.js';
 
 const RECENT_KEY = 'fm2_recent_searches';
-const MAX_RECENT = 8;
+const POPULAR_KEY = 'fm2_popular_picks';
+const MAX_RECENT = 6;
+const MAX_POPULAR = 12;
 
 const TAB_DEFS = [
   { key: 'ALL', label: 'Todos' },
@@ -15,17 +17,12 @@ const TAB_DEFS = [
   { key: 'MUTUALFUND', label: 'Fondos' },
 ];
 
-const SUGGESTIONS = [
-  'AAPL', 'NVDA', 'TSLA', 'MSFT', 'GOOGL', 'AMZN',
-  'BTC-USD', 'ETH-USD', 'SOL-USD',
-  'SPY', 'QQQ', 'VOO', '^GSPC', 'GC=F', 'EURUSD=X'
-];
-
 const TYPE_LABEL = {
   EQUITY: 'STOCK', ETF: 'ETF', CRYPTOCURRENCY: 'CRYPTO',
   CURRENCY: 'FX', INDEX: 'INDEX', FUTURE: 'FUT', MUTUALFUND: 'FUND',
 };
 
+/* ── Recents ── */
 function loadRecents() {
   try { return JSON.parse(localStorage.getItem(RECENT_KEY)) || []; } catch { return []; }
 }
@@ -41,6 +38,30 @@ function pushRecent(item) {
     exchange: item.exchange,
   });
   saveRecents(list);
+}
+
+/* ── Más buscados (tracking de selecciones) ── */
+function loadPopular() {
+  try { return JSON.parse(localStorage.getItem(POPULAR_KEY)) || {}; } catch { return {}; }
+}
+function savePopular(obj) {
+  try { localStorage.setItem(POPULAR_KEY, JSON.stringify(obj)); } catch {}
+}
+function bumpPopular(item) {
+  const all = loadPopular();
+  const cur = all[item.symbol] || { symbol: item.symbol, name: item.name, quoteType: item.quoteType, exchange: item.exchange, count: 0 };
+  cur.count += 1;
+  cur.name = item.name || cur.name;
+  cur.quoteType = item.quoteType || cur.quoteType;
+  cur.exchange = item.exchange || cur.exchange;
+  all[item.symbol] = cur;
+  savePopular(all);
+}
+function getTopPopular(n = MAX_POPULAR) {
+  const all = loadPopular();
+  return Object.values(all)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, n);
 }
 
 export function initSearchOverlay({ onSelect }) {
@@ -83,7 +104,6 @@ export function initSearchOverlay({ onSelect }) {
     if (e.target === overlay) close();
   });
 
-  // Botón de búsqueda del bottom nav también abre el overlay
   const bnavSearch = document.getElementById('bnav-search');
   if (bnavSearch) bnavSearch.addEventListener('click', () => open());
 
@@ -141,39 +161,39 @@ export function initSearchOverlay({ onSelect }) {
   function showLoading() {
     results.innerHTML = `
       <div class="search-loading">
-        <span class="spinner"></span> Buscando...
+        <span class="spinner"></span> Buscando…
       </div>`;
   }
 
   function renderEmpty() {
     const recents = loadRecents();
+    const popular = getTopPopular();
+
     const recentsHtml = recents.length > 0 ? `
       <div class="search-section-label">
         <span>Recientes</span>
         <button class="clear-recents" id="clear-recents">Borrar</button>
       </div>
       <div class="search-results-list">
-        ${recents.map((r, i) => renderRowHTML(r, i, true)).join('')}
+        ${recents.map(r => renderRowHTML(r, -1)).join('')}
       </div>
     ` : '';
 
-    const sugs = SUGGESTIONS.map(s => `<button class="search-suggestion" data-q="${s}">${s}</button>`).join('');
+    const popularHtml = popular.length > 0 ? `
+      <div class="search-section-label"><span>Más buscados</span></div>
+      <div class="search-results-list">
+        ${popular.map(r => renderRowHTML(r, -1)).join('')}
+      </div>
+    ` : `
+      <div class="search-section-label"><span>Más buscados</span></div>
+      <div class="search-empty" style="padding: 24px 16px;">
+        <p>Tus búsquedas más frecuentes aparecerán acá.</p>
+      </div>
+    `;
 
     results.innerHTML = `
       ${recentsHtml}
-      <div class="search-section-label"><span>Sugerencias rápidas</span></div>
-      <div class="search-suggestions">${sugs}</div>
-      <div class="search-empty">
-        <h4>Buscá cualquier activo del mundo</h4>
-        <p>Acciones, crypto, ETFs, forex, índices y commodities.</p>
-      </div>`;
-
-    results.querySelectorAll('.search-suggestion').forEach(b => {
-      b.addEventListener('click', () => {
-        input.value = b.dataset.q;
-        input.dispatchEvent(new Event('input'));
-      });
-    });
+      ${popularHtml}`;
 
     const clearBtn = results.querySelector('#clear-recents');
     if (clearBtn) clearBtn.addEventListener('click', (e) => {
@@ -182,12 +202,12 @@ export function initSearchOverlay({ onSelect }) {
       renderEmpty();
     });
 
-    // Click handlers de items recientes
+    // Click handlers para items en recientes/populares
     results.querySelectorAll('.search-result-item').forEach(el => {
       el.addEventListener('click', () => {
         const sym = el.dataset.sym;
-        const item = loadRecents().find(r => r.symbol === sym);
-        if (item) pick(item);
+        const fromAny = [...loadRecents(), ...getTopPopular()].find(r => r.symbol === sym);
+        if (fromAny) pick(fromAny);
       });
     });
   }
@@ -234,13 +254,13 @@ export function initSearchOverlay({ onSelect }) {
         </div>`;
       return;
     }
-    results.innerHTML = items.map((i, idx) => renderRowHTML(i, idx, false)).join('');
+    results.innerHTML = items.map((i, idx) => renderRowHTML(i, idx)).join('');
 
     results.querySelectorAll('.search-result-item').forEach(el => {
       el.addEventListener('click', () => {
         const idx = parseInt(el.dataset.idx, 10);
         const visible = filteredResults();
-        if (visible[idx]) pick(visible[idx]);
+        if (!Number.isNaN(idx) && visible[idx]) pick(visible[idx]);
       });
       el.addEventListener('mouseenter', () => {
         const idx = parseInt(el.dataset.idx, 10);
@@ -254,7 +274,7 @@ export function initSearchOverlay({ onSelect }) {
     updateFocus();
   }
 
-  function renderRowHTML(i, idx, isRecent) {
+  function renderRowHTML(i, idx) {
     const type = TYPE_LABEL[i.quoteType] || 'OTHER';
     const tColor = typeColor(i.quoteType);
     const q = lastQuery.trim();
@@ -271,10 +291,11 @@ export function initSearchOverlay({ onSelect }) {
         </span>`;
     }
 
+    const idxAttr = idx >= 0 ? `data-idx="${idx}"` : '';
     return `
-      <div class="search-result-item ${idx === focusedIdx && !isRecent ? 'focused' : ''}" data-idx="${idx}" data-sym="${i.symbol}">
-        <span class="sym"><span class="type-dot" style="background:${tColor}"></span>${highlight(i.symbol, q)}</span>
-        <span class="nm">${highlight(escapeHTML(i.name || ''), q)}<span class="sub">${escapeHTML(i.exchange || '')}</span></span>
+      <div class="search-result-item ${idx === focusedIdx ? 'focused' : ''}" ${idxAttr} data-sym="${i.symbol}">
+        <span class="sym">${highlight(i.symbol, q)}</span>
+        <span class="nm">${highlight(escapeHTML(i.name || ''), q)}</span>
         <span class="mini-type" style="color:${tColor}">${type}</span>
         ${priceHtml}
         <span class="exch">${shortExch(i.exchange)}</span>
@@ -283,7 +304,8 @@ export function initSearchOverlay({ onSelect }) {
 
   function updateFocus() {
     results.querySelectorAll('.search-result-item').forEach((el, i) => {
-      el.classList.toggle('focused', i === focusedIdx);
+      const idx = parseInt(el.dataset.idx, 10);
+      el.classList.toggle('focused', !Number.isNaN(idx) && idx === focusedIdx);
     });
     const el = results.querySelector('.search-result-item.focused');
     if (el) el.scrollIntoView({ block: 'nearest' });
@@ -309,6 +331,7 @@ export function initSearchOverlay({ onSelect }) {
 
   function pick(item) {
     pushRecent(item);
+    bumpPopular(item);
     activeCallback(item);
     close();
   }
@@ -337,7 +360,7 @@ function highlight(text, q) {
   if (!q) return text;
   const safe = String(text);
   const re = new RegExp(`(${escapeRegex(q)})`, 'ig');
-  return safe.replace(re, '<mark style="background:rgba(var(--color-accent-rgb),0.18);color:var(--color-accent);padding:0 2px;border-radius:3px;">$1</mark>');
+  return safe.replace(re, '<mark style="background:rgba(var(--color-accent-rgb),0.18);color:var(--color-accent);padding:0 2px;border-radius:2px;">$1</mark>');
 }
 
 function escapeRegex(s) {

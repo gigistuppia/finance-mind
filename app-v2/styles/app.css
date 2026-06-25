@@ -566,7 +566,8 @@ a { color: inherit; text-decoration: none; }
   border-bottom: 1px solid var(--color-border);
 }
 
-/* ── SEARCH OVERLAY (estilo TradingView) ── */
+/* ── SEARCH OVERLAY (estilo TradingView) ──
+   Modal grande, tipografía compacta, una sola línea por resultado */
 .search-overlay {
   position: fixed;
   inset: 0;
@@ -577,219 +578,288 @@ a { color: inherit; text-decoration: none; }
   display: none;
   align-items: flex-start;
   justify-content: center;
-  padding: 10vh var(--s3) var(--s3);
+  padding: 8vh var(--s3) var(--s3);
   animation: fadeIn 180ms var(--ease-smooth);
 }
 .search-overlay.open { display: flex; }
 .search-modal {
-  width: min(720px, 100%);
-  max-height: 80vh;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-hi);
-  border-radius: var(--r-xl);
-  box-shadow: var(--shadow-lg);
+  width: min(820px, 100%);
+  height: min(640px, calc(100vh - 12vh));
+  background: #131722;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 8px;
+  box-shadow: 0 16px 64px rgba(0,0,0,0.7);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  animation: modalIn 260ms var(--ease-smooth);
+  animation: modalIn 220ms var(--ease-smooth);
+  font-family: var(--font-body);
 }
+
 .search-modal-head {
   display: flex;
   align-items: center;
-  gap: var(--s2);
-  padding: var(--s2) var(--s3);
-  border-bottom: 1px solid var(--color-border);
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
 }
-.search-modal-head svg { color: var(--color-text-2); flex-shrink: 0; }
+.search-modal-head svg {
+  color: var(--color-text-3);
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
 .search-modal-input {
   flex: 1;
   background: transparent;
   border: none;
   color: var(--color-text-1);
-  font-size: 1.05rem;
+  font-size: 14px;
   outline: none;
-  height: 40px;
-  font-weight: 500;
+  height: 28px;
+  font-weight: 400;
+  letter-spacing: 0;
+  font-family: var(--font-body);
 }
-.search-modal-input::placeholder { color: var(--color-text-3); }
+.search-modal-input::placeholder { color: var(--color-text-3); font-weight: 400; }
 .search-modal-close {
   background: transparent;
-  border: 1px solid var(--color-border);
-  color: var(--color-text-2);
-  padding: var(--s0) var(--s1);
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  border-radius: var(--r-sm);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: var(--color-text-3);
+  padding: 2px 8px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: border-color var(--transition-fast), color var(--transition-fast);
+  letter-spacing: 0.04em;
+  transition: border-color 120ms, color 120ms, background 120ms;
 }
-.search-modal-close:hover { border-color: var(--color-border-hi); color: var(--color-text-1); }
+.search-modal-close:hover { border-color: rgba(255,255,255,0.20); color: var(--color-text-1); background: rgba(255,255,255,0.04); }
 
 .search-tabs {
   display: flex;
-  gap: var(--s0);
-  padding: var(--s1) var(--s2);
-  border-bottom: 1px solid var(--color-border);
+  gap: 2px;
+  padding: 4px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
   overflow-x: auto;
   scrollbar-width: none;
+  flex-shrink: 0;
 }
 .search-tabs::-webkit-scrollbar { display: none; }
 .search-tab {
-  padding: var(--s1) var(--s2);
+  padding: 6px 12px;
   background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--r-full);
-  color: var(--color-text-2);
-  font-size: 0.82rem;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--color-text-3);
+  font-size: 12px;
   cursor: pointer;
   white-space: nowrap;
-  font-family: var(--font-mono);
-  letter-spacing: 0.04em;
-  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+  font-family: var(--font-body);
+  letter-spacing: 0;
+  font-weight: 500;
+  border-radius: 0;
+  margin-bottom: -1px;
+  transition: color 120ms, border-color 120ms;
 }
-.search-tab:hover { color: var(--color-text-1); background: rgba(255,255,255,0.04); }
+.search-tab:hover { color: var(--color-text-1); background: transparent; }
 .search-tab.active {
-  background: var(--color-accent-dim);
+  background: transparent;
   color: var(--color-accent);
-  border-color: rgba(var(--color-accent-rgb), 0.30);
+  border-bottom-color: var(--color-accent);
 }
 .search-tab .count {
   display: inline-block;
-  margin-left: var(--s0);
-  font-size: 0.7rem;
+  margin-left: 4px;
+  font-size: 11px;
   color: var(--color-text-3);
+  font-weight: 400;
 }
-.search-tab.active .count { color: var(--color-accent); }
+.search-tab.active .count { color: var(--color-accent); opacity: 0.85; }
 
 .search-results {
   flex: 1;
   overflow-y: auto;
-  padding: var(--s1) 0;
-  min-height: 200px;
+  min-height: 0;
 }
+
+/* ── Result row TradingView: una sola línea, columnas claras ── */
 .search-result-item {
-  padding: var(--s2) var(--s3);
+  padding: 0 16px;
+  height: 36px;
   display: grid;
-  grid-template-columns: 90px 1fr auto auto;
-  gap: var(--s2);
+  grid-template-columns: 90px 1fr 56px 100px 60px;
+  gap: 12px;
   align-items: center;
   cursor: pointer;
-  transition: background var(--transition-fast);
+  transition: background 100ms;
   border-left: 2px solid transparent;
+  font-size: 13px;
 }
 .search-result-item:hover,
 .search-result-item.focused {
-  background: rgba(66,133,244,0.07);
+  background: rgba(255,255,255,0.04);
   border-left-color: var(--color-accent);
 }
 .search-result-item .sym {
-  font-family: var(--font-mono);
-  font-weight: 700;
+  font-family: var(--font-body);
+  font-weight: 600;
   color: var(--color-text-1);
-  font-size: 0.95rem;
-}
-.search-result-item .nm {
-  color: var(--color-text-1);
-  font-size: 0.88rem;
+  font-size: 13px;
+  letter-spacing: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.search-result-item .nm .sub {
-  display: block;
-  color: var(--color-text-3);
-  font-size: 0.74rem;
-  font-family: var(--font-mono);
-  letter-spacing: 0.04em;
-  margin-top: 2px;
+.search-result-item .nm {
+  color: var(--color-text-2);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 400;
 }
+/* Quitamos el .sub debajo del nombre — todo en una sola línea */
+.search-result-item .nm .sub { display: none; }
 .search-result-item .exch {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-family: var(--font-body);
+  font-size: 11px;
   color: var(--color-text-3);
-  padding: var(--s0) var(--s1);
-  border: 1px solid var(--color-border);
-  border-radius: var(--r-sm);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  text-transform: none;
+  letter-spacing: 0;
+  text-align: right;
+  background: transparent;
+  font-weight: 400;
 }
 .search-result-item .mini-type {
-  font-family: var(--font-mono);
-  font-size: 0.66rem;
+  font-family: var(--font-body);
+  font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 2px var(--s1);
-  border-radius: var(--r-full);
+  letter-spacing: 0.04em;
+  padding: 1px 6px;
+  border-radius: 3px;
   border: 1px solid currentColor;
-}
-.search-empty {
-  padding: var(--s5) var(--s3);
   text-align: center;
-  color: var(--color-text-2);
+  font-weight: 600;
+  opacity: 0.85;
 }
-.search-empty h4 { color: var(--color-text-1); margin-bottom: var(--s1); font-size: 1rem; }
-.search-empty p { font-size: 0.88rem; }
+.search-result-item .price-prev {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+  line-height: 1.1;
+}
+.search-result-item .price-prev .pp-val { color: var(--color-text-1); font-weight: 500; font-size: 12px; }
+.search-result-item .price-prev .pp-chg { font-size: 10.5px; font-weight: 500; }
+.search-result-item .price-prev.muted { opacity: 0; }
+/* type-dot ya no se usa en el sym, lo escondemos para mantener limpieza */
+.search-result-item .type-dot { display: none; }
 
-.search-suggestions {
-  padding: var(--s2) var(--s3);
+.search-empty {
+  padding: 48px 16px;
+  text-align: center;
+  color: var(--color-text-3);
+  font-size: 13px;
+}
+.search-empty h4 { color: var(--color-text-2); margin-bottom: 6px; font-size: 14px; font-weight: 500; }
+.search-empty p { font-size: 12px; }
+
+/* "Más buscados" — lista de tickers populares en chips planos */
+.search-popular {
+  padding: 6px 12px 10px;
   display: flex;
   flex-wrap: wrap;
-  gap: var(--s1);
+  gap: 4px;
 }
-.search-suggestion {
-  padding: var(--s0) var(--s2);
-  background: var(--color-surface-2);
-  border: 1px solid var(--color-border);
-  border-radius: var(--r-full);
+.search-popular .pop-item {
+  padding: 4px 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 4px;
   color: var(--color-text-2);
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-family: var(--font-body);
+  font-size: 12px;
   cursor: pointer;
-  transition: border-color var(--transition-fast), color var(--transition-fast), background var(--transition-fast);
+  font-weight: 500;
+  transition: background 100ms, color 100ms, border-color 100ms;
 }
-.search-suggestion:hover {
-  border-color: var(--color-accent);
+.search-popular .pop-item:hover {
+  background: rgba(var(--color-accent-rgb), 0.10);
   color: var(--color-accent);
-  background: var(--color-accent-dim);
+  border-color: rgba(var(--color-accent-rgb), 0.30);
 }
-.search-suggestion-label {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
+
+/* Section labels más TradingView: muy pequeñas, gris claro */
+.search-section-label {
+  padding: 12px 16px 4px;
+  font-family: var(--font-body);
+  font-size: 10.5px;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.06em;
   color: var(--color-text-3);
-  padding: 0 var(--s3) var(--s1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
 }
+.search-section-label .clear-recents {
+  background: transparent;
+  border: none;
+  color: var(--color-text-3);
+  font-family: var(--font-body);
+  font-size: 10.5px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: color 120ms, background 120ms;
+}
+.search-section-label .clear-recents:hover { color: var(--color-text-1); background: rgba(255,255,255,0.04); }
 
 .search-modal-footer {
   display: flex;
   align-items: center;
-  gap: var(--s3);
-  padding: var(--s1) var(--s3);
-  border-top: 1px solid var(--color-border);
-  font-size: 0.72rem;
+  gap: 16px;
+  padding: 8px 16px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  font-size: 11px;
   color: var(--color-text-3);
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
   flex-wrap: wrap;
+  flex-shrink: 0;
+  background: rgba(0,0,0,0.15);
 }
 .search-modal-footer .kbd {
   display: inline-block;
-  padding: 2px var(--s1);
-  background: rgba(255,255,255,0.05);
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
+  padding: 1px 5px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 3px;
   margin-right: 4px;
   color: var(--color-text-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
 }
 
 .search-loading {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--s2);
-  padding: var(--s4);
-  color: var(--color-text-2);
-  font-size: 0.88rem;
+  gap: 10px;
+  padding: 40px 16px;
+  color: var(--color-text-3);
+  font-size: 12px;
 }
 
 /* ── ADD ASSET MODAL ── */
@@ -1199,18 +1269,28 @@ a { color: inherit; text-decoration: none; }
 
   /* Search overlay full screen mobile */
   .search-overlay { padding: var(--s2); align-items: stretch; }
-  .search-modal { max-height: calc(100vh - 2 * var(--s2)); }
+  .search-modal { height: 100%; max-height: calc(100vh - 2 * var(--s2)); }
+
+  /* Mobile: dos líneas, sym+price arriba, name+type+exch abajo */
   .search-result-item {
     grid-template-columns: 1fr auto;
     grid-template-areas:
-      "sym  type"
-      "name exch";
-    gap: var(--s0) var(--s2);
+      "sym  price"
+      "name meta";
+    gap: 2px 10px;
+    height: auto;
+    padding: 8px 12px;
   }
   .search-result-item .sym { grid-area: sym; }
+  .search-result-item .price-prev { grid-area: price; flex-direction: row; gap: 6px; align-items: baseline; }
   .search-result-item .nm { grid-area: name; }
-  .search-result-item .exch { grid-area: exch; }
-  .search-result-item .mini-type { grid-area: type; }
+  .search-result-item .exch,
+  .search-result-item .mini-type {
+    grid-area: meta;
+    display: inline-block;
+    justify-self: end;
+  }
+  .search-result-item .exch { margin-left: 6px; }
 }
 
 @media (max-width: 480px) {
@@ -1426,20 +1506,9 @@ a { color: inherit; text-decoration: none; }
   gap: var(--s1);
 }
 
-/* ── Search result: row con price preview ── */
-.search-result-item {
-  grid-template-columns: 90px 1fr auto 86px auto;
-}
-.search-result-item .price-prev {
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
-  text-align: right;
-}
-.search-result-item .price-prev .pp-val { color: var(--color-text-1); display: block; }
-.search-result-item .price-prev .pp-chg { font-size: 0.72rem; display: block; }
+/* ── Search price prev colors ── */
 .search-result-item .price-prev.pos .pp-chg { color: var(--color-green); }
 .search-result-item .price-prev.neg .pp-chg { color: var(--color-red); }
-.search-result-item .price-prev.muted { opacity: 0; }
 
 .search-section-label {
   padding: var(--s2) var(--s3) var(--s0);
@@ -1518,9 +1587,7 @@ a { color: inherit; text-decoration: none; }
   .search-trigger { transition: height 240ms var(--ease-smooth), transform 240ms var(--ease-smooth), border-color var(--transition-fast), background var(--transition-fast); }
 }
 
-/* ── Refinements buscador: mejor hierarchy ── */
-.search-result-item .sym { font-size: 1rem; letter-spacing: -0.01em; }
-.search-result-item .nm { line-height: 1.2; }
+/* (Tipografía del buscador definida en bloque principal arriba) */
 
 /* Mobile: bottom-nav also adjust search modal close button */
 @media (max-width: 480px) {
