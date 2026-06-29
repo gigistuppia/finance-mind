@@ -1,3 +1,20 @@
+/* ── Sparkle / thinking indicator ── */
+@keyframes sparkle-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes sparkle-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%      { opacity: 1; transform: scale(1.18); }
+}
+
+/* ── Gradient shift (USO LIMITADO: solo en gradient-text y barra superior del header) ── */
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 /* ── Shimmer loading ── */
 @keyframes shimmer {
   0%   { background-position: -200% 0; }
@@ -38,7 +55,7 @@
 /* ── Price flash ── */
 @keyframes pricePulse {
   0%  { background: transparent; }
-  30% { background: rgba(var(--color-accent-rgb), 0.08); }
+  30% { background: rgba(var(--color-accent-rgb), 0.12); }
   100% { background: transparent; }
 }
 
@@ -77,12 +94,46 @@
 .fade-scale-in { animation: fadeScaleIn 320ms var(--ease-smooth) both; }
 .shake { animation: shake 380ms var(--ease-smooth); }
 
+/* ── Gradient text utility ── */
+.gradient-text {
+  background: var(--gradient-gemini-text);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 8s ease infinite;
+}
+
+/* ── Animated gradient border (solo en hover/focus, NO siempre activo) ── */
+.gradient-border {
+  position: relative;
+}
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--gradient-primary);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 280ms var(--ease-smooth);
+  pointer-events: none;
+}
+.gradient-border:hover::before,
+.gradient-border:focus-within::before {
+  opacity: 1;
+}
+
 /* ── Spinner ── */
 @keyframes spin { to { transform: rotate(360deg); } }
 .spinner {
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(255,255,255,0.10);
+  border: 2px solid rgba(255,255,255,0.15);
   border-top-color: var(--color-accent);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;

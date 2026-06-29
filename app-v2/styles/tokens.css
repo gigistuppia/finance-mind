@@ -1,47 +1,60 @@
 :root {
-  /* ── Fondos (neutros, sin tinte azul/violeta) ── */
-  --color-bg:          #0F0F0F;
-  --color-bg-alt:      #141414;
-  --color-surface:     #1C1C1E;
-  --color-surface-2:   #242426;
-  --color-surface-3:   #2C2C2E;
-  --color-surface-hi:  #3A3A3C;
+  /* ── Fondos ── */
+  --color-bg:          #0a0a0f;
+  --color-bg-alt:      #0e0e14;
+  --color-surface:     #13141c;
+  --color-surface-2:   #1a1b25;
+  --color-surface-3:   #22232e;
+  --color-surface-hi:  #292a36;
 
   /* ── Bordes ── */
-  --color-border:      rgba(255, 255, 255, 0.07);
+  --color-border:      rgba(255, 255, 255, 0.06);
   --color-border-2:    rgba(255, 255, 255, 0.10);
-  --color-border-hi:   rgba(255, 255, 255, 0.16);
+  --color-border-hi:   rgba(255, 255, 255, 0.18);
+  --color-border-glow: rgba(66, 133, 244, 0.30);
 
-  /* ── Acentos (Material You — desaturados) ── */
-  --color-accent:      #8AB4F8;
-  --color-accent-rgb:  138, 180, 248;
-  --color-accent-dim:  rgba(138, 180, 248, 0.08);
-  --color-accent-soft: rgba(138, 180, 248, 0.04);
+  /* ── Acentos ── */
+  --color-accent:      #4285F4;
+  --color-accent-rgb:  66, 133, 244;
+  --color-accent-2:    #00BCD4;
+  --color-accent-2-rgb: 0, 188, 212;
+  --color-accent-dim:  rgba(66, 133, 244, 0.12);
+  --color-accent-soft: rgba(66, 133, 244, 0.06);
 
-  /* ── Seniales (tonos suaves, no neon) ── */
-  --color-green:       #81C995;
-  --color-green-rgb:   129, 201, 149;
-  --color-red:         #F28B82;
-  --color-red-rgb:     242, 139, 130;
-  --color-yellow:      #FDD663;
-  --color-purple:      #C58AF9;
-  --color-magenta:     #F48FB1;
+  /* ── Señales ── */
+  --color-green:       #00E676;
+  --color-green-rgb:   0, 230, 118;
+  --color-red:         #FF1744;
+  --color-red-rgb:     255, 23, 68;
+  --color-yellow:      #F4B400;
+  --color-purple:      #A855F7;
+  --color-magenta:     #EC407A;
 
   /* ── Texto ── */
-  --color-text-1:      #E8EAED;
-  --color-text-2:      #9AA0A6;
-  --color-text-3:      #5F6368;
+  --color-text-1:      #f0f0f5;
+  --color-text-2:      #9a9ab0;
+  --color-text-3:      #5a5a72;
 
-  /* ── Colores por tipo de activo (desaturados) ── */
-  --color-stock:       #8AB4F8;
-  --color-etf:         #78D9EC;
-  --color-crypto:      #FDD663;
-  --color-forex:       #81C995;
-  --color-index:       #C58AF9;
-  --color-commodity:   #FCAD70;
-  --color-fund:        #F48FB1;
+  /* ── Colores por tipo de activo ── */
+  --color-stock:       #4285F4;
+  --color-etf:         #00BCD4;
+  --color-crypto:      #F4B400;
+  --color-forex:       #00E676;
+  --color-index:       #A855F7;
+  --color-commodity:   #FF6D00;
+  --color-fund:        #EC407A;
 
-  /* ── Tipografia ── */
+  /* ── Gradientes Gemini (firma visual) ── */
+  --gradient-gemini:      linear-gradient(135deg, #4285F4 0%, #0F9D58 30%, #F4B400 60%, #DB4437 100%);
+  --gradient-gemini-text: linear-gradient(90deg, #4285F4, #A855F7, #EC407A, #F4B400, #0F9D58, #4285F4);
+  --gradient-primary:     linear-gradient(135deg, #4285F4 0%, #A855F7 40%, #EC407A 70%, #F4B400 100%);
+  --gradient-accent:      linear-gradient(135deg, #4285F4 0%, #00BCD4 50%, #0F9D58 100%);
+  --gradient-shimmer:     linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.05) 50%, transparent 100%);
+  --gradient-glow:        radial-gradient(circle, rgba(66,133,244,0.12) 0%, transparent 70%);
+  --gradient-surface:     linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0));
+  --gradient-card-border: linear-gradient(135deg, rgba(66,133,244,0.35), rgba(168,85,247,0.20), rgba(236,64,122,0.12), transparent 70%);
+
+  /* ── Tipografía ── */
   --font-display: 'Space Grotesk', sans-serif;
   --font-body:    'Space Grotesk', sans-serif;
   --font-mono:    'JetBrains Mono', monospace;
@@ -71,10 +84,14 @@
   --transition-normal: 240ms var(--ease-smooth);
   --transition-slow:   420ms var(--ease-smooth);
 
-  /* ── Sombras (negras neutras, sin color de acento) ── */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.15);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.2);
-  --shadow-lg: 0 12px 32px rgba(0,0,0,0.5), 0 4px 8px rgba(0,0,0,0.25);
+  /* ── Sombras (con color del acento) ── */
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.4), 0 1px 3px rgba(var(--color-accent-rgb), 0.08);
+  --shadow-md: 0 8px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(var(--color-accent-rgb), 0.12);
+  --shadow-lg: 0 20px 48px rgba(0,0,0,0.6), 0 4px 16px rgba(var(--color-accent-rgb), 0.18);
+  --shadow-glow: 0 0 24px rgba(var(--color-accent-rgb), 0.30), 0 0 48px rgba(var(--color-accent-rgb), 0.10);
+  --glow-accent: 0 0 32px rgba(var(--color-accent-rgb), 0.35);
+  --glow-green:  0 0 24px rgba(var(--color-green-rgb), 0.30);
+  --glow-red:    0 0 24px rgba(var(--color-red-rgb), 0.30);
 
   /* ── Layout ── */
   --sidebar-w: 240px;
@@ -83,17 +100,17 @@
   --header-h-mobile: 56px;
   --max-w: 1440px;
 
-  /* ── Chart colors (tonal, desaturados) ── */
-  --chart-1: #8AB4F8;
-  --chart-2: #78D9EC;
-  --chart-3: #81C995;
-  --chart-4: #FDD663;
-  --chart-5: #F28B82;
-  --chart-6: #C58AF9;
-  --chart-7: #FCAD70;
-  --chart-8: #7FCFFF;
-  --chart-9: #A8DAB5;
-  --chart-10: #F48FB1;
+  /* ── Chart colors ── */
+  --chart-1: #4285F4;
+  --chart-2: #00BCD4;
+  --chart-3: #00E676;
+  --chart-4: #F4B400;
+  --chart-5: #DB4437;
+  --chart-6: #A855F7;
+  --chart-7: #FF6D00;
+  --chart-8: #00B0FF;
+  --chart-9: #76FF03;
+  --chart-10: #EC407A;
 }
 
 @media (prefers-reduced-motion: reduce) {
