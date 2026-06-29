@@ -1,4 +1,4 @@
-const ROUTES = ['dashboard', 'mercados', 'watchlist', 'ajustes'];
+const ROUTES = ['dashboard', 'mercados', 'watchlist', 'activos', 'movimientos', 'ajustes'];
 const listeners = new Set();
 
 export function currentRoute() {
@@ -16,7 +16,7 @@ function apply() {
   document.querySelectorAll('.view').forEach(el => {
     el.hidden = el.dataset.view !== route;
   });
-  document.querySelectorAll('.nav-item').forEach(el => {
+  document.querySelectorAll('.nav-item, .bnav-item').forEach(el => {
     el.classList.toggle('active', el.dataset.route === route);
   });
   for (const fn of listeners) fn(route);

@@ -1,4 +1,5 @@
 import { addAsset } from '../state.js';
+import { logoImg } from '../logos.js';
 
 let pendingAsset = null;
 
@@ -44,9 +45,10 @@ export function initAddAsset({ onAdd }) {
     open(asset) {
       pendingAsset = asset;
       selectedBox.innerHTML = `
-        <div style="display:flex;align-items:center;gap:12px;">
-          <span class="mono" style="font-weight:700;font-size:1.1rem;">${asset.symbol}</span>
-          <span style="color:var(--color-text-2);font-size:0.88rem;">${escapeHTML(asset.name)}</span>
+        ${logoImg(asset.symbol, asset.quoteType, 36)}
+        <div>
+          <div style="font-weight:700;font-size:1rem;color:var(--color-text-1);">${asset.symbol}</div>
+          <div style="color:var(--color-text-2);font-size:0.82rem;">${escapeHTML(asset.name || '')}</div>
         </div>
       `;
       qtyInput.value = '';

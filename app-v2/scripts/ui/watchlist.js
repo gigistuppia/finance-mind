@@ -1,6 +1,7 @@
 import { getState, removeFromWatchlist, setQuotes } from '../state.js';
 import { getQuotes } from '../api.js';
 import { toast } from './toast.js';
+import { logoImg } from '../logos.js';
 
 let prevPrices = new Map();
 
@@ -40,7 +41,8 @@ export function renderWatchlist() {
       <tr data-symbol="${w.symbol}">
         <td>
           <div class="ticker-cell">
-            <div>
+            ${logoImg(w.symbol, w.quoteType, 36)}
+            <div class="ticker-info">
               <div class="ticker-symbol">${w.symbol}</div>
               <div class="ticker-name">${escapeHTML(w.name || '')}</div>
             </div>
@@ -74,9 +76,12 @@ export function renderWatchlist() {
       return `
         <div class="holding-card" data-symbol="${w.symbol}">
           <div class="holding-card-head">
-            <div>
-              <div class="ticker-symbol mono">${w.symbol}</div>
-              <div class="ticker-name">${escapeHTML(w.name || '')}</div>
+            <div class="ticker-cell">
+              ${logoImg(w.symbol, w.quoteType, 32)}
+              <div class="ticker-info">
+                <div class="ticker-symbol mono">${w.symbol}</div>
+                <div class="ticker-name">${escapeHTML(w.name || '')}</div>
+              </div>
             </div>
             <span class="type-badge" data-type="${w.quoteType || 'EQUITY'}">${shortType(w.quoteType)}</span>
           </div>

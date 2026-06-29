@@ -1,58 +1,59 @@
 :root {
-  /* ── Fondos ── */
-  --color-bg:          #0a0a0f;
-  --color-bg-alt:      #0e0e14;
-  --color-surface:     #13141c;
-  --color-surface-2:   #1a1b25;
-  --color-surface-3:   #22232e;
-  --color-surface-hi:  #292a36;
+  /* ── Fondos (negro plano profesional) ── */
+  --color-bg:          #000000;
+  --color-bg-alt:      #0a0a0c;
+  --color-surface:     #111114;
+  --color-surface-2:   #16161a;
+  --color-surface-3:   #1c1c22;
+  --color-surface-hi:  #22222a;
 
   /* ── Bordes ── */
   --color-border:      rgba(255, 255, 255, 0.06);
   --color-border-2:    rgba(255, 255, 255, 0.10);
-  --color-border-hi:   rgba(255, 255, 255, 0.18);
-  --color-border-glow: rgba(66, 133, 244, 0.30);
+  --color-border-hi:   rgba(255, 255, 255, 0.16);
+  --color-border-glow: rgba(124, 138, 255, 0.25);
 
-  /* ── Acentos ── */
-  --color-accent:      #4285F4;
-  --color-accent-rgb:  66, 133, 244;
-  --color-accent-2:    #00BCD4;
-  --color-accent-2-rgb: 0, 188, 212;
-  --color-accent-dim:  rgba(66, 133, 244, 0.12);
-  --color-accent-soft: rgba(66, 133, 244, 0.06);
+  /* ── Acento (azul lavanda Balanz) ── */
+  --color-accent:      #7C8AFF;
+  --color-accent-rgb:  124, 138, 255;
+  --color-accent-2:    #5B6BFF;
+  --color-accent-2-rgb: 91, 107, 255;
+  --color-accent-dim:  rgba(124, 138, 255, 0.14);
+  --color-accent-soft: rgba(124, 138, 255, 0.07);
 
   /* ── Señales ── */
-  --color-green:       #00E676;
-  --color-green-rgb:   0, 230, 118;
-  --color-red:         #FF1744;
-  --color-red-rgb:     255, 23, 68;
-  --color-yellow:      #F4B400;
-  --color-purple:      #A855F7;
-  --color-magenta:     #EC407A;
+  --color-green:       #22D67A;
+  --color-green-rgb:   34, 214, 122;
+  --color-green-dim:   rgba(34, 214, 122, 0.12);
+  --color-red:         #FF4D5E;
+  --color-red-rgb:     255, 77, 94;
+  --color-red-dim:     rgba(255, 77, 94, 0.12);
+  --color-yellow:      #F5C518;
+  --color-yellow-rgb:  245, 197, 24;
 
-  /* ── Texto ── */
-  --color-text-1:      #f0f0f5;
-  --color-text-2:      #9a9ab0;
-  --color-text-3:      #5a5a72;
+  /* ── Texto (jerarquía neutra) ── */
+  --color-text-1:      #FFFFFF;
+  --color-text-2:      #9CA3AF;
+  --color-text-3:      #6B7280;
 
   /* ── Colores por tipo de activo ── */
-  --color-stock:       #4285F4;
-  --color-etf:         #00BCD4;
-  --color-crypto:      #F4B400;
-  --color-forex:       #00E676;
-  --color-index:       #A855F7;
-  --color-commodity:   #FF6D00;
-  --color-fund:        #EC407A;
+  --color-stock:       #7C8AFF;
+  --color-etf:         #5BC9FF;
+  --color-crypto:      #F5C518;
+  --color-forex:       #22D67A;
+  --color-index:       #A78BFA;
+  --color-commodity:   #FF8A4C;
+  --color-fund:        #F472B6;
 
-  /* ── Gradientes Gemini (firma visual) ── */
-  --gradient-gemini:      linear-gradient(135deg, #4285F4 0%, #0F9D58 30%, #F4B400 60%, #DB4437 100%);
-  --gradient-gemini-text: linear-gradient(90deg, #4285F4, #A855F7, #EC407A, #F4B400, #0F9D58, #4285F4);
-  --gradient-primary:     linear-gradient(135deg, #4285F4 0%, #A855F7 40%, #EC407A 70%, #F4B400 100%);
-  --gradient-accent:      linear-gradient(135deg, #4285F4 0%, #00BCD4 50%, #0F9D58 100%);
-  --gradient-shimmer:     linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.05) 50%, transparent 100%);
-  --gradient-glow:        radial-gradient(circle, rgba(66,133,244,0.12) 0%, transparent 70%);
-  --gradient-surface:     linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0));
-  --gradient-card-border: linear-gradient(135deg, rgba(66,133,244,0.35), rgba(168,85,247,0.20), rgba(236,64,122,0.12), transparent 70%);
+  /* ── Gradientes (sutiles, no Gemini) ── */
+  --gradient-accent:      linear-gradient(135deg, #7C8AFF 0%, #5B6BFF 100%);
+  --gradient-shimmer:     linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 50%, transparent 100%);
+  --gradient-surface:     linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+  --gradient-gemini-text: linear-gradient(90deg, #FFFFFF, #FFFFFF);
+  --gradient-gemini:      linear-gradient(135deg, #7C8AFF 0%, #5B6BFF 100%);
+  --gradient-primary:     linear-gradient(135deg, #7C8AFF 0%, #5B6BFF 100%);
+  --gradient-glow:        radial-gradient(circle, rgba(124,138,255,0.10) 0%, transparent 70%);
+  --gradient-card-border: linear-gradient(135deg, rgba(124,138,255,0.18), transparent 60%);
 
   /* ── Tipografía ── */
   --font-display: 'Space Grotesk', sans-serif;
@@ -84,14 +85,14 @@
   --transition-normal: 240ms var(--ease-smooth);
   --transition-slow:   420ms var(--ease-smooth);
 
-  /* ── Sombras (con color del acento) ── */
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.4), 0 1px 3px rgba(var(--color-accent-rgb), 0.08);
-  --shadow-md: 0 8px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(var(--color-accent-rgb), 0.12);
-  --shadow-lg: 0 20px 48px rgba(0,0,0,0.6), 0 4px 16px rgba(var(--color-accent-rgb), 0.18);
-  --shadow-glow: 0 0 24px rgba(var(--color-accent-rgb), 0.30), 0 0 48px rgba(var(--color-accent-rgb), 0.10);
-  --glow-accent: 0 0 32px rgba(var(--color-accent-rgb), 0.35);
-  --glow-green:  0 0 24px rgba(var(--color-green-rgb), 0.30);
-  --glow-red:    0 0 24px rgba(var(--color-red-rgb), 0.30);
+  /* ── Sombras (planas, neutras) ── */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.5);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.5);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,0.65);
+  --shadow-glow: 0 0 0 1px rgba(var(--color-accent-rgb), 0.20);
+  --glow-accent: 0 0 0 1px rgba(var(--color-accent-rgb), 0.25);
+  --glow-green:  0 0 0 1px rgba(var(--color-green-rgb), 0.25);
+  --glow-red:    0 0 0 1px rgba(var(--color-red-rgb), 0.25);
 
   /* ── Layout ── */
   --sidebar-w: 240px;
@@ -100,17 +101,17 @@
   --header-h-mobile: 56px;
   --max-w: 1440px;
 
-  /* ── Chart colors ── */
-  --chart-1: #4285F4;
-  --chart-2: #00BCD4;
-  --chart-3: #00E676;
-  --chart-4: #F4B400;
-  --chart-5: #DB4437;
-  --chart-6: #A855F7;
-  --chart-7: #FF6D00;
-  --chart-8: #00B0FF;
-  --chart-9: #76FF03;
-  --chart-10: #EC407A;
+  /* ── Chart colors (paleta neutra/azul) ── */
+  --chart-1: #7C8AFF;
+  --chart-2: #5BC9FF;
+  --chart-3: #22D67A;
+  --chart-4: #F5C518;
+  --chart-5: #FF4D5E;
+  --chart-6: #A78BFA;
+  --chart-7: #FF8A4C;
+  --chart-8: #34D399;
+  --chart-9: #F472B6;
+  --chart-10: #94A3B8;
 }
 
 @media (prefers-reduced-motion: reduce) {

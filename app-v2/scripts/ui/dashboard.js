@@ -1,6 +1,7 @@
 import { computeHoldings } from '../portfolio.js';
 import { removeAsset } from '../state.js';
 import { toast } from './toast.js';
+import { logoImg } from '../logos.js';
 
 let pieChart = null;
 let barChart = null;
@@ -9,8 +10,8 @@ let chartLibPromise = null;
 let prevPrices = new Map(); // symbol -> last seen price (for flash effect)
 
 const CHART_COLORS = [
-  '#1C8AFF', '#00BCD4', '#00E676', '#F4B400', '#DB4437',
-  '#9C27B0', '#FF6D00', '#00B0FF', '#76FF03', '#FF4081'
+  '#7C8AFF', '#5BC9FF', '#22D67A', '#F5C518', '#FF4D5E',
+  '#A78BFA', '#FF8A4C', '#34D399', '#F472B6', '#94A3B8'
 ];
 
 const SORTABLE_COLS = [
@@ -148,7 +149,8 @@ function renderHoldings(rows) {
     <tr data-symbol="${r.symbol}">
       <td>
         <div class="ticker-cell">
-          <div>
+          ${logoImg(r.symbol, r.quoteType, 36)}
+          <div class="ticker-info">
             <div class="ticker-symbol">${r.symbol}</div>
             <div class="ticker-name">${escapeHTML(r.name || '')}</div>
           </div>
@@ -186,9 +188,12 @@ function renderCards(rows) {
   cards.innerHTML = rows.map(r => `
     <div class="holding-card" data-symbol="${r.symbol}">
       <div class="holding-card-head">
-        <div>
-          <div class="ticker-symbol mono">${r.symbol}</div>
-          <div class="ticker-name">${escapeHTML(r.name || '')}</div>
+        <div class="ticker-cell">
+          ${logoImg(r.symbol, r.quoteType, 32)}
+          <div class="ticker-info">
+            <div class="ticker-symbol mono">${r.symbol}</div>
+            <div class="ticker-name">${escapeHTML(r.name || '')}</div>
+          </div>
         </div>
         <span class="type-badge" data-type="${r.quoteType || 'EQUITY'}">${shortType(r.quoteType)}</span>
       </div>
@@ -290,7 +295,7 @@ async function renderCharts(rows) {
   if (pieChart) pieChart.destroy();
   pieChart = new Chart(pieCanvas, {
     type: 'doughnut',
-    data: { labels, datasets: [{ data: values, backgroundColor: colors, borderColor: '#13141c', borderWidth: 2 }] },
+    data: { labels, datasets: [{ data: values, backgroundColor: colors, borderColor: '#111114', borderWidth: 2 }] },
     options: {
       responsive: true, maintainAspectRatio: false,
       animation: { duration: 360 },
@@ -310,8 +315,8 @@ async function renderCharts(rows) {
       datasets: [{
         label: 'P&L %',
         data: rows.map(r => r.pnlPct),
-        backgroundColor: rows.map(r => r.pnlPct >= 0 ? 'rgba(0,230,118,0.7)' : 'rgba(255,23,68,0.7)'),
-        borderColor: rows.map(r => r.pnlPct >= 0 ? '#00E676' : '#FF1744'),
+        backgroundColor: rows.map(r => r.pnlPct >= 0 ? 'rgba(34,214,122,0.7)' : 'rgba(255,77,94,0.7)'),
+        borderColor: rows.map(r => r.pnlPct >= 0 ? '#22D67A' : '#FF4D5E'),
         borderWidth: 1
       }]
     },

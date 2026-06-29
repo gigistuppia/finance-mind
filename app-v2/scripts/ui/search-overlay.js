@@ -1,5 +1,6 @@
 import { debouncedSearch } from '../search.js';
 import { getState } from '../state.js';
+import { logoFor, placeholderDataUri } from '../logos.js';
 
 const RECENT_KEY = 'fm2_recent_searches';
 const POPULAR_KEY = 'fm2_popular_picks';
@@ -275,31 +276,27 @@ export function initSearchOverlay({ onSelect }) {
   }
 
   function renderRowHTML(i, idx) {
-    const type = TYPE_LABEL[i.quoteType] || 'OTHER';
-    const tColor = typeColor(i.quoteType);
-    const q = lastQuery.trim();
-    const cached = getState().quotes[i.symbol];
-
-    let priceHtml = '<span class="price-prev muted"><span class="pp-val">—</span></span>';
-    if (cached && cached.price > 0) {
-      const cls = cached.changePercent >= 0 ? 'pos' : 'neg';
-      const sign = cached.changePercent >= 0 ? '+' : '';
-      priceHtml = `
-        <span class="price-prev ${cls}">
-          <span class="pp-val">${formatPrice(cached.price, cached.currency)}</span>
-          <span class="pp-chg">${sign}${cached.changePercent.toFixed(2)}%</span>
-        </span>`;
-    }
-
+    const logo = logoFor(i.symbol, i.quoteType);
+    const fallback = placeholderDataUri(i.symbol).replace(/'/g, '&#39;');
     const idxAttr = idx >= 0 ? `data-idx="${idx}"` : '';
+    const ticker = stripSuffix(i.symbol);
+    const nameUpper = (i.name || i.symbol).toUpperCase();
+    const market = (i.currency || 'USD').toUpperCase().slice(0, 3);
     return `
       <div class="search-result-item ${idx === focusedIdx ? 'focused' : ''}" ${idxAttr} data-sym="${i.symbol}">
-        <span class="sym">${highlight(i.symbol, q)}</span>
-        <span class="nm">${highlight(escapeHTML(i.name || ''), q)}</span>
-        <span class="mini-type" style="color:${tColor}">${type}</span>
-        ${priceHtml}
-        <span class="exch">${shortExch(i.exchange)}</span>
+        <img class="result-logo" src="${logo}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${fallback}'" />
+        <div class="result-main">
+          <div class="result-ticker">${escapeHTML(ticker)}</div>
+          <div class="result-name">${escapeHTML(nameUpper)}</div>
+        </div>
+        <div class="result-markets">
+          <span class="market-badge" data-market="${market}">${market}</span>
+        </div>
       </div>`;
+  }
+
+  function stripSuffix(symbol) {
+    return symbol.replace(/-USD$/, '').replace(/=X$/, '').replace(/=F$/, '').replace(/^\^/, '');
   }
 
   function updateFocus() {

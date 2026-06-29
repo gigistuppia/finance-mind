@@ -2,17 +2,43 @@ const PORTFOLIO_KEY = 'fm2_portfolio';
 const CCL_KEY = 'fm2_ccl';
 const WATCHLIST_KEY = 'fm2_watchlist';
 const QUOTES_CACHE_KEY = 'fm2_quotes_cache';
+const MOVEMENTS_KEY = 'fm2_movements';
+const MAX_MOVEMENTS = 500;
 
 const listeners = new Set();
 
 const state = {
   portfolio: load(PORTFOLIO_KEY, []),
   watchlist: load(WATCHLIST_KEY, []),
+  movements: load(MOVEMENTS_KEY, []),
   ccl: parseFloat(localStorage.getItem(CCL_KEY)) || 1000,
   quotes: load(QUOTES_CACHE_KEY, {}),
   loading: false,
   online: navigator.onLine,
 };
+
+function logMovement(type, payload) {
+  state.movements.unshift({
+    id: crypto.randomUUID(),
+    type,
+    timestamp: Date.now(),
+    ...payload,
+  });
+  if (state.movements.length > MAX_MOVEMENTS) {
+    state.movements.length = MAX_MOVEMENTS;
+  }
+  try { localStorage.setItem(MOVEMENTS_KEY, JSON.stringify(state.movements)); } catch {}
+}
+
+export function getMovements() {
+  return state.movements;
+}
+
+export function clearMovements() {
+  state.movements = [];
+  try { localStorage.removeItem(MOVEMENTS_KEY); } catch {}
+  emit();
+}
 
 function load(key, fallback) {
   try {
@@ -82,12 +108,31 @@ export function addAsset(asset) {
       date: asset.date || new Date().toISOString().slice(0, 10),
     });
   }
+  logMovement('add', {
+    symbol: asset.symbol,
+    name: asset.name,
+    quoteType: asset.quoteType,
+    currency: asset.currency,
+    quantity: asset.quantity,
+    price: asset.avgPrice,
+  });
   persistCritical();
   emit();
 }
 
 export function removeAsset(id) {
+  const removed = state.portfolio.find(p => p.id === id);
   state.portfolio = state.portfolio.filter(p => p.id !== id);
+  if (removed) {
+    logMovement('remove', {
+      symbol: removed.symbol,
+      name: removed.name,
+      quoteType: removed.quoteType,
+      currency: removed.currency,
+      quantity: removed.quantity,
+      price: removed.avgPrice,
+    });
+  }
   persistCritical();
   emit();
 }
@@ -96,6 +141,14 @@ export function updateAsset(id, patch) {
   const asset = state.portfolio.find(p => p.id === id);
   if (!asset) return;
   Object.assign(asset, patch);
+  logMovement('update', {
+    symbol: asset.symbol,
+    name: asset.name,
+    quoteType: asset.quoteType,
+    currency: asset.currency,
+    quantity: asset.quantity,
+    price: asset.avgPrice,
+  });
   persistCritical();
   emit();
 }
@@ -125,12 +178,25 @@ export function addToWatchlist(item) {
     quoteType: item.quoteType,
     exchange: item.exchange,
   });
+  logMovement('watch-add', {
+    symbol: item.symbol,
+    name: item.name,
+    quoteType: item.quoteType,
+  });
   persistCritical();
   emit();
 }
 
 export function removeFromWatchlist(symbol) {
+  const removed = state.watchlist.find(w => w.symbol === symbol);
   state.watchlist = state.watchlist.filter(w => w.symbol !== symbol);
+  if (removed) {
+    logMovement('watch-remove', {
+      symbol: removed.symbol,
+      name: removed.name,
+      quoteType: removed.quoteType,
+    });
+  }
   persistCritical();
   emit();
 }

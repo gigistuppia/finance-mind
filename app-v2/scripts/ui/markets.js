@@ -1,4 +1,5 @@
 import { getQuotes } from '../api.js';
+import { logoImg } from '../logos.js';
 
 const CATEGORIES = [
   {
@@ -76,16 +77,16 @@ function renderCategory(cat, quotes) {
   if (!body) return;
   body.innerHTML = cat.symbols.map(s => {
     const q = quotes[s];
-    if (!q) return `<div class="market-row" data-symbol="${s}"><span class="mono">${s}</span><span style="color:var(--color-text-3);">—</span></div>`;
+    const logo = logoImg(s, q?.quoteType, 28).replace('class="asset-logo"', 'class="mr-logo"');
+    if (!q) return `<div class="market-row" data-symbol="${s}">${logo}<span class="mr-sym">${s}</span><span></span><span style="color:var(--color-text-3);">—</span><span></span></div>`;
     const chgClass = q.changePercent >= 0 ? 'pnl-pos' : 'pnl-neg';
     const sign = q.changePercent >= 0 ? '+' : '';
     return `
       <div class="market-row" data-symbol="${s}">
-        <div class="mr-sym">
-          <span class="mono" style="font-weight:700;">${s}</span>
-        </div>
-        <div class="mr-price mono">${formatPrice(q.price, q.currency)}</div>
-        <div class="mr-chg mono ${chgClass}">${sign}${q.changePercent.toFixed(2)}%</div>
+        ${logo}
+        <span class="mr-sym">${s}</span>
+        <span class="mr-price mono">${formatPrice(q.price, q.currency)}</span>
+        <span class="mr-chg mono ${chgClass}">${sign}${q.changePercent.toFixed(2)}%</span>
         <div class="mr-actions">
           <button class="icon-btn" data-action="watch" data-symbol="${s}" title="Agregar a watchlist">★</button>
           <button class="icon-btn primary" data-action="add" data-symbol="${s}" title="Agregar al portfolio">+</button>

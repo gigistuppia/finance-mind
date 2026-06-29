@@ -10,6 +10,8 @@ import { renderWatchlist, refreshWatchlistQuotes } from './ui/watchlist.js';
 import { initSettings } from './ui/settings.js';
 import { initDolar } from './dolar.js';
 import { toast } from './ui/toast.js';
+import { renderMovements, initMovements } from './ui/movements.js';
+import { renderAssets, initAssets } from './ui/assets.js';
 
 const REFRESH_MS = 60_000;
 let addAssetUI = null;
@@ -27,6 +29,8 @@ function scheduleRender(route) {
     pendingRoute = null;
     if (r === 'dashboard') renderDashboard();
     else if (r === 'watchlist') renderWatchlist();
+    else if (r === 'movimientos') renderMovements();
+    else if (r === 'activos') renderAssets();
   });
 }
 
@@ -165,6 +169,8 @@ function init() {
   });
 
   initSettings();
+  initMovements();
+  initAssets();
 
   document.getElementById('watchlist-add')?.addEventListener('click', () => {
     searchUI.open((item) => {

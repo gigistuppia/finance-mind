@@ -60,6 +60,14 @@
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/><path d="M3 9h18M9 21V9"/></svg>
           Watchlist
         </a>
+        <a class="nav-item" href="#/activos" data-route="activos">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path d="M3.27 6.96L12 12l8.73-5.04M12 22.08V12"/></svg>
+          Activos
+        </a>
+        <a class="nav-item" href="#/movimientos" data-route="movimientos">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>
+          Movimientos
+        </a>
         <a class="nav-item" href="#/ajustes" data-route="ajustes">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 008 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H2a2 2 0 010-4h.09A1.65 1.65 0 003.6 8a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 008 3.6 1.65 1.65 0 009 2.09V2a2 2 0 014 0v.09A1.65 1.65 0 0015 3.6a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 8a1.65 1.65 0 001.51 1H22a2 2 0 010 4h-.09A1.65 1.65 0 0019.4 15z"/></svg>
           Ajustes
@@ -227,6 +235,59 @@
           </div>
         </div>
 
+        <!-- VIEW: ACTIVOS -->
+        <div class="view" data-view="activos" hidden>
+          <div class="page-head">
+            <div>
+              <div class="sub">Activos</div>
+              <h1>Tus instrumentos</h1>
+            </div>
+            <button class="btn primary" id="assets-export-xlsx">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+              Exportar Excel
+            </button>
+          </div>
+
+          <div class="movements">
+            <div class="movements-head">
+              <h3>Detalle por activo</h3>
+            </div>
+            <div class="assets-list" id="assets-list"></div>
+            <div class="empty" id="assets-empty" style="display:none;">
+              <h4>Sin activos</h4>
+              <p>Agregá un activo al portfolio para verlo acá.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW: MOVIMIENTOS -->
+        <div class="view" data-view="movimientos" hidden>
+          <div class="page-head">
+            <div>
+              <div class="sub">Movimientos</div>
+              <h1>Historial de la cuenta</h1>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn" id="movements-clear">Borrar historial</button>
+              <button class="btn primary" id="movements-export">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+                Exportar CSV
+              </button>
+            </div>
+          </div>
+
+          <div class="movements">
+            <div class="movements-head">
+              <h3>Todas tus operaciones</h3>
+            </div>
+            <div class="movement-list" id="movements-list"></div>
+            <div class="empty" id="movements-empty" style="display:none;">
+              <h4>Sin movimientos</h4>
+              <p>Cuando agregues o quites activos, aparecerá el registro acá.</p>
+            </div>
+          </div>
+        </div>
+
         <!-- VIEW: AJUSTES -->
         <div class="view" data-view="ajustes" hidden>
           <div class="page-head">
@@ -287,13 +348,13 @@
     <button class="bnav-item bnav-fab" id="bnav-search" aria-label="Buscar">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
     </button>
-    <a class="bnav-item" href="#/watchlist" data-route="watchlist">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14l-7 7-7-7"/><path d="M19 3l-7 7-7-7"/></svg>
-      <span>Watchlist</span>
+    <a class="bnav-item" href="#/activos" data-route="activos">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path d="M3.27 6.96L12 12l8.73-5.04M12 22.08V12"/></svg>
+      <span>Activos</span>
     </a>
-    <a class="bnav-item" href="#/ajustes" data-route="ajustes">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 008 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H2a2 2 0 010-4h.09A1.65 1.65 0 003.6 8a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 008 3.6 1.65 1.65 0 009 2.09V2a2 2 0 014 0v.09A1.65 1.65 0 0015 3.6a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 8a1.65 1.65 0 001.51 1H22a2 2 0 010 4h-.09A1.65 1.65 0 0019.4 15z"/></svg>
-      <span>Ajustes</span>
+    <a class="bnav-item" href="#/movimientos" data-route="movimientos">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>
+      <span>Movim.</span>
     </a>
   </nav>
 
