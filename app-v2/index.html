@@ -153,6 +153,11 @@
         <section class="holdings">
           <div class="holdings-head">
             <h3>Tenencias</h3>
+            <div class="holdings-filter" id="holdings-filter" role="group" aria-label="Filtrar por moneda">
+              <button class="hfilter-btn active" data-filter="all">Todo</button>
+              <button class="hfilter-btn" data-filter="USD">USD</button>
+              <button class="hfilter-btn" data-filter="ARS">$ ARS</button>
+            </div>
           </div>
           <div class="table-scroll">
             <table>
@@ -383,6 +388,13 @@
       <div class="field">
         <label>Precio de compra</label>
         <input type="number" id="add-price" min="0" step="any" placeholder="0" inputmode="decimal" />
+      </div>
+      <div class="field">
+        <label>Moneda del precio ingresado</label>
+        <div class="currency-toggle" id="add-currency-toggle" role="group" aria-label="Moneda de compra">
+          <button class="ctoggle-btn active" data-cur="USD">USD</button>
+          <button class="ctoggle-btn" data-cur="ARS">Pesos ARS</button>
+        </div>
       </div>
       <div class="field">
         <label>Fecha</label>

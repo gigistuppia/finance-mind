@@ -29,6 +29,8 @@ const SORTABLE_COLS = [
 let sortKey = 'valueARS';
 let sortDir = 'desc';
 let sortableBound = false;
+let holdingsFilter = 'all';
+let filterBound = false;
 
 function bindSortable() {
   if (sortableBound) return;
@@ -63,6 +65,38 @@ function updateSortIndicators() {
   }
 }
 
+function bindFilter() {
+  if (filterBound) return;
+  document.querySelectorAll('.hfilter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      holdingsFilter = btn.dataset.filter;
+      document.querySelectorAll('.hfilter-btn').forEach(b =>
+        b.classList.toggle('active', b.dataset.filter === holdingsFilter)
+      );
+      renderDashboard();
+    });
+  });
+  filterBound = true;
+}
+
+function filterRows(rows) {
+  if (holdingsFilter === 'USD') return rows.filter(r => r.currency !== 'ARS');
+  if (holdingsFilter === 'ARS') return rows.filter(r => r.currency === 'ARS');
+  return rows;
+}
+
+function updateValueColHeader() {
+  const col = SORTABLE_COLS.find(c => c.key === 'valueARS');
+  if (!col) return;
+  const th = document.querySelectorAll('.holdings thead th')[col.th];
+  if (!th) return;
+  const label = holdingsFilter === 'USD' ? 'Valor USD' : 'Valor ARS';
+  col.label = label;
+  const arrowSpan = th.querySelector('.sort-arrow');
+  th.textContent = label;
+  if (arrowSpan) th.appendChild(arrowSpan);
+}
+
 function sortRows(rows) {
   const col = SORTABLE_COLS.find(c => c.key === sortKey);
   if (!col) return rows;
@@ -82,20 +116,21 @@ function sortRows(rows) {
 
 export function renderDashboard() {
   const { rows, summary } = computeHoldings();
-  const isEmpty = rows.length === 0;
 
-  // Skeleton mientras no haya cotizaciones para ningún row
   const allMissing = rows.length > 0 && rows.every(r => !r.price);
   toggleSummarySkeleton(allMissing);
 
   const sorted = sortRows(rows);
+  const filtered = filterRows(sorted);
 
+  bindFilter();
   bindSortable();
   updateSortIndicators();
+  updateValueColHeader();
 
   renderSummary(summary);
-  renderHoldings(sorted);
-  renderCards(sorted);
+  renderHoldings(filtered);
+  renderCards(filtered);
   trackPriceFlash(sorted);
   renderCharts(sorted);
 }
@@ -160,7 +195,7 @@ function renderHoldings(rows) {
       <td>${formatNum(r.quantity)}</td>
       <td>${formatPrice(r.avgPrice, r.currency)}</td>
       <td class="price-cell" data-symbol="${r.symbol}">${r.price ? formatPrice(r.price, r.currency) : '<span class="skeleton" style="display:inline-block;width:60px;height:14px;"></span>'}</td>
-      <td>${formatARS(r.valueARS)}</td>
+      <td>${holdingsFilter === 'USD' ? formatUSD(r.valueUSD) : formatARS(r.valueARS)}</td>
       <td>${r.weight.toFixed(1)}%</td>
       <td class="${r.pnlNative >= 0 ? 'pnl-pos' : 'pnl-neg'}">
         ${r.pnlNative >= 0 ? '+' : ''}${r.pnlPct.toFixed(2)}%
@@ -199,7 +234,7 @@ function renderCards(rows) {
       </div>
       <div class="holding-card-row">
         <span class="label">Valor</span>
-        <span class="v">${formatARS(r.valueARS)}</span>
+        <span class="v">${holdingsFilter === 'USD' ? formatUSD(r.valueUSD) : formatARS(r.valueARS)}</span>
       </div>
       <div class="holding-card-row">
         <span class="label">Precio</span>
