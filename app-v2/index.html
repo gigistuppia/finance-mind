@@ -457,6 +457,12 @@
 
   <!-- Chart.js se carga lazy desde dashboard.js cuando se necesita -->
   <script type="module" src="scripts/app.js"></script>
-  <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"PEGAR_SITE_TAG_AQUI"}'></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TDSPMX3DWM"></script>
+  <script>
+    window.dataLayer=window.dataLayer||[];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js',new Date());
+    gtag('config','G-TDSPMX3DWM');
+  </script>
 </body>
 </html>
