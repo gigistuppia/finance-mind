@@ -278,17 +278,17 @@ a { color: inherit; text-decoration: none; }
 
 /* ── CONTENT AREA ── */
 .content {
-  padding: var(--s4);
+  padding: var(--s3);
   display: flex;
   flex-direction: column;
-  gap: var(--s4);
+  gap: var(--s3);
   max-width: var(--max-w);
   width: 100%;
 }
 .view {
   display: flex;
   flex-direction: column;
-  gap: var(--s4);
+  gap: var(--s3);
   animation: fadeScaleIn 260ms var(--ease-smooth) both;
 }
 .view[hidden] { display: none; }
@@ -364,7 +364,7 @@ a { color: inherit; text-decoration: none; }
   gap: var(--s2);
 }
 .summary-card {
-  padding: var(--s3);
+  padding: var(--s2) var(--s3);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--r-md);
@@ -393,12 +393,14 @@ a { color: inherit; text-decoration: none; }
   font-weight: 500;
 }
 .summary-card .value {
-  font-size: 1.6rem;
+  font-size: clamp(0.95rem, 1.3vw, 1.25rem);
   font-weight: 700;
   letter-spacing: -0.02em;
   font-family: var(--font-mono);
   color: var(--color-text-1);
-  word-break: break-all;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .summary-card .delta {
   margin-top: var(--s1);
@@ -415,11 +417,11 @@ a { color: inherit; text-decoration: none; }
   gap: var(--s2);
 }
 .chart-card {
-  padding: var(--s3);
+  padding: var(--s2) var(--s3);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--r-md);
-  min-height: 320px;
+  min-height: 240px;
   display: flex;
   flex-direction: column;
   transition: border-color var(--transition-fast);
@@ -441,7 +443,7 @@ a { color: inherit; text-decoration: none; }
   background: var(--color-accent);
   border-radius: 2px;
 }
-.chart-canvas-wrap { flex: 1; position: relative; min-height: 260px; }
+.chart-canvas-wrap { flex: 1; position: relative; min-height: 180px; }
 
 /* ── HOLDINGS TABLE ── */
 .holdings {
@@ -743,12 +745,12 @@ a { color: inherit; text-decoration: none; }
   border-left-color: var(--color-accent);
 }
 .search-result-item .result-logo {
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
   background: #fff;
   object-fit: contain;
-  padding: 5px;
+  padding: 3px;
   flex-shrink: 0;
 }
 .search-result-item .result-main {
@@ -1411,8 +1413,8 @@ a { color: inherit; text-decoration: none; }
   #add-trigger { width: 40px; padding: 0; font-size: 1.2rem; }
   #add-trigger .add-label { display: none; }
 
-  .content { padding: var(--s2); gap: var(--s3); }
-  .view { gap: var(--s3); }
+  .content { padding: var(--s2); gap: var(--s2); }
+  .view { gap: var(--s2); }
   .page-head h1 { font-size: clamp(1.4rem, 6vw, 2rem); }
 
   .holdings .table-scroll { display: none; }
@@ -1435,9 +1437,10 @@ a { color: inherit; text-decoration: none; }
 }
 
 @media (max-width: 480px) {
-  .summary { grid-template-columns: 1fr; }
+  .summary { grid-template-columns: 1fr 1fr; }
   .market-categories { grid-template-columns: 1fr; }
-  .summary-card .value { font-size: 1.4rem; }
+  .summary-card .value { font-size: 0.9rem; }
+  .summary-card { padding: var(--s2); }
   .header { gap: var(--s0); }
   .paywall-card { padding: var(--s3); }
 }
