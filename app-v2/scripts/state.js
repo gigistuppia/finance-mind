@@ -1,5 +1,6 @@
 const PORTFOLIO_KEY = 'fm2_portfolio';
 const CCL_KEY = 'fm2_ccl';
+const DOLAR_TIPO_KEY = 'fm2_dolar_tipo';
 const WATCHLIST_KEY = 'fm2_watchlist';
 const QUOTES_CACHE_KEY = 'fm2_quotes_cache';
 const MOVEMENTS_KEY = 'fm2_movements';
@@ -12,6 +13,7 @@ const state = {
   watchlist: load(WATCHLIST_KEY, []),
   movements: load(MOVEMENTS_KEY, []),
   ccl: parseFloat(localStorage.getItem(CCL_KEY)) || 1000,
+  dolarTipo: localStorage.getItem(DOLAR_TIPO_KEY) || 'contadoconliqui',
   quotes: load(QUOTES_CACHE_KEY, {}),
   loading: false,
   online: navigator.onLine,
@@ -55,6 +57,7 @@ function persistCritical() {
     localStorage.setItem(PORTFOLIO_KEY, JSON.stringify(state.portfolio));
     localStorage.setItem(WATCHLIST_KEY, JSON.stringify(state.watchlist));
     localStorage.setItem(CCL_KEY, String(state.ccl));
+    localStorage.setItem(DOLAR_TIPO_KEY, state.dolarTipo);
   } catch {}
 }
 
@@ -163,6 +166,11 @@ export function setCCL(value) {
   state.ccl = value;
   persistCritical();
   emit();
+}
+
+export function setDolarTipo(tipo) {
+  state.dolarTipo = tipo;
+  persistCritical();
 }
 
 export function setLoading(flag) {
