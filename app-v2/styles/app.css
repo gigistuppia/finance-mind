@@ -372,7 +372,7 @@ a { color: inherit; text-decoration: none; }
   overflow: hidden;
   transition: border-color var(--transition-fast);
 }
-.summary-card:hover { border-color: var(--color-accent); transform: translateY(-4px); box-shadow: 0 8px 28px rgba(124,138,255,0.18); }
+.summary-card:hover { border-color: var(--color-border-hi); }
 .summary-card::before {
   content: '';
   position: absolute;
@@ -424,7 +424,7 @@ a { color: inherit; text-decoration: none; }
   flex-direction: column;
   transition: border-color var(--transition-fast);
 }
-.chart-card:hover { border-color: var(--color-accent); transform: translateY(-3px); box-shadow: 0 8px 28px rgba(124,138,255,0.15); }
+.chart-card:hover { border-color: var(--color-border-hi); }
 .chart-card h3 {
   font-size: 0.95rem;
   font-weight: 600;
@@ -670,6 +670,7 @@ a { color: inherit; text-decoration: none; }
   font-weight: 400;
   font-family: var(--font-body);
 }
+.search-modal-input:focus { outline: none; }
 .search-modal-input::placeholder { color: var(--color-text-3); }
 .search-modal-close {
   background: transparent;
