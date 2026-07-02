@@ -307,9 +307,6 @@ async function renderCharts(rows) {
   const barCanvas = document.getElementById('chart-bar');
   if (!pieCanvas || !barCanvas) return;
 
-  pieCanvas.closest('.chart-card')?.classList.toggle('is-empty', rows.length === 0);
-  barCanvas.closest('.chart-card')?.classList.toggle('is-empty', rows.length === 0);
-
   if (rows.length === 0) {
     pieChart?.destroy(); pieChart = null;
     barChart?.destroy(); barChart = null;
