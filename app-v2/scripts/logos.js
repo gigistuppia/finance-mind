@@ -41,9 +41,23 @@ const FOREX_FLAGS = {
   CAD: 'ca', AUD: 'au', NZD: 'nz', CHF: 'ch', CNY: 'cn', HKD: 'hk', SGD: 'sg', KRW: 'kr',
 };
 
-const COMMODITY_SLUGS = {
-  'GC=F': 'gold', 'SI=F': 'silver', 'CL=F': 'crude-oil', 'NG=F': 'natural-gas',
-  'HG=F': 'copper', 'ZC=F': 'corn', 'ZS=F': 'soybean', 'ZW=F': 'wheat',
+const COMMODITY_CONFIG = {
+  'GC=F':  { label: 'XAU', color: '#F5C518', bg: 'rgba(245,197,24,0.18)' },
+  'SI=F':  { label: 'XAG', color: '#C0C0C0', bg: 'rgba(192,192,192,0.18)' },
+  'CL=F':  { label: 'OIL', color: '#FF8A4C', bg: 'rgba(255,138,76,0.18)' },
+  'BZ=F':  { label: 'BRN', color: '#FF6B35', bg: 'rgba(255,107,53,0.18)' },
+  'NG=F':  { label: 'GAS', color: '#5BC9FF', bg: 'rgba(91,201,255,0.18)' },
+  'HG=F':  { label: 'Cu',  color: '#CD7F32', bg: 'rgba(205,127,50,0.18)' },
+  'ZC=F':  { label: 'ZC',  color: '#22D67A', bg: 'rgba(34,214,122,0.18)' },
+  'ZS=F':  { label: 'ZS',  color: '#86EFAC', bg: 'rgba(134,239,172,0.18)' },
+  'ZW=F':  { label: 'ZW',  color: '#FCD34D', bg: 'rgba(252,211,77,0.18)' },
+  'PL=F':  { label: 'XPT', color: '#E2E8F0', bg: 'rgba(226,232,240,0.18)' },
+  'PA=F':  { label: 'XPD', color: '#93C5FD', bg: 'rgba(147,197,253,0.18)' },
+  'RB=F':  { label: 'RB',  color: '#FB923C', bg: 'rgba(251,146,60,0.18)' },
+  'KC=F':  { label: 'KFE', color: '#A16207', bg: 'rgba(161,98,7,0.25)' },
+  'SB=F':  { label: 'SU',  color: '#F472B6', bg: 'rgba(244,114,182,0.18)' },
+  'CC=F':  { label: 'CC',  color: '#92400E', bg: 'rgba(146,64,14,0.25)' },
+  'CT=F':  { label: 'CT',  color: '#F9FAFB', bg: 'rgba(249,250,251,0.12)' },
 };
 
 const INDEX_SLUGS = {
@@ -51,6 +65,17 @@ const INDEX_SLUGS = {
   '^RUT': 'russell-2000', '^VIX': 'cboe-volatility-index', '^MERV': 'merval',
   '^FTSE': 'ftse-100', '^N225': 'nikkei-225', '^GDAXI': 'dax',
 };
+
+function commoditySvg(symbol) {
+  const cfg = COMMODITY_CONFIG[symbol] || {
+    label: symbol.replace('=F', '').slice(0, 3),
+    color: '#FF8A4C',
+    bg: 'rgba(255,138,76,0.18)',
+  };
+  const fs = cfg.label.length > 2 ? '10' : '13';
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle cx="20" cy="20" r="20" fill="${cfg.bg}"/><text x="20" y="25" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-size="${fs}" font-weight="700" fill="${cfg.color}">${cfg.label}</text></svg>`;
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+}
 
 function stripSuffix(symbol) {
   return symbol.replace(/\.BA$/, '').replace(/-USD$/, '').replace(/=X$/, '').replace(/=F$/, '');
@@ -75,8 +100,7 @@ export function logoFor(symbol, quoteType) {
   }
 
   if (sym.endsWith('=F')) {
-    const slug = COMMODITY_SLUGS[sym];
-    if (slug) return `${TV_BASE}/futures/${slug}.svg`;
+    return commoditySvg(sym);
   }
 
   if (sym.startsWith('^')) {

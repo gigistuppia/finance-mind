@@ -1,5 +1,4 @@
 import { getMovements, clearMovements } from '../state.js';
-import { logoImg } from '../logos.js';
 import { toast } from './toast.js';
 
 const TYPE_LABEL = {
@@ -8,14 +7,6 @@ const TYPE_LABEL = {
   update: 'Actualización del portfolio',
   'watch-add': 'Agregado a watchlist',
   'watch-remove': 'Removido de watchlist',
-};
-
-const TYPE_ICON = {
-  add: '+', remove: '−', update: '↻', 'watch-add': '★', 'watch-remove': '☆',
-};
-
-const TYPE_CLASS = {
-  add: 'add', remove: 'remove', update: 'update', 'watch-add': 'watch', 'watch-remove': 'watch',
 };
 
 export function renderMovements() {
@@ -32,13 +23,10 @@ export function renderMovements() {
   if (empty) empty.style.display = 'none';
 
   list.innerHTML = movs.map(m => {
-    const icon = TYPE_ICON[m.type] || '•';
-    const cls = TYPE_CLASS[m.type] || '';
     const label = TYPE_LABEL[m.type] || m.type;
     const amount = formatAmount(m);
     return `
       <div class="movement-row">
-        <span class="movement-icon ${cls}">${icon}</span>
         <div class="movement-info">
           <span class="movement-title">${escapeHTML(label)} — ${escapeHTML(m.symbol)}</span>
           <span class="movement-meta">${escapeHTML(m.name || '')}</span>
