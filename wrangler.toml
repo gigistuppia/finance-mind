@@ -1,4 +1,4 @@
-name = "finance-mind"
+name = "finance-mind-real"
 main = "worker.js"
 compatibility_date = "2026-07-01"
 compatibility_flags = ["nodejs_compat"]
