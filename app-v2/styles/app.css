@@ -394,7 +394,7 @@ a { color: inherit; text-decoration: none; }
   font-weight: 500;
 }
 .summary-card .value {
-  font-size: clamp(1rem, 1.5vw, 1.35rem);
+  font-size: clamp(0.95rem, 1.3vw, 1.25rem);
   font-weight: 700;
   letter-spacing: -0.02em;
   font-family: var(--font-mono);
