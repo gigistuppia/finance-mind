@@ -259,6 +259,7 @@ a { color: inherit; text-decoration: none; }
   background: var(--color-accent);
   border-color: var(--color-accent);
   color: #fff;
+  border-radius: var(--r-full);
 }
 .btn.primary:hover {
   background: var(--color-accent-2);
@@ -357,17 +358,17 @@ a { color: inherit; text-decoration: none; }
   border-radius: 2px;
 }
 
-/* ── SUMMARY CARDS (Balanz: barra vertical color) ── */
+/* ── SUMMARY CARDS ── */
 .summary {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 1fr 1fr;
   gap: var(--s2);
 }
 .summary-card {
-  padding: var(--s2) var(--s3);
+  padding: var(--s3);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--r-md);
+  border-radius: var(--r-lg);
   position: relative;
   overflow: hidden;
   transition: border-color var(--transition-fast);
@@ -379,11 +380,33 @@ a { color: inherit; text-decoration: none; }
   left: 0; top: var(--s3); bottom: var(--s3);
   width: 3px;
   border-radius: 0 2px 2px 0;
-  background: var(--color-accent);
+  background: var(--color-green);
 }
-.summary-card:nth-child(2)::before { background: var(--color-accent-2); }
-.summary-card:nth-child(3)::before { background: var(--color-green); }
-.summary-card:nth-child(4)::before { background: var(--color-yellow); }
+.summary-card:nth-child(3)::before { background: var(--color-yellow); }
+
+.summary-hero {
+  grid-column: 1 / -1;
+  padding: var(--s4) var(--s3);
+}
+.summary-hero::before { background: var(--color-accent); }
+.summary-hero > .value {
+  font-size: clamp(1.6rem, 3vw, 2.4rem) !important;
+}
+.summary-hero-sub {
+  display: flex;
+  align-items: center;
+  gap: var(--s1);
+  margin-top: var(--s1);
+}
+.summary-hero-sub .label {
+  margin-bottom: 0;
+  font-size: 0.75rem;
+  color: var(--color-text-3);
+}
+.summary-hero-sub .value {
+  font-size: 0.95rem !important;
+  color: var(--color-text-2) !important;
+}
 
 .summary-card .label {
   font-family: var(--font-body);
@@ -393,7 +416,7 @@ a { color: inherit; text-decoration: none; }
   font-weight: 500;
 }
 .summary-card .value {
-  font-size: clamp(0.95rem, 1.3vw, 1.25rem);
+  font-size: clamp(1rem, 1.5vw, 1.35rem);
   font-weight: 700;
   letter-spacing: -0.02em;
   font-family: var(--font-mono);
@@ -444,6 +467,7 @@ a { color: inherit; text-decoration: none; }
   border-radius: 2px;
 }
 .chart-canvas-wrap { flex: 1; position: relative; min-height: 180px; }
+.chart-card.is-empty { display: none; }
 
 /* ── HOLDINGS TABLE ── */
 .holdings {
@@ -1388,7 +1412,7 @@ a { color: inherit; text-decoration: none; }
   .charts { grid-template-columns: 1fr; }
 }
 @media (max-width: 900px) {
-  .summary { grid-template-columns: repeat(2, 1fr); }
+  .summary { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 768px) {
@@ -1457,11 +1481,15 @@ a { color: inherit; text-decoration: none; }
 
 @media (max-width: 480px) {
   .summary { grid-template-columns: 1fr 1fr; }
+  .summary-hero { padding: var(--s3); }
+  .summary-hero > .value { font-size: clamp(1.4rem, 6vw, 2rem) !important; }
   .market-categories { grid-template-columns: 1fr; }
-  .summary-card .value { font-size: 0.9rem; }
-  .summary-card { padding: var(--s2); }
+  .summary-card .value { font-size: 1rem; }
+  .summary-card { padding: var(--s2) var(--s3); }
   .header { gap: var(--s0); }
   .paywall-card { padding: var(--s3); }
+  .chart-card { min-height: 180px; }
+  .chart-canvas-wrap { min-height: 140px; }
 }
 
 /* ── TOAST STACK ── */
@@ -1550,15 +1578,14 @@ a { color: inherit; text-decoration: none; }
   position: fixed;
   bottom: 0; left: 0; right: 0;
   z-index: 55;
-  background: rgba(0,0,0,0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(10,10,10,0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid var(--color-border);
-  padding: var(--s0) var(--s1);
-  padding-bottom: calc(var(--s0) + env(safe-area-inset-bottom, 0px));
+  padding: var(--s1) 0;
+  padding-bottom: calc(var(--s1) + env(safe-area-inset-bottom, 0px));
   justify-content: space-around;
-  align-items: center;
-  gap: var(--s0);
+  align-items: stretch;
 }
 .bnav-item {
   flex: 1;
@@ -1566,33 +1593,32 @@ a { color: inherit; text-decoration: none; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  padding: var(--s1) var(--s0);
+  gap: 4px;
+  padding: var(--s0) 0;
   background: transparent;
   border: none;
   color: var(--color-text-3);
-  font-size: 0.66rem;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  font-size: 0.68rem;
+  letter-spacing: 0.01em;
   font-weight: 500;
   cursor: pointer;
-  border-radius: var(--r-md);
-  transition: color var(--transition-fast);
+  transition: color 200ms var(--ease-smooth);
+  position: relative;
 }
 .bnav-item svg { width: 22px; height: 22px; }
-.bnav-item:hover { color: var(--color-text-1); }
+.bnav-item:hover { color: var(--color-text-2); }
 .bnav-item.active { color: var(--color-accent); }
-.bnav-fab {
-  width: 56px; height: 56px;
-  flex: 0 0 56px;
+.bnav-item.active::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 2px;
   background: var(--color-accent);
-  color: #fff !important;
-  border-radius: 50%;
-  margin-top: -22px;
-  box-shadow: 0 6px 20px rgba(var(--color-accent-rgb), 0.45);
-  padding: 0;
+  border-radius: 0 0 2px 2px;
 }
-.bnav-fab svg { width: 24px; height: 24px; }
 
 /* Sticky thead */
 .holdings .table-scroll { position: relative; }
@@ -1651,11 +1677,11 @@ a { color: inherit; text-decoration: none; }
 
 @media (max-width: 768px) {
   .bottom-nav { display: flex; }
-  .content { padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
+  .content { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
   .menu-toggle { display: none; }
   .search-overlay { padding-bottom: calc(var(--s1) + env(safe-area-inset-bottom, 0px)); }
   .toast-stack {
-    bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(72px + env(safe-area-inset-bottom, 0px));
     right: var(--s2);
     left: var(--s2);
     max-width: calc(100vw - 2 * var(--s2));
