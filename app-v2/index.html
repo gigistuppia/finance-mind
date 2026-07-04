@@ -57,11 +57,11 @@
           Cartera
         </a>
         <a class="nav-item" href="#/mercados" data-route="mercados">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg>
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="14" width="4" height="7" rx="1"/><rect x="10" y="10" width="4" height="11" rx="1"/><rect x="17" y="5" width="4" height="16" rx="1"/></svg>
           Mercados
         </a>
         <a class="nav-item" href="#/watchlist" data-route="watchlist">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/><path d="M3 9h18M9 21V9"/></svg>
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="15" r="4"/><circle cx="17" cy="15" r="4"/><path d="M10 15h4"/><path d="M7 11V7M17 11V7"/></svg>
           Watchlist
         </a>
         <a class="nav-item" href="#/movimientos" data-route="movimientos">
@@ -253,6 +253,19 @@
             </div>
             <div class="holdings-cards" id="watchlist-cards"></div>
             <div class="empty" id="watchlist-empty">
+              <svg class="empty-illustration" viewBox="0 0 200 140" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="100" cy="60" r="40" fill="rgba(124,138,255,0.08)" stroke="rgba(124,138,255,0.15)" stroke-width="1"/>
+                <circle cx="80" cy="58" r="14" fill="rgba(124,138,255,0.12)" stroke="rgba(124,138,255,0.35)" stroke-width="1.5"/>
+                <circle cx="120" cy="58" r="14" fill="rgba(124,138,255,0.12)" stroke="rgba(124,138,255,0.35)" stroke-width="1.5"/>
+                <rect x="93" y="54" width="14" height="8" rx="4" fill="rgba(124,138,255,0.2)" stroke="rgba(124,138,255,0.3)" stroke-width="1"/>
+                <line x1="80" y1="44" x2="80" y2="34" stroke="rgba(124,138,255,0.4)" stroke-width="1.5" stroke-linecap="round"/>
+                <line x1="120" y1="44" x2="120" y2="34" stroke="rgba(124,138,255,0.4)" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="80" cy="58" r="5" fill="rgba(124,138,255,0.25)"/>
+                <circle cx="120" cy="58" r="5" fill="rgba(124,138,255,0.25)"/>
+                <path d="M60 100 L80 92 L100 96 L120 88 L140 94" stroke="rgba(124,138,255,0.25)" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="4 4"/>
+                <circle cx="100" cy="96" r="3" fill="#7C8AFF" opacity="0.5"/>
+                <path d="M55 120 L145 120" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+              </svg>
               <h4>Tu watchlist está vacía</h4>
               <p>Agregá activos para seguirlos sin agregarlos al portfolio.</p>
             </div>
@@ -278,6 +291,21 @@
             </div>
             <div class="assets-list" id="assets-list"></div>
             <div class="empty" id="assets-empty" style="display:none;">
+              <svg class="empty-illustration" viewBox="0 0 200 140" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="100" cy="60" r="40" fill="rgba(124,138,255,0.08)" stroke="rgba(124,138,255,0.15)" stroke-width="1"/>
+                <rect x="75" y="45" width="50" height="35" rx="4" fill="rgba(124,138,255,0.1)" stroke="rgba(124,138,255,0.3)" stroke-width="1.5"/>
+                <path d="M90 45 V40 a5 5 0 0 1 5-5 h10 a5 5 0 0 1 5 5 V45" stroke="rgba(124,138,255,0.35)" stroke-width="1.5" fill="none"/>
+                <line x1="75" y1="56" x2="125" y2="56" stroke="rgba(124,138,255,0.2)" stroke-width="1"/>
+                <rect x="85" y="61" width="30" height="3" rx="1.5" fill="rgba(124,138,255,0.2)"/>
+                <rect x="90" y="68" width="20" height="3" rx="1.5" fill="rgba(124,138,255,0.15)"/>
+                <circle cx="135" cy="40" r="12" fill="rgba(124,138,255,0.12)" stroke="rgba(124,138,255,0.3)" stroke-width="1.2"/>
+                <line x1="135" y1="34" x2="135" y2="46" stroke="#7C8AFF" stroke-width="2" stroke-linecap="round"/>
+                <line x1="129" y1="40" x2="141" y2="40" stroke="#7C8AFF" stroke-width="2" stroke-linecap="round"/>
+                <path d="M55 120 L145 120" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+                <rect x="65" y="100" width="22" height="12" rx="3" fill="rgba(124,138,255,0.08)" stroke="rgba(124,138,255,0.15)" stroke-width="1"/>
+                <rect x="93" y="100" width="22" height="12" rx="3" fill="rgba(124,138,255,0.08)" stroke="rgba(124,138,255,0.15)" stroke-width="1"/>
+                <rect x="121" y="100" width="22" height="12" rx="3" fill="rgba(124,138,255,0.08)" stroke="rgba(124,138,255,0.15)" stroke-width="1"/>
+              </svg>
               <h4>Sin activos</h4>
               <p>Agregá un activo al portfolio para verlo acá.</p>
             </div>
@@ -306,6 +334,18 @@
             </div>
             <div class="movement-list" id="movements-list"></div>
             <div class="empty" id="movements-empty" style="display:none;">
+              <svg class="empty-illustration" viewBox="0 0 200 140" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="100" cy="60" r="40" fill="rgba(124,138,255,0.08)" stroke="rgba(124,138,255,0.15)" stroke-width="1"/>
+                <circle cx="100" cy="58" r="22" fill="rgba(124,138,255,0.1)" stroke="rgba(124,138,255,0.35)" stroke-width="1.5"/>
+                <line x1="100" y1="44" x2="100" y2="58" stroke="#7C8AFF" stroke-width="2" stroke-linecap="round"/>
+                <line x1="100" y1="58" x2="112" y2="64" stroke="#7C8AFF" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="100" cy="58" r="2.5" fill="#7C8AFF"/>
+                <path d="M60 100h80" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+                <rect x="60" y="106" width="80" height="6" rx="3" fill="rgba(124,138,255,0.08)"/>
+                <rect x="60" y="116" width="55" height="6" rx="3" fill="rgba(124,138,255,0.06)"/>
+                <path d="M122 36 l6-6 M128 36 l-6-6" stroke="rgba(124,138,255,0.3)" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M78 80 l-6 6 M72 80 l6 6" stroke="rgba(124,138,255,0.3)" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
               <h4>Sin movimientos</h4>
               <p>Cuando agregues o quites activos, aparecerá el registro acá.</p>
             </div>
@@ -368,7 +408,7 @@
       <span>Cartera</span>
     </a>
     <a class="bnav-item" href="#/mercados" data-route="mercados">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><path d="M7 16l4-5 4 3 5-7"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="14" width="4" height="7" rx="1"/><rect x="10" y="10" width="4" height="11" rx="1"/><rect x="17" y="5" width="4" height="16" rx="1"/></svg>
       <span>Mercado</span>
     </a>
     <a class="bnav-item" href="#/movimientos" data-route="movimientos">
@@ -376,7 +416,7 @@
       <span>Actividad</span>
     </a>
     <a class="bnav-item" href="#/watchlist" data-route="watchlist">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3h18v18H3z"/><path d="M3 9h18M9 21V9"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="15" r="4"/><circle cx="17" cy="15" r="4"/><path d="M10 15h4"/><path d="M7 11V7M17 11V7"/></svg>
       <span>Watchlist</span>
     </a>
   </nav>

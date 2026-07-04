@@ -17,6 +17,9 @@ const STOCK_SLUGS = {
   ABBV: 'abbvie', MRK: 'merck-co', GE: 'general-electric', HON: 'honeywell', RTX: 'raytheon',
   COST: 'costco', HD: 'home-depot', LOW: 'lowes', TGT: 'target', AMC: 'amc-entertainment',
   GME: 'gamestop', BB: 'blackberry', HOOD: 'robinhood', COIN: 'coinbase', SOFI: 'sofi-technologies',
+  SAP: 'sap', ASML: 'asml-holding', NVO: 'novo-nordisk',
+  TM: 'toyota', BABA: 'alibaba', TSM: 'taiwan-semiconductor',
+  SHEL: 'shell-plc', HSBC: 'hsbc',
 };
 
 const ETF_SLUGS = {
@@ -78,7 +81,7 @@ function commoditySvg(symbol) {
 }
 
 function stripSuffix(symbol) {
-  return symbol.replace(/\.BA$/, '').replace(/-USD$/, '').replace(/=X$/, '').replace(/=F$/, '');
+  return symbol.replace(/\.\w+$/, '').replace(/-USD$/, '').replace(/=X$/, '').replace(/=F$/, '');
 }
 
 export function logoFor(symbol, quoteType) {

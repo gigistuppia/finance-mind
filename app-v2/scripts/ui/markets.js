@@ -13,6 +13,11 @@ const CATEGORIES = [
     symbols: ['JPM', 'BAC', 'WFC', 'GS', 'MS', 'V', 'MA', 'BRK-B']
   },
   {
+    key: 'global',
+    label: 'Acciones Globales',
+    symbols: ['SAP.DE', 'ASML', 'NVO', 'TM', 'BABA', 'TSM', 'SHEL', 'HSBC']
+  },
+  {
     key: 'crypto',
     label: 'Crypto',
     symbols: ['BTC-USD', 'ETH-USD', 'SOL-USD', 'BNB-USD', 'XRP-USD', 'ADA-USD', 'DOGE-USD', 'AVAX-USD']
@@ -30,7 +35,7 @@ const CATEGORIES = [
   {
     key: 'commodities',
     label: 'Commodities',
-    symbols: ['GC=F', 'SI=F', 'CL=F', 'NG=F', 'HG=F', 'ZC=F']
+    symbols: ['GC=F', 'SI=F', 'CL=F', 'BZ=F', 'NG=F', 'HG=F', 'PL=F', 'PA=F', 'ZW=F', 'ZS=F', 'KC=F', 'CC=F']
   },
   {
     key: 'forex',
@@ -55,8 +60,8 @@ export function initMarkets({ onSelect, onWatch }) {
         <h3>${c.label}</h3>
         <span class="mono" style="color:var(--color-text-3);font-size:0.7rem;">${c.symbols.length} activos</span>
       </div>
-      <div class="market-cat-body" id="market-cat-${c.key}">
-        ${c.symbols.map(s => `<div class="market-row skeleton" data-symbol="${s}">${s}</div>`).join('')}
+      <div class="market-cat-grid" id="market-cat-${c.key}">
+        ${c.symbols.map(s => `<div class="holding-card skeleton" data-symbol="${s}"><div class="holding-card-head"><span class="ticker-symbol mono">${s}</span></div></div>`).join('')}
       </div>
     </div>
   `).join('');
@@ -77,17 +82,34 @@ function renderCategory(cat, quotes) {
   if (!body) return;
   body.innerHTML = cat.symbols.map(s => {
     const q = quotes[s];
-    const logo = logoImg(s, q?.quoteType, 28).replace('class="asset-logo"', 'class="mr-logo"');
-    if (!q) return `<div class="market-row" data-symbol="${s}">${logo}<span class="mr-sym">${s}</span><span></span><span style="color:var(--color-text-3);">—</span><span></span></div>`;
+    const logo = logoImg(s, q?.quoteType, 32);
+    const name = q?.name || s;
+    const type = shortType(q?.quoteType);
+    if (!q) return `
+      <div class="holding-card" data-symbol="${s}">
+        <div class="holding-card-head">
+          <div class="ticker-cell">${logo}<div class="ticker-info"><div class="ticker-symbol mono">${s}</div><div class="ticker-name">${name}</div></div></div>
+          <span class="type-badge" data-type="EQUITY">${type}</span>
+        </div>
+        <div class="holding-card-row"><span class="label">Precio</span><span class="v">—</span></div>
+        <div class="holding-card-row"><span class="label">Variación</span><span class="v">—</span></div>
+        <div class="holding-card-actions">
+          <button class="icon-btn" data-action="watch" data-symbol="${s}" title="Agregar a watchlist">★</button>
+          <button class="icon-btn primary" data-action="add" data-symbol="${s}" title="Agregar al portfolio">+</button>
+        </div>
+      </div>`;
     const chgClass = q.changePercent >= 0 ? 'pnl-pos' : 'pnl-neg';
     const sign = q.changePercent >= 0 ? '+' : '';
     return `
-      <div class="market-row" data-symbol="${s}">
-        ${logo}
-        <span class="mr-sym">${s}</span>
-        <span class="mr-price mono">${formatPrice(q.price, q.currency)}</span>
-        <span class="mr-chg mono ${chgClass}">${sign}${q.changePercent.toFixed(2)}%</span>
-        <div class="mr-actions">
+      <div class="holding-card" data-symbol="${s}">
+        <div class="holding-card-head">
+          <div class="ticker-cell">${logo}<div class="ticker-info"><div class="ticker-symbol mono">${s}</div><div class="ticker-name">${escapeHTML(name)}</div></div></div>
+          <span class="type-badge" data-type="${q.quoteType || 'EQUITY'}">${type}</span>
+        </div>
+        <div class="holding-card-row"><span class="label">Precio</span><span class="v mono">${formatPrice(q.price, q.currency)}</span></div>
+        <div class="holding-card-row"><span class="label">Variación</span><span class="v mono ${chgClass}">${sign}${q.changePercent.toFixed(2)}%</span></div>
+        ${q.dayLow ? `<div class="holding-card-row"><span class="label">Día</span><span class="v mono">${formatPrice(q.dayLow, q.currency)} / ${formatPrice(q.dayHigh, q.currency)}</span></div>` : ''}
+        <div class="holding-card-actions">
           <button class="icon-btn" data-action="watch" data-symbol="${s}" title="Agregar a watchlist">★</button>
           <button class="icon-btn primary" data-action="add" data-symbol="${s}" title="Agregar al portfolio">+</button>
         </div>
@@ -111,6 +133,13 @@ function renderCategory(cat, quotes) {
       else onSelectAsset?.(item);
     });
   });
+}
+
+function shortType(t) {
+  return ({ EQUITY: 'STOCK', ETF: 'ETF', CRYPTOCURRENCY: 'CRYPTO', CURRENCY: 'FX', INDEX: 'INDEX', FUTURE: 'FUT', MUTUALFUND: 'FUND' })[t] || 'OTHER';
+}
+function escapeHTML(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
 function formatPrice(n, currency) {
