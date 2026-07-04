@@ -15,7 +15,7 @@ const CATEGORIES = [
   {
     key: 'global',
     label: 'Acciones Globales',
-    symbols: ['SAP.DE', 'ASML', 'NVO', 'TM', 'BABA', 'TSM', 'SHEL', 'HSBC']
+    symbols: ['SAP.DE', 'ASML', 'NVO', 'TM', 'BABA', 'TSM', 'SHEL', 'HSBC', 'MC.PA', 'NESN.SW', 'AZN', 'TTE', 'BHP', 'RIO']
   },
   {
     key: 'crypto',
@@ -35,7 +35,7 @@ const CATEGORIES = [
   {
     key: 'commodities',
     label: 'Commodities',
-    symbols: ['GC=F', 'SI=F', 'CL=F', 'BZ=F', 'NG=F', 'HG=F', 'PL=F', 'PA=F', 'ZW=F', 'ZS=F', 'KC=F', 'CC=F']
+    symbols: ['GC=F', 'SI=F', 'CL=F', 'BZ=F', 'NG=F', 'HG=F', 'PL=F', 'PA=F', 'ZW=F', 'ZS=F', 'ZC=F', 'KC=F', 'CC=F', 'SB=F', 'CT=F']
   },
   {
     key: 'forex',

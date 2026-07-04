@@ -152,6 +152,7 @@ export function initSearchOverlay({ onSelect }) {
     debouncedSearch(q, (groups) => {
       if (lastQuery !== q) return;
       allResults = groups.flatMap(g => g.items);
+      allResults.sort((a, b) => (b._priority ? 1 : 0) - (a._priority ? 1 : 0));
       activeTab = 'ALL';
       focusedIdx = allResults.length > 0 ? 0 : -1;
       renderTabs(allResults);

@@ -20,6 +20,9 @@ const STOCK_SLUGS = {
   SAP: 'sap', ASML: 'asml-holding', NVO: 'novo-nordisk',
   TM: 'toyota', BABA: 'alibaba', TSM: 'taiwan-semiconductor',
   SHEL: 'shell-plc', HSBC: 'hsbc',
+  MC: 'lvmh', NESN: 'nestle', ROG: 'roche',
+  AZN: 'astrazeneca', TTE: 'totalenergies',
+  RELIANCE: 'reliance-industries', BHP: 'bhp', RIO: 'rio-tinto',
 };
 
 const ETF_SLUGS = {
@@ -44,7 +47,26 @@ const FOREX_FLAGS = {
   CAD: 'ca', AUD: 'au', NZD: 'nz', CHF: 'ch', CNY: 'cn', HKD: 'hk', SGD: 'sg', KRW: 'kr',
 };
 
-const COMMODITY_CONFIG = {
+const COMMODITY_SLUGS = {
+  'GC=F':  'metal/gold',
+  'SI=F':  'metal/silver',
+  'CL=F':  'crude-oil',
+  'BZ=F':  'crude-oil',
+  'NG=F':  'natural-gas',
+  'HG=F':  'metal/copper',
+  'PL=F':  'metal/platinum',
+  'PA=F':  'metal/palladium',
+  'ZW=F':  'commodity/wheat',
+  'ZS=F':  'soybean',
+  'ZC=F':  'commodity/corn',
+  'KC=F':  'commodity/coffee',
+  'CC=F':  'cocoa',
+  'SB=F':  'commodity/sugar',
+  'CT=F':  'commodity/cotton',
+  'RB=F':  'crude-oil',
+};
+
+const COMMODITY_FALLBACK = {
   'GC=F':  { label: 'XAU', color: '#F5C518', bg: 'rgba(245,197,24,0.18)' },
   'SI=F':  { label: 'XAG', color: '#C0C0C0', bg: 'rgba(192,192,192,0.18)' },
   'CL=F':  { label: 'OIL', color: '#FF8A4C', bg: 'rgba(255,138,76,0.18)' },
@@ -70,7 +92,7 @@ const INDEX_SLUGS = {
 };
 
 function commoditySvg(symbol) {
-  const cfg = COMMODITY_CONFIG[symbol] || {
+  const cfg = COMMODITY_FALLBACK[symbol] || {
     label: symbol.replace('=F', '').slice(0, 3),
     color: '#FF8A4C',
     bg: 'rgba(255,138,76,0.18)',
@@ -103,6 +125,8 @@ export function logoFor(symbol, quoteType) {
   }
 
   if (sym.endsWith('=F')) {
+    const commoditySlug = COMMODITY_SLUGS[sym];
+    if (commoditySlug) return `${TV_BASE}/${commoditySlug}.svg`;
     return commoditySvg(sym);
   }
 
