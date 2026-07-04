@@ -279,9 +279,9 @@
               <div class="sub">Cartera</div>
               <h1>Tus instrumentos</h1>
             </div>
-            <button class="btn primary" id="assets-export-xlsx">
+            <button class="btn primary" id="assets-export-btn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
-              Exportar Excel
+              Exportar
             </button>
           </div>
 
@@ -529,5 +529,44 @@
     gtag('js',new Date());
     gtag('config','G-TDSPMX3DWM');
   </script>
+  <div class="export-overlay" id="export-overlay">
+    <div class="export-overlay-backdrop" id="export-overlay-backdrop"></div>
+    <button class="export-overlay-close" id="export-overlay-close" aria-label="Cerrar">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="export-overlay-content">
+      <h2 class="export-overlay-title">Exportar activos</h2>
+      <p class="export-overlay-sub">Elegí el formato de exportación</p>
+      <div class="export-overlay-grid">
+        <button class="export-option" data-format="xlsx">
+          <div class="export-option-icon xlsx">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M3 9h18"/><path d="M3 15h18"/></svg>
+          </div>
+          <div class="export-option-info">
+            <span class="export-option-title">Excel (.xlsx)</span>
+            <span class="export-option-desc">Hojas con formato y resumen</span>
+          </div>
+        </button>
+        <button class="export-option" data-format="csv">
+          <div class="export-option-icon csv">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+          </div>
+          <div class="export-option-info">
+            <span class="export-option-title">CSV (.csv)</span>
+            <span class="export-option-desc">Texto plano, universal</span>
+          </div>
+        </button>
+        <button class="export-option" data-format="pdf">
+          <div class="export-option-icon pdf">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15v-2h2a1.5 1.5 0 010 3H9z"/></svg>
+          </div>
+          <div class="export-option-info">
+            <span class="export-option-title">PDF (.pdf)</span>
+            <span class="export-option-desc">Reporte listo para imprimir</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
