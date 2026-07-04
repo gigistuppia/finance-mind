@@ -1,6 +1,8 @@
 const ROUTES = ['dashboard', 'mercados', 'watchlist', 'activos', 'movimientos', 'ajustes'];
 const listeners = new Set();
 
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
 export function currentRoute() {
   const hash = location.hash.replace(/^#\/?/, '');
   return ROUTES.includes(hash) ? hash : 'dashboard';
@@ -11,6 +13,8 @@ export function onRouteChange(fn) {
   return () => listeners.delete(fn);
 }
 
+let prevRoute = null;
+
 function apply() {
   const route = currentRoute();
   document.querySelectorAll('.view').forEach(el => {
@@ -20,6 +24,11 @@ function apply() {
     el.classList.toggle('active', el.dataset.route === route);
   });
   for (const fn of listeners) fn(route);
+  if (route !== prevRoute) {
+    prevRoute = route;
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+  }
 }
 
 export function initRouter() {
