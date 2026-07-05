@@ -9,6 +9,8 @@ html, body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   min-height: 100vh;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -1531,7 +1533,7 @@ a { color: inherit; text-decoration: none; }
     width: 80vw;
     max-width: 280px;
     transition: transform 280ms var(--ease-smooth);
-    background: var(--color-bg);
+    background: var(--color-bg-alt);
     border-right: 1px solid var(--color-border-hi);
   }
   .sidebar.open { transform: translateX(0); }
@@ -1540,28 +1542,41 @@ a { color: inherit; text-decoration: none; }
     height: var(--header-h-mobile);
     padding: 0 var(--s2);
     gap: var(--s1);
+    background: var(--color-bg);
+  }
+  .header.scrolled {
+    background: rgba(0,0,0,0.92);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
   }
   .header-logo { display: inline-flex; }
 
   .search-trigger {
-    flex: 0 0 auto;
-    width: 40px;
+    flex: 1;
     height: 40px;
-    padding: 0;
-    justify-content: center;
-    border-radius: var(--r-md);
+    padding: 0 var(--s2);
+    border-radius: var(--r-full);
+    background: var(--color-surface);
+    border-color: var(--color-border);
   }
-  .search-trigger > span,
+  .search-trigger > span { display: block; font-size: var(--text-sm); }
   .search-trigger .kbd { display: none; }
 
   .dolar-btn { padding: var(--s0) var(--s1); }
   .dolar-btn .dolar-label { display: none; }
   .dolar-btn .dolar-value { font-size: 0.82rem; }
 
-  #add-trigger { width: 40px; padding: 0; font-size: 1.2rem; }
+  #add-trigger {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    font-size: 1.2rem;
+    border-radius: var(--r-full);
+    flex-shrink: 0;
+  }
   #add-trigger .add-label { display: none; }
 
-  .content { padding: var(--s2); gap: var(--s2); }
+  .content { padding: var(--s2); gap: var(--s3); }
   .view { gap: var(--s2); }
   .page-head h1 { font-size: clamp(1.4rem, 6vw, 2rem); }
 
@@ -1588,8 +1603,9 @@ a { color: inherit; text-decoration: none; }
   .market-cat-grid { grid-template-columns: 1fr 1fr; }
   .summary-card .value { font-size: 0.9rem; }
   .summary-card { padding: var(--s2); }
-  .header { gap: var(--s0); }
   .paywall-card { padding: var(--s3); }
+
+  .search-trigger > span { font-size: var(--text-xs); }
 }
 
 /* ── TOAST STACK ── */
@@ -1678,9 +1694,9 @@ a { color: inherit; text-decoration: none; }
   position: fixed;
   bottom: 0; left: 0; right: 0;
   z-index: 55;
-  background: rgba(10,10,10,0.96);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(0,0,0,0.92);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
   border-top: 1px solid var(--color-border);
   padding: var(--s1) 0;
   padding-bottom: calc(var(--s1) + env(safe-area-inset-bottom, 0px));
