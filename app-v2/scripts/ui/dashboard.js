@@ -28,6 +28,12 @@ const SORTABLE_COLS = [
 
 let sortKey = 'valueARS';
 let sortDir = 'desc';
+
+const mobileMq = window.matchMedia('(max-width: 768px)');
+mobileMq.addEventListener('change', () => {
+  lastChartSignature = '';
+  renderDashboard();
+});
 let sortableBound = false;
 let holdingsFilter = 'all';
 let filterBound = false;
@@ -216,55 +222,78 @@ function renderHoldings(rows) {
   });
 }
 
+const expandedCards = new Set();
+let cardsToggleBound = false;
+
+function bindCardsToggle() {
+  if (cardsToggleBound) return;
+  const cards = document.getElementById('holdings-cards');
+  if (!cards) return;
+  cards.addEventListener('click', (e) => {
+    if (e.target.closest('.delete-btn')) return;
+    const main = e.target.closest('.hc-main');
+    if (!main) return;
+    const card = main.closest('.holding-card');
+    const sym = card.dataset.symbol;
+    const isOpen = card.classList.toggle('expanded');
+    main.setAttribute('aria-expanded', String(isOpen));
+    if (isOpen) expandedCards.add(sym); else expandedCards.delete(sym);
+  });
+  cardsToggleBound = true;
+}
+
 function renderCards(rows) {
   const cards = document.getElementById('holdings-cards');
   if (!cards) return;
   if (rows.length === 0) { cards.innerHTML = ''; return; }
-  cards.innerHTML = rows.map(r => `
-    <div class="holding-card" data-symbol="${r.symbol}">
-      <div class="holding-card-head">
-        <div class="ticker-cell">
-          ${logoImg(r.symbol, r.quoteType, 32)}
-          <div class="ticker-info">
-            <div class="ticker-symbol mono">${r.symbol}</div>
-            <div class="ticker-name">${escapeHTML(r.name || '')}</div>
+  bindCardsToggle();
+  cards.innerHTML = rows.map(r => {
+    const isOpen = expandedCards.has(r.symbol);
+    return `
+    <div class="holding-card hc ${isOpen ? 'expanded' : ''}" data-symbol="${r.symbol}">
+      <button class="hc-main" aria-expanded="${isOpen}">
+        ${logoImg(r.symbol, r.quoteType, 36)}
+        <div class="ticker-info">
+          <div class="ticker-symbol mono">${r.symbol}</div>
+          <div class="ticker-name">${escapeHTML(r.name || '')}</div>
+        </div>
+        <div class="hc-right">
+          <span class="hc-value">${holdingsFilter === 'USD' ? formatUSD(r.valueUSD) : formatARS(r.valueARS)}</span>
+          <span class="hc-pnl ${r.pnlNative >= 0 ? 'pos' : 'neg'}">${r.pnlNative >= 0 ? '▲' : '▼'} ${r.pnlNative >= 0 ? '+' : ''}${r.pnlPct.toFixed(2)}%</span>
+        </div>
+        <svg class="hc-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="hc-details">
+        <div class="hc-details-inner">
+          <div class="hc-details-grid">
+            <div class="hc-detail">
+              <span class="label">Precio actual</span>
+              <span class="v price-cell" data-symbol="${r.symbol}">${r.price ? formatPrice(r.price, r.currency) : '—'}</span>
+            </div>
+            <div class="hc-detail">
+              <span class="label">Cantidad</span>
+              <span class="v">${formatNum(r.quantity)}</span>
+            </div>
+            <div class="hc-detail">
+              <span class="label">Precio compra</span>
+              <span class="v">${formatPrice(r.avgPrice, r.currency)}</span>
+            </div>
+            <div class="hc-detail">
+              <span class="label">Variación día</span>
+              <span class="v ${r.changePercent >= 0 ? 'pnl-pos' : 'pnl-neg'}">${r.changePercent >= 0 ? '+' : ''}${r.changePercent.toFixed(2)}%</span>
+            </div>
+            <button class="hc-delete delete-btn" data-id="${r.id}" data-symbol="${r.symbol}">Eliminar del portfolio</button>
           </div>
         </div>
-        <span class="type-badge" data-type="${r.quoteType || 'EQUITY'}">${shortType(r.quoteType)}</span>
-      </div>
-      <div class="holding-card-row">
-        <span class="label">Valor</span>
-        <span class="v">${holdingsFilter === 'USD' ? formatUSD(r.valueUSD) : formatARS(r.valueARS)}</span>
-      </div>
-      <div class="holding-card-row">
-        <span class="label">Precio</span>
-        <span class="v price-cell" data-symbol="${r.symbol}">${r.price ? formatPrice(r.price, r.currency) : '—'}</span>
-      </div>
-      <div class="holding-card-row">
-        <span class="label">Cantidad</span>
-        <span class="v">${formatNum(r.quantity)}</span>
-      </div>
-      <div class="holding-card-row">
-        <span class="label">P&amp;L</span>
-        <span class="v ${r.pnlNative >= 0 ? 'pnl-pos' : 'pnl-neg'}">
-          ${r.pnlNative >= 0 ? '+' : ''}${r.pnlPct.toFixed(2)}%
-        </span>
-      </div>
-      <div class="holding-card-row">
-        <span class="label">Día</span>
-        <span class="v ${r.changePercent >= 0 ? 'pnl-pos' : 'pnl-neg'}">
-          ${r.changePercent >= 0 ? '+' : ''}${r.changePercent.toFixed(2)}%
-        </span>
-      </div>
-      <div class="holding-card-row" style="justify-content:flex-end;">
-        <button class="delete-btn" data-id="${r.id}" data-symbol="${r.symbol}" aria-label="Eliminar">× Eliminar</button>
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 
   cards.querySelectorAll('.delete-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const sym = btn.dataset.symbol;
+      expandedCards.delete(sym);
       removeAsset(btn.dataset.id);
       toast(`${sym} eliminado del portfolio`, 'info');
     });
@@ -336,7 +365,7 @@ async function renderCharts(rows) {
       animation: { duration: 360 },
       cutout: '65%',
       plugins: {
-        legend: { position: 'right', labels: { color: '#a0a0a0', font: { family: 'Space Grotesk' }, boxWidth: 12 } },
+        legend: { position: mobileMq.matches ? 'bottom' : 'right', labels: { color: '#a0a0a0', font: { family: 'Space Grotesk' }, boxWidth: 12 } },
         tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${formatARS(ctx.parsed)}` } }
       }
     }

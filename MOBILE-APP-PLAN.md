@@ -50,27 +50,34 @@
 
 ---
 
-### FASE 2: Layout mobile — Dashboard (Prioridad ALTA)
+### FASE 2: Dashboard mobile — nivel app bancaria premium (Prioridad ALTA)
 
-**Archivos a tocar**: `app-v2/styles/app.css`
+**Objetivo**: que el dashboard mobile se sienta como Revolut/N26 — un hero balance protagonista, métricas compactas, y una lista de holdings limpia y escaneable.
 
-- [ ] **2.1** Summary cards: en 375px usar grid 2x2 con gap reducido a `var(--s1)`
-- [ ] **2.2** Summary card `.value`: font-size mínimo `var(--text-base)` para legibilidad
-- [ ] **2.3** Charts: altura mínima de 200px en mobile para que no se aplasten
-- [ ] **2.4** Holdings cards mobile: agregar swipe horizontal para ver más datos (overflow-x scroll con snap)
-- [ ] **2.5** Page head: reducir margin-bottom en mobile
-- [ ] **2.6** `.content` padding: `var(--s2)` está bien pero gap entre secciones puede ser `var(--s3)` en vez de `var(--s2)`
+**Archivos a tocar**: `app-v2/styles/app.css`, `app-v2/scripts/ui/dashboard.js`
+
+- [ ] **2.1** **Hero balance**: la card "Valor ARS" ocupa todo el ancho en mobile, valor grande centrado (~2rem mono), label uppercase discreto, glow radial sutil del acento de fondo. Es lo primero que ve el usuario al abrir la app.
+- [ ] **2.2** **Stat chips**: Valor USD, P&L Total y Activos como 3 chips compactos en fila debajo del hero, con sus barras de color laterales.
+- [ ] **2.3** **Holdings como lista de trading app**: rediseñar `.holding-card` mobile — una fila compacta: logo + símbolo/nombre a la izquierda, valor + pill de P&L% coloreada a la derecha. Nada de 6 filas verticales por activo.
+- [ ] **2.4** **Tap para expandir**: tocar una holding card despliega los detalles (precio, cantidad, día, eliminar) con animación suave — patrón accordion.
+- [ ] **2.5** **Charts**: doughnut con legend abajo (no a la derecha) en mobile, altura mínima 220px, padding interno reducido.
+- [ ] **2.6** **Entrada animada**: las cards del dashboard aparecen con stagger sutil (fade + translateY) al cargar la vista.
+- [ ] **2.7** Page head compacto: label + h1 con menos margen, jerarquía clara.
 
 ---
 
-### FASE 3: Layout mobile — Cartera / Activos (Prioridad ALTA)
+### FASE 3: Cartera / Activos mobile — detalle por activo premium (Prioridad ALTA)
 
-**Archivos a tocar**: `app-v2/styles/app.css`, `app-v2/index.html`
+**Objetivo**: la vista Cartera como una lista de posiciones profesional — cada activo es una card tocable con jerarquía clara: qué tengo, cuánto vale, cuánto gano.
 
-- [ ] **3.1** Asset rows: en mobile mostrar solo símbolo, nombre corto, y P&L (ocultar tipo, invertido, precio compra)
-- [ ] **3.2** Asset row: tap para expandir y ver todos los datos (accordion style)
-- [ ] **3.3** Botón "Exportar": en mobile < 480px, hacerlo icon-only (sin texto) para ahorrar espacio
-- [ ] **3.4** Empty state SVG: verificar que escale correctamente con `max-width: 180px` en mobile
+**Archivos a tocar**: `app-v2/styles/app.css`, `app-v2/scripts/ui/assets.js`
+
+- [ ] **3.1** **Asset rows como cards**: en mobile cada `.asset-row` se ve como card independiente (fondo surface-2, borde redondeado, separación) — no filas de tabla apretadas.
+- [ ] **3.2** **Jerarquía en 2 niveles**: colapsada muestra logo + símbolo/nombre + P&L coloreado con flecha ▲▼; expandida (tap) revela tipo, invertido, precio compra con animación de altura suave.
+- [ ] **3.3** **P&L como pill**: la ganancia/pérdida con fondo tenue verde/rojo (`rgba` del color al 10%), no solo texto coloreado — se escanea de un vistazo.
+- [ ] **3.4** **Botón "Exportar"** icon-only en < 480px (solo el ícono de descarga, 44x44px touch target).
+- [ ] **3.5** **Empty state**: ilustración centrada con `max-width` proporcional en mobile, CTA "+ Agregar primer activo" visible sin scroll.
+- [ ] **3.6** **Consistencia con dashboard**: mismas holding cards del punto 2.3/2.4 — un solo lenguaje visual en toda la app.
 
 ---
 
