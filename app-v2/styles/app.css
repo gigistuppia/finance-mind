@@ -2206,6 +2206,30 @@ a { color: inherit; text-decoration: none; }
 .chart-card   { transition: border-color 200ms var(--ease-smooth), transform 200ms var(--ease-smooth), box-shadow 200ms var(--ease-smooth); }
 .btn { transition: border-color 180ms var(--ease-smooth), background 180ms var(--ease-smooth), color 180ms var(--ease-smooth), transform 180ms var(--ease-smooth), box-shadow 180ms var(--ease-smooth); }
 
+/* ── OFFLINE BANNER ── */
+.offline-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  padding: var(--s1) var(--s2);
+  background: var(--color-yellow);
+  color: #0a0a0a;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-align: center;
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+  transform: translateY(-100%);
+  opacity: 0;
+  transition: transform 300ms var(--ease-smooth), opacity 300ms var(--ease-smooth);
+}
+.offline-banner.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .live-dot { animation: none !important; }
   .nav-item, .summary-card, .chart-card, .btn, .dolar-type-row { transform: none !important; transition: none !important; }

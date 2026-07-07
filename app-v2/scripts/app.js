@@ -128,18 +128,31 @@ function initMobileNav() {
 }
 
 function initOnlineIndicator() {
-  let wasOffline = !navigator.onLine;
-  window.addEventListener('online', () => {
-    if (wasOffline) {
-      toast('Conexión restablecida', 'success', 2200);
-      refreshQuotes();
-    }
-    wasOffline = false;
-  });
-  window.addEventListener('offline', () => {
-    wasOffline = true;
-    toast('Sin conexión — mostrando datos cacheados', 'warn', 3200);
-  });
+  let banner = null;
+
+  function showBanner() {
+    if (banner) return;
+    banner = document.createElement('div');
+    banner.className = 'offline-banner';
+    banner.setAttribute('role', 'status');
+    banner.setAttribute('aria-live', 'polite');
+    banner.textContent = 'Sin conexión — datos cacheados';
+    document.body.prepend(banner);
+    requestAnimationFrame(() => banner.classList.add('show'));
+  }
+
+  function hideBanner() {
+    if (!banner) return;
+    banner.classList.remove('show');
+    banner.addEventListener('transitionend', () => banner.remove(), { once: true });
+    banner = null;
+    toast('Conexión restablecida', 'success', 2200);
+    refreshQuotes();
+  }
+
+  if (!navigator.onLine) showBanner();
+  window.addEventListener('online', hideBanner);
+  window.addEventListener('offline', showBanner);
 }
 
 function init() {
