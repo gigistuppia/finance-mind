@@ -45,6 +45,8 @@ const TYPE_LABEL = {
   CURRENCY: 'Forex', INDEX: 'Índice', FUTURE: 'Commodity', MUTUALFUND: 'Fondo',
 };
 
+const expandedAssets = new Set();
+
 export function renderAssets() {
   const list = document.getElementById('assets-list');
   const empty = document.getElementById('assets-empty');
@@ -65,28 +67,38 @@ export function renderAssets() {
     const pnlCls = pnl >= 0 ? 'pos' : 'neg';
     const sign = pnl >= 0 ? '+' : '';
     const cur = r.currency || 'USD';
+    const isOpen = expandedAssets.has(r.symbol);
     return `
-      <div class="asset-row" data-symbol="${r.symbol}">
-        ${logoImg(r.symbol, r.quoteType, 36)}
-        <div class="ticker-info">
-          <div class="ticker-symbol">${r.symbol}</div>
-          <div class="ticker-name">${escapeHTML(r.name || '')}</div>
-        </div>
-        <div class="asset-meta">
-          <span class="lbl">Tipo</span>
-          <span class="type-badge" data-type="${r.quoteType || 'EQUITY'}">${TYPE_LABEL[r.quoteType] || 'Otro'}</span>
-        </div>
-        <div class="asset-meta">
-          <span class="lbl">Invertido</span>
-          <span class="v">${formatCurrency(invested, cur)}</span>
-        </div>
-        <div class="asset-meta">
-          <span class="lbl">Precio compra</span>
-          <span class="v">${formatCurrency(r.avgPrice, cur)}</span>
-        </div>
-        <div class="asset-meta">
-          <span class="lbl">Ganancia / Pérdida</span>
-          <span class="v ${pnlCls}">${sign}${formatCurrency(pnl, cur)}</span>
+      <div class="asset-row ${isOpen ? 'expanded' : ''}" data-symbol="${r.symbol}">
+        <button class="ar-main" aria-expanded="${isOpen}">
+          ${logoImg(r.symbol, r.quoteType, 36)}
+          <div class="ticker-info">
+            <div class="ticker-symbol">${r.symbol}</div>
+            <div class="ticker-name">${escapeHTML(r.name || '')}</div>
+          </div>
+          <div class="asset-meta ar-pnl">
+            <span class="lbl">Ganancia / Pérdida</span>
+            <span class="v ${pnlCls}">${sign}${formatCurrency(pnl, cur)}</span>
+          </div>
+          <svg class="ar-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="ar-details">
+          <div class="ar-details-inner">
+            <div class="ar-details-grid">
+              <div class="asset-meta">
+                <span class="lbl">Tipo</span>
+                <span class="type-badge" data-type="${r.quoteType || 'EQUITY'}">${TYPE_LABEL[r.quoteType] || 'Otro'}</span>
+              </div>
+              <div class="asset-meta">
+                <span class="lbl">Invertido</span>
+                <span class="v">${formatCurrency(invested, cur)}</span>
+              </div>
+              <div class="asset-meta">
+                <span class="lbl">Precio compra</span>
+                <span class="v">${formatCurrency(r.avgPrice, cur)}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     `;
@@ -94,6 +106,18 @@ export function renderAssets() {
 }
 
 export function initAssets() {
+  const list = document.getElementById('assets-list');
+  list?.addEventListener('click', (e) => {
+    if (!window.matchMedia('(max-width: 768px)').matches) return;
+    const main = e.target.closest('.ar-main');
+    if (!main) return;
+    const row = main.closest('.asset-row');
+    const sym = row.dataset.symbol;
+    const isOpen = row.classList.toggle('expanded');
+    main.setAttribute('aria-expanded', String(isOpen));
+    if (isOpen) expandedAssets.add(sym); else expandedAssets.delete(sym);
+  });
+
   const toggleBtn = document.getElementById('assets-export-btn');
   const overlay = document.getElementById('export-overlay');
   const closeBtn = document.getElementById('export-overlay-close');

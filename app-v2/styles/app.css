@@ -1589,6 +1589,17 @@ a { color: inherit; text-decoration: none; }
 .asset-row .asset-meta .v.neg { color: var(--color-red); }
 .asset-row .asset-meta .v { color: var(--color-text-1); font-weight: 500; }
 
+/* Estructura accordion: en desktop se aplana y se ve como fila de tabla */
+.ar-main,
+.ar-details,
+.ar-details-inner,
+.ar-details-grid { display: contents; }
+.ar-chevron { display: none; }
+.ar-details-grid > .asset-meta:nth-child(1) { order: 1; }
+.ar-details-grid > .asset-meta:nth-child(2) { order: 2; }
+.ar-details-grid > .asset-meta:nth-child(3) { order: 3; }
+.asset-row .ar-pnl { order: 4; }
+
 /* Sidebar backdrop (mobile) */
 .sidebar-backdrop {
   display: none;
@@ -1722,9 +1733,73 @@ a { color: inherit; text-decoration: none; }
   .search-overlay { padding: var(--s1); align-items: stretch; }
   .search-modal { height: 100%; max-height: calc(100vh - 2 * var(--s1)); }
 
-  .asset-row { grid-template-columns: auto 1fr auto; }
-  .asset-row .asset-meta:nth-of-type(2),
-  .asset-row .asset-meta:nth-of-type(3) { display: none; }
+  /* Cartera: asset rows como cards con accordion */
+  .assets-list { gap: var(--s1); padding: var(--s2); }
+  .asset-row {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    transition: border-color 240ms var(--ease-smooth);
+  }
+  .asset-row:hover { background: var(--color-surface-2); }
+  .asset-row.expanded { border-color: var(--color-border-hi); }
+  .ar-main {
+    display: flex;
+    align-items: center;
+    gap: var(--s2);
+    width: 100%;
+    min-height: 64px;
+    padding: var(--s2);
+    background: transparent;
+    border: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .ar-main .ticker-info { flex: 1; min-width: 0; }
+  .ar-pnl { text-align: right; flex-shrink: 0; }
+  .ar-pnl .lbl { display: none; }
+  .ar-pnl .v {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    font-weight: 600;
+    padding: 3px var(--s1);
+    border-radius: var(--r-full);
+  }
+  .ar-pnl .v.pos { background: rgba(var(--color-green-rgb), 0.10); }
+  .ar-pnl .v.neg { background: rgba(var(--color-red-rgb), 0.10); }
+  .ar-chevron {
+    display: block;
+    flex-shrink: 0;
+    color: var(--color-text-3);
+    transition: transform 260ms var(--ease-smooth);
+  }
+  .asset-row.expanded .ar-chevron { transform: rotate(180deg); }
+  .ar-details {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 300ms var(--ease-smooth);
+  }
+  .asset-row.expanded .ar-details { grid-template-rows: 1fr; }
+  .ar-details-inner { display: block; overflow: hidden; min-height: 0; }
+  .ar-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s2);
+    padding: var(--s2);
+    border-top: 1px solid var(--color-border);
+  }
+  .ar-details-grid .asset-meta { text-align: left; }
+  .ar-details-grid .asset-meta .lbl { margin-bottom: 4px; }
+
+  /* Empty state proporcional */
+  .empty-illustration { width: min(200px, 55vw); height: auto; }
 
   .movement-row { grid-template-columns: auto 1fr auto; }
   .movement-date { display: none; }
@@ -1736,6 +1811,14 @@ a { color: inherit; text-decoration: none; }
   .paywall-card { padding: var(--s3); }
 
   .search-trigger > span { font-size: var(--text-xs); }
+
+  #assets-export-btn {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+  #assets-export-btn .export-label { display: none; }
 }
 
 /* ── TOAST STACK ── */

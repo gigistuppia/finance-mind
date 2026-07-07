@@ -193,6 +193,8 @@ function init() {
   const route = currentRoute();
   if (route === 'dashboard') renderDashboard();
   else if (route === 'watchlist') renderWatchlist();
+  else if (route === 'activos') renderAssets();
+  else if (route === 'movimientos') renderMovements();
   // y refresh del bnav active
   document.querySelectorAll('#bottom-nav .bnav-item').forEach(el => {
     if (el.dataset.route) el.classList.toggle('active', el.dataset.route === route);
