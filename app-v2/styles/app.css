@@ -1730,8 +1730,23 @@ a { color: inherit; text-decoration: none; }
 
   .modal { padding: var(--s3); }
 
-  .search-overlay { padding: var(--s1); align-items: stretch; }
-  .search-modal { height: 100%; max-height: calc(100vh - 2 * var(--s1)); }
+  /* Search overlay fullscreen tipo app nativa */
+  .search-overlay { padding: 0; align-items: stretch; }
+  .search-modal {
+    height: 100%;
+    max-height: 100vh;
+    max-height: 100dvh;
+    width: 100%;
+    border: none;
+    border-radius: 0;
+  }
+  .search-modal-head { padding: var(--s2); padding-top: calc(var(--s2) + env(safe-area-inset-top, 0px)); }
+  .search-modal-input { font-size: 16px; height: 44px; }
+  .search-modal-close {
+    font-size: 13px;
+    padding: var(--s1) var(--s2);
+    min-height: 40px;
+  }
 
   /* Cartera: asset rows como cards con accordion */
   .assets-list { gap: var(--s1); padding: var(--s2); }
@@ -1934,7 +1949,12 @@ a { color: inherit; text-decoration: none; }
   transition: color 200ms var(--ease-smooth);
   position: relative;
 }
-.bnav-item svg { width: 22px; height: 22px; }
+.bnav-item svg {
+  width: 22px;
+  height: 22px;
+  transition: transform 180ms var(--ease-bounce);
+}
+.bnav-item:active svg { transform: scale(0.82); }
 .bnav-item:hover { color: var(--color-text-2); }
 .bnav-item.active { color: var(--color-accent); }
 .bnav-item.active::after {
@@ -2003,6 +2023,23 @@ a { color: inherit; text-decoration: none; }
 /* Content visibility */
 .market-cat { content-visibility: auto; contain-intrinsic-size: 280px; }
 .settings-card { content-visibility: auto; contain-intrinsic-size: 200px; }
+
+/* ── TOUCH DEVICES: active feedback en vez de hover ── */
+@media (hover: none) {
+  .glass-card:hover,
+  .summary-card:hover,
+  .chart-card:hover,
+  .asset-row:hover { transform: none; box-shadow: none; }
+  .btn:active,
+  .export-option:active { transform: scale(0.97); }
+  .holding-card.hc .hc-main:active,
+  .asset-row .ar-main:active { background: rgba(255,255,255,0.03); }
+  .bnav-item,
+  .btn,
+  .hfilter-btn,
+  .search-trigger,
+  #add-trigger { -webkit-tap-highlight-color: transparent; }
+}
 
 @media (max-width: 768px) {
   .bottom-nav { display: flex; }
