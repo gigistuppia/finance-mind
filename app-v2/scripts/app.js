@@ -1,5 +1,5 @@
 import { getState, subscribe, setQuotes, addToWatchlist } from './state.js';
-import { getQuotes } from './api.js';
+import { getQuotes, getLastMarketState } from './api.js';
 import { initRouter, onRouteChange, currentRoute } from './router.js';
 import { initSearchOverlay } from './ui/search-overlay.js';
 import { initAddAsset } from './ui/add-asset.js';
@@ -13,11 +13,13 @@ import { toast } from './ui/toast.js';
 import { renderMovements, initMovements } from './ui/movements.js';
 import { renderAssets, initAssets } from './ui/assets.js';
 
-const REFRESH_MS = 60_000;
+const REFRESH_LIVE = 10_000;
+const REFRESH_CLOSED = 60_000;
 let addAssetUI = null;
 let marketsLoaded = false;
 let rafScheduled = false;
 let pendingRoute = null;
+let refreshTimer = null;
 
 function scheduleRender(route) {
   pendingRoute = route;
@@ -155,6 +157,31 @@ function initOnlineIndicator() {
   window.addEventListener('offline', showBanner);
 }
 
+function hasLiveSymbols() {
+  const { portfolio, watchlist } = getState();
+  return [...portfolio, ...watchlist].some(p =>
+    p.symbol.endsWith('-USD') || p.symbol.endsWith('-EUR') ||
+    p.symbol.endsWith('-BTC') || p.symbol.endsWith('=X')
+  );
+}
+
+function getRefreshInterval() {
+  if (hasLiveSymbols()) return REFRESH_LIVE;
+  const state = getLastMarketState();
+  return state === 'OPEN' ? REFRESH_LIVE : REFRESH_CLOSED;
+}
+
+function scheduleAdaptiveRefresh() {
+  if (refreshTimer) clearTimeout(refreshTimer);
+  const interval = getRefreshInterval();
+  refreshTimer = setTimeout(async () => {
+    if (document.visibilityState !== 'hidden') {
+      await refreshQuotes();
+    }
+    scheduleAdaptiveRefresh();
+  }, interval);
+}
+
 function init() {
   initPaywall();
   renderTrialBadge();
@@ -214,7 +241,14 @@ function init() {
   });
 
   refreshQuotes();
-  setInterval(refreshQuotes, REFRESH_MS);
+  scheduleAdaptiveRefresh();
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      refreshQuotes();
+      scheduleAdaptiveRefresh();
+    }
+  });
 
   setInterval(() => {
     renderTrialBadge();

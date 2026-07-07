@@ -1,7 +1,84 @@
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36';
 
+const CRUMB_URL = 'https://query2.finance.yahoo.com/v1/test/getcrumb';
+const QUOTE_URL = 'https://query2.finance.yahoo.com/v7/finance/quote';
+const CHART_URL = 'https://query1.finance.yahoo.com/v8/finance/chart';
+
+let cachedCookieCrumb = null;
+let cookieCrumbExpiry = 0;
+
+async function getCookieAndCrumb() {
+  if (cachedCookieCrumb && Date.now() < cookieCrumbExpiry) {
+    return cachedCookieCrumb;
+  }
+  try {
+    const consentRes = await fetch('https://fc.yahoo.com', {
+      headers: { 'User-Agent': UA },
+      redirect: 'manual',
+    });
+    const setCookie = consentRes.headers.get('set-cookie') || '';
+
+    const crumbRes = await fetch(CRUMB_URL, {
+      headers: {
+        'User-Agent': UA,
+        Cookie: setCookie.split(';')[0],
+      },
+    });
+    const crumb = await crumbRes.text();
+
+    if (crumb && !crumb.includes('{')) {
+      cachedCookieCrumb = { cookie: setCookie.split(';')[0], crumb };
+      cookieCrumbExpiry = Date.now() + 10 * 60_000;
+      return cachedCookieCrumb;
+    }
+  } catch {}
+  return null;
+}
+
+async function fetchQuotesV7(symbols) {
+  const auth = await getCookieAndCrumb();
+  if (!auth) return null;
+
+  const url = `${QUOTE_URL}?symbols=${encodeURIComponent(symbols.join(','))}&crumb=${encodeURIComponent(auth.crumb)}`;
+  const res = await fetch(url, {
+    headers: {
+      'User-Agent': UA,
+      Cookie: auth.cookie,
+    },
+  });
+  if (!res.ok) {
+    cachedCookieCrumb = null;
+    return null;
+  }
+  const data = await res.json();
+  const results = data?.quoteResponse?.result;
+  if (!results || results.length === 0) return null;
+
+  return results.map((q) => ({
+    symbol: q.symbol,
+    regularMarketPrice: q.regularMarketPrice ?? 0,
+    regularMarketPreviousClose: q.regularMarketPreviousClose ?? 0,
+    regularMarketChange: q.regularMarketChange ?? 0,
+    regularMarketChangePercent: q.regularMarketChangePercent ?? 0,
+    regularMarketDayHigh: q.regularMarketDayHigh ?? 0,
+    regularMarketDayLow: q.regularMarketDayLow ?? 0,
+    regularMarketOpen: q.regularMarketOpen ?? 0,
+    regularMarketVolume: q.regularMarketVolume ?? 0,
+    marketCap: q.marketCap ?? 0,
+    fiftyTwoWeekHigh: q.fiftyTwoWeekHigh ?? 0,
+    fiftyTwoWeekLow: q.fiftyTwoWeekLow ?? 0,
+    currency: q.currency || 'USD',
+    exchange: q.exchange || '',
+    exchangeTimezoneName: q.exchangeTimezoneName || '',
+    quoteType: q.quoteType || 'EQUITY',
+    shortName: q.shortName || q.longName || q.symbol,
+    longName: q.longName || '',
+    marketState: q.marketState || 'CLOSED',
+  }));
+}
+
 async function fetchChart(symbol) {
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=2d`;
+  const url = `${CHART_URL}/${encodeURIComponent(symbol)}?interval=1d&range=1d`;
   try {
     const res = await fetch(url, { headers: { 'User-Agent': UA } });
     const data = await res.json();
@@ -23,7 +100,8 @@ async function fetchChart(symbol) {
       currency: m.currency || 'USD',
       exchange: m.exchangeName || '',
       quoteType: m.instrumentType || 'EQUITY',
-      shortName: m.symbol
+      shortName: m.symbol,
+      marketState: 'UNKNOWN',
     };
   } catch {
     return null;
@@ -32,18 +110,25 @@ async function fetchChart(symbol) {
 
 exports.handler = async function (event) {
   const symbols = ((event.queryStringParameters || {}).symbols || '')
-    .split(',').filter(Boolean);
+    .split(',')
+    .filter(Boolean);
   if (symbols.length === 0) {
     return { statusCode: 400, body: '{"error":"Missing symbols param"}' };
   }
-  const results = (await Promise.all(symbols.map(fetchChart))).filter(Boolean);
+
+  let results = await fetchQuotesV7(symbols);
+
+  if (!results) {
+    results = (await Promise.all(symbols.map(fetchChart))).filter(Boolean);
+  }
+
   return {
     statusCode: 200,
     headers: {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
-      'Cache-Control': 'public, max-age=30'
+      'Cache-Control': 'public, max-age=8',
     },
-    body: JSON.stringify({ quoteResponse: { result: results, error: null } })
+    body: JSON.stringify({ quoteResponse: { result: results || [], error: null } }),
   };
 };

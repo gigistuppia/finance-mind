@@ -1,9 +1,14 @@
-const QUOTE_TTL = 60_000;
+const QUOTE_TTL_LIVE = 8_000;
+const QUOTE_TTL_CLOSED = 60_000;
 const SEARCH_TTL = 5 * 60_000;
 
 const quoteCache = new Map();
 const searchCache = new Map();
 const pendingQuotes = new Map();
+
+let lastMarketState = 'CLOSED';
+
+export function getLastMarketState() { return lastMarketState; }
 
 async function fetchJSON(url) {
   const res = await fetch(url);
@@ -47,7 +52,8 @@ export async function getQuotes(symbols) {
 
   for (const s of symbols) {
     const cached = quoteCache.get(s);
-    if (cached && now - cached.ts < QUOTE_TTL) {
+    const ttl = isLiveSymbol(s) ? QUOTE_TTL_LIVE : QUOTE_TTL_CLOSED;
+    if (cached && now - cached.ts < ttl) {
       result[s] = cached.data;
     } else {
       toFetch.push(s);
@@ -72,6 +78,10 @@ export async function getQuotes(symbols) {
         const normalized = normalizeQuote(q);
         quoteCache.set(q.symbol, { ts: now, data: normalized });
         result[q.symbol] = normalized;
+
+        if (normalized.marketState === 'REGULAR' || normalized.marketState === 'PRE' || normalized.marketState === 'POST') {
+          lastMarketState = 'OPEN';
+        }
       }
     } catch (e) {
       // network failure — cached values remain
@@ -82,11 +92,16 @@ export async function getQuotes(symbols) {
 }
 
 function normalizeQuote(q) {
+  const price = q.regularMarketPrice ?? 0;
+  const prevClose = q.regularMarketPreviousClose ?? 0;
+  const change = q.regularMarketChange ?? (prevClose ? price - prevClose : 0);
+  const changePct = q.regularMarketChangePercent ?? (prevClose ? ((price - prevClose) / prevClose) * 100 : 0);
+
   return {
     symbol: q.symbol,
-    price: q.regularMarketPrice ?? 0,
-    change: q.regularMarketChange ?? 0,
-    changePercent: q.regularMarketChangePercent ?? 0,
+    price,
+    change,
+    changePercent: changePct,
     volume: q.regularMarketVolume ?? 0,
     marketCap: q.marketCap ?? 0,
     name: q.shortName || q.longName || q.symbol,
@@ -98,9 +113,16 @@ function normalizeQuote(q) {
     dayHigh: q.regularMarketDayHigh ?? 0,
     dayLow: q.regularMarketDayLow ?? 0,
     open: q.regularMarketOpen ?? 0,
-    prevClose: q.regularMarketPreviousClose ?? 0,
+    prevClose,
+    marketState: q.marketState || 'CLOSED',
     updatedAt: Date.now(),
   };
+}
+
+function isLiveSymbol(symbol) {
+  if (symbol.endsWith('-USD') || symbol.endsWith('-EUR') || symbol.endsWith('-BTC')) return true;
+  if (symbol.endsWith('=X')) return true;
+  return false;
 }
 
 function chunk(arr, size) {
