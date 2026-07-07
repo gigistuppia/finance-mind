@@ -1723,7 +1723,6 @@ a { color: inherit; text-decoration: none; }
   /* Charts */
   .chart-card { min-height: 220px; padding: var(--s2); }
 
-  .holdings .table-scroll { display: none; }
   .holdings .holdings-cards { display: flex; }
 
   .market-cat-grid { grid-template-columns: 1fr; }
@@ -1816,8 +1815,113 @@ a { color: inherit; text-decoration: none; }
   /* Empty state proporcional */
   .empty-illustration { width: min(200px, 55vw); height: auto; }
 
-  .movement-row { grid-template-columns: auto 1fr auto; }
+  /* ── MERCADOS mobile: cards compactas, touch targets grandes ── */
+  .market-categories { gap: var(--s4); }
+  .market-cat-head { padding: 0 var(--s2) var(--s1); }
+  .market-cat-head h3 { font-size: 0.85rem; }
+  .market-cat-grid .holding-card {
+    padding: var(--s2);
+    gap: var(--s1);
+  }
+  .market-cat-grid .holding-card-head {
+    padding-bottom: var(--s1);
+    gap: var(--s1);
+  }
+  .market-cat-grid .holding-card-head .ticker-cell { gap: var(--s1); }
+  .market-cat-grid .holding-card-row {
+    font-size: 0.8rem;
+    padding: 0;
+  }
+  .market-cat-grid .holding-card-actions {
+    gap: var(--s1);
+    padding-top: var(--s2);
+  }
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+    border-radius: var(--r-md);
+  }
+  .icon-btn.primary { border-radius: var(--r-md); }
+
+  /* ── WATCHLIST mobile: cards nativas ── */
+  .holdings .table-scroll { display: none; }
+  #watchlist-cards { display: flex !important; flex-direction: column; gap: var(--s1); padding: var(--s2); }
+  #watchlist-cards .holding-card {
+    padding: var(--s2);
+    gap: var(--s1);
+  }
+  #watchlist-cards .holding-card-head {
+    padding-bottom: var(--s1);
+    gap: var(--s1);
+  }
+  #watchlist-cards .holding-card-row { font-size: 0.82rem; }
+  #watchlist-cards .delete-btn {
+    min-height: 36px;
+    padding: var(--s1) var(--s2);
+    font-size: 0.78rem;
+    border-radius: var(--r-sm);
+  }
+
+  /* ── MOVIMIENTOS mobile: filas compactas tipo actividad ── */
+  .movement-row {
+    grid-template-columns: 1fr auto;
+    gap: var(--s1);
+    padding: var(--s2);
+  }
   .movement-date { display: none; }
+  .movement-title { font-size: 0.82rem; }
+  .movement-amount { font-size: 0.78rem; }
+  .movements-head { padding: var(--s2); }
+  .movements-head h3 { font-size: 0.85rem; }
+
+  /* ── AJUSTES mobile: stack vertical, touch-friendly ── */
+  .settings-grid {
+    grid-template-columns: 1fr;
+    gap: var(--s2);
+    padding: 0;
+  }
+  .settings-card {
+    padding: var(--s3);
+    border-radius: var(--r-md);
+  }
+  .settings-card h3 { font-size: 0.92rem; }
+  .settings-card p { font-size: 0.82rem; }
+  .settings-card .btn {
+    min-height: 44px;
+    width: 100%;
+    justify-content: center;
+    align-self: stretch;
+  }
+  .settings-card .field input {
+    min-height: 44px;
+    font-size: 16px;
+  }
+  .settings-card--dolar { grid-column: auto; }
+  .dolar-type-row { padding: var(--s2); }
+  .dolar-type-name { font-size: 0.85rem; }
+  .dolar-type-prices { gap: var(--s1); }
+  .dolar-type-prices .compra,
+  .dolar-type-prices .venta { font-size: 0.78rem; }
+
+  /* Page heads más compactos */
+  .page-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--s2);
+    padding: var(--s3) var(--s2);
+  }
+  .page-head .sub { font-size: 0.68rem; }
+  .page-head > div:last-child:not(:first-child) {
+    width: 100%;
+    display: flex;
+    gap: var(--s1);
+  }
+  .page-head > div:last-child:not(:first-child) .btn {
+    flex: 1;
+    justify-content: center;
+    min-height: 44px;
+  }
 }
 
 @media (max-width: 480px) {
