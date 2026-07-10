@@ -1,5 +1,5 @@
 import { getQuotes } from '../api.js';
-import { logoImg } from '../logos.js';
+import { logoImg, COMMODITY_NAMES } from '../logos.js';
 
 const CATEGORIES = [
   {
@@ -83,7 +83,7 @@ function renderCategory(cat, quotes) {
   body.innerHTML = cat.symbols.map(s => {
     const q = quotes[s];
     const logo = logoImg(s, q?.quoteType, 32);
-    const name = q?.name || s;
+    const name = COMMODITY_NAMES[s] || q?.name || s;
     const type = shortType(q?.quoteType);
     if (!q) return `
       <div class="holding-card" data-symbol="${s}">
@@ -124,7 +124,7 @@ function renderCategory(cat, quotes) {
       const q = quotes[sym];
       const item = {
         symbol: sym,
-        name: q?.name || sym,
+        name: COMMODITY_NAMES[sym] || q?.name || sym,
         quoteType: q?.quoteType || 'EQUITY',
         exchange: q?.exchange || '',
         currency: q?.currency || 'USD',

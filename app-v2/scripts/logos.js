@@ -85,6 +85,25 @@ const COMMODITY_FALLBACK = {
   'CT=F':  { label: 'CT',  color: '#F9FAFB', bg: 'rgba(249,250,251,0.12)' },
 };
 
+export const COMMODITY_NAMES = {
+  'GC=F':  'Oro',
+  'SI=F':  'Plata',
+  'CL=F':  'Petróleo WTI',
+  'BZ=F':  'Petróleo Brent',
+  'NG=F':  'Gas Natural',
+  'HG=F':  'Cobre',
+  'PL=F':  'Platino',
+  'PA=F':  'Paladio',
+  'ZW=F':  'Trigo',
+  'ZS=F':  'Soja',
+  'ZC=F':  'Maíz',
+  'KC=F':  'Café',
+  'CC=F':  'Cacao',
+  'SB=F':  'Azúcar',
+  'CT=F':  'Algodón',
+  'RB=F':  'Gasolina',
+};
+
 const INDEX_SLUGS = {
   '^GSPC': 'sp-500', '^IXIC': 'nasdaq-composite', '^DJI': 'dow-jones',
   '^RUT': 'russell-2000', '^VIX': 'cboe-volatility-index', '^MERV': 'merval',
