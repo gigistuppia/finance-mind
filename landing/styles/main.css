@@ -305,7 +305,7 @@ nav#nav.nav--scrolled::after { opacity: 0.55; }
 }
 
 /* Mockup del dashboard — sangra fuera de la grilla a la derecha */
-.hero__visual { perspective: 1200px; }
+.hero__visual { perspective: 1200px; margin-top: var(--s7); }
 .mockup {
   width: min(150%, 560px);
   background: var(--color-surface);
