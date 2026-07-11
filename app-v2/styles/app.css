@@ -1364,6 +1364,36 @@ a { color: inherit; text-decoration: none; }
   font-size: 0.85rem;
   color: var(--color-text-1);
 }
+.paywall-subscribe {
+  width: 100%;
+  justify-content: center;
+  gap: var(--s1);
+  margin-top: var(--s2);
+  text-decoration: none;
+}
+.paywall-subscribe svg { flex-shrink: 0; }
+.paywall-note {
+  margin-top: var(--s1);
+  font-size: 0.78rem;
+  color: var(--color-text-3);
+}
+.paywall-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  margin: var(--s3) 0 var(--s2);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-3);
+}
+.paywall-divider::before,
+.paywall-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
 
 /* ── MARKETS ── */
 .market-categories {

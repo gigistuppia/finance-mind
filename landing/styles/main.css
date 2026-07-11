@@ -847,7 +847,108 @@ nav#nav.nav--scrolled::after { opacity: 0.55; }
 }
 .tcard figcaption { font-size: 11px; color: var(--color-text-3); letter-spacing: 0.06em; }
 
-/* ════════ 9 · CTA FINAL — full-bleed dramático ════════ */
+/* ════════ 9 · PRECIO — split asimétrico 55/45 ════════ */
+.pricing {
+  padding: var(--s8) 0;
+  background: var(--color-bg-alt);
+  border-block: 1px solid var(--color-border);
+}
+.pricing__inner {
+  display: grid;
+  grid-template-columns: 55fr 45fr;
+  gap: clamp(var(--s5), 6vw, var(--s8));
+  align-items: center;
+}
+.pricing__copy .section-title { margin-bottom: var(--s3); }
+.pricing__copy p { margin-bottom: var(--s4); }
+.pricing__points {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+  list-style: none;
+  padding: 0;
+}
+.pricing__points li {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s2);
+  font-size: var(--text-base);
+  color: var(--color-text-2);
+}
+.pricing__points .pos { color: var(--color-green); flex-shrink: 0; }
+
+.pricing__card {
+  position: relative;
+  padding: var(--s5) var(--s4) var(--s4);
+  text-align: center;
+  border: 1px solid var(--color-border-2);
+  box-shadow: var(--shadow-lg), 0 32px 80px rgba(0, 0, 0, 0.5);
+  transition: transform 0.45s var(--ease-smooth), box-shadow 0.45s var(--ease-smooth), border-color 0.45s var(--ease-smooth);
+}
+.pricing__card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(var(--color-accent-rgb), 0.35);
+  box-shadow: var(--shadow-glow), 0 32px 80px rgba(0, 0, 0, 0.5);
+}
+.pricing__badge {
+  position: absolute;
+  top: calc(var(--s2) * -1);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 16px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #0a0a0a;
+  border-radius: var(--r-full);
+  background: var(--gradient-gemini);
+  white-space: nowrap;
+}
+.pricing__plan {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--color-text-3);
+  margin-bottom: var(--s2);
+}
+.pricing__price {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: var(--s1);
+  margin-bottom: var(--s4);
+}
+.pricing__currency { font-size: var(--text-xl); color: var(--color-text-2); }
+.pricing__amount {
+  font-size: clamp(3rem, 2.4rem + 2.4vw, 4.4rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  background-image: var(--gradient-gemini);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.pricing__period { font-size: var(--text-sm); color: var(--color-text-3); }
+.pricing__features {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+  margin-bottom: var(--s4);
+  padding: var(--s3) 0 0;
+  border-top: 1px solid var(--color-border);
+  list-style: none;
+}
+.pricing__features li { font-size: var(--text-sm); color: var(--color-text-2); }
+.pricing__cta { width: 100%; justify-content: center; }
+.pricing__mp {
+  margin-top: var(--s2);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--color-text-3);
+}
+.pricing__mp strong { color: var(--color-accent-2); font-weight: 500; }
+
+/* ════════ 10 · CTA FINAL — full-bleed dramático ════════ */
 .cta {
   position: relative;
   width: 100vw;
@@ -906,6 +1007,8 @@ footer {
   }
   .bento__card--live { min-height: 0; }
   .stats__grid { grid-template-columns: repeat(2, 1fr); gap: var(--s5) var(--s4); }
+  .pricing__inner { grid-template-columns: 1fr; gap: var(--s6); }
+  .pricing__card { max-width: 480px; margin: 0 auto; width: 100%; }
 }
 
 @media (max-width: 768px) {
@@ -958,6 +1061,9 @@ footer {
 
   .cta { padding: var(--s7) var(--s3); }
   .cta__title { font-size: var(--text-2xl); }
+
+  .pricing { padding: var(--s7) 0; }
+  .pricing__card { padding: var(--s4) var(--s3) var(--s3); }
 
   .mockup { padding: var(--s2); border-radius: var(--r-lg); }
   .mockup__charts { gap: var(--s2); padding: var(--s2) 0; }
