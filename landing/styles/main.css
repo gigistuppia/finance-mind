@@ -280,7 +280,7 @@ nav#nav.nav--scrolled::after { opacity: 0.55; }
   display: grid;
   grid-template-columns: minmax(0, 6fr) minmax(0, 4fr);
   gap: var(--s6);
-  align-items: center;
+  align-items: start;
 }
 .hero__title {
   font-size: var(--text-hero);
@@ -424,6 +424,14 @@ nav#nav.nav--scrolled::after { opacity: 0.55; }
   color: #0a0a0a;
   background: var(--c);
 }
+.mockup__logo-img {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: rgba(255,255,255,0.06);
+  padding: 2px;
+  flex-shrink: 0;
+}
 .mockup__name { color: var(--color-text-1); font-weight: 500; }
 .mockup__name em { color: var(--color-text-3); font-size: 10px; margin-left: 6px; }
 .mockup__row [data-price] { color: var(--color-text-1); }
@@ -449,9 +457,15 @@ nav#nav.nav--scrolled::after { opacity: 0.55; }
   margin-top: var(--s2);
 }
 .ticker:hover .ticker__row { animation-play-state: paused; }
+.ticker__logo {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  object-fit: contain;
+  flex-shrink: 0;
+}
 .ticker__item {
   display: inline-flex;
-  align-items: baseline;
+  align-items: center;
   gap: 10px;
   padding: 6px 28px;
   border-right: 1px solid var(--color-border);

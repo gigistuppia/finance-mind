@@ -16,8 +16,41 @@ const MIME = {
   '.woff2': 'font/woff2'
 };
 
+function handleApiProxy(req, res) {
+  const parsed = new URL(req.url, `http://localhost:${PORT}`);
+  const modulePath = parsed.pathname === '/api/quote'
+    ? path.resolve(PROJECT_ROOT, 'netlify', 'functions', 'quote.js')
+    : parsed.pathname === '/api/search'
+      ? path.resolve(PROJECT_ROOT, 'netlify', 'functions', 'search.js')
+      : null;
+  const handler = modulePath ? require(modulePath).handler : null;
+  if (!handler) {
+    res.writeHead(404);
+    res.end('{"error":"Not found"}');
+    return;
+  }
+  const params = {};
+  parsed.searchParams.forEach((v, k) => { params[k] = v; });
+  handler({ queryStringParameters: params }).then(result => {
+    res.writeHead(result.statusCode, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+    });
+    res.end(result.body);
+  }).catch(() => {
+    res.writeHead(500);
+    res.end('{"error":"Internal"}');
+  });
+}
+
 http.createServer((req, res) => {
   const urlPath = req.url.split('?')[0];
+
+  if (urlPath.startsWith('/api/')) {
+    handleApiProxy(req, res);
+    return;
+  }
+
   let filePath;
 
   if (urlPath.startsWith('/app')) {

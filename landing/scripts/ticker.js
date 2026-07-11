@@ -1,25 +1,24 @@
 window.FM = window.FM || {};
 
 (function () {
-  const ASSETS = [
-    { t: 'AAPL',  n: 'Apple',     base: 24350, init: 1.24 },
-    { t: 'NVDA',  n: 'NVIDIA',    base: 31820, init: 2.67 },
-    { t: 'TSLA',  n: 'Tesla',     base: 18940, init: -0.83 },
-    { t: 'MSFT',  n: 'Microsoft', base: 28115, init: 0.45 },
-    { t: 'GOOGL', n: 'Alphabet',  base: 9870,  init: -0.21 },
-    { t: 'META',  n: 'Meta',      base: 22480, init: 1.02 },
-    { t: 'AMZN',  n: 'Amazon',    base: 15230, init: 0.67 },
-    { t: 'JPM',   n: 'JPMorgan',  base: 12940, init: 0.12 },
-  ];
+  const SYMBOLS = ['AAPL', 'NVDA', 'TSLA', 'MSFT', 'GOOGL', 'META', 'AMZN', 'JPM'];
+  const NAMES = {
+    AAPL: 'Apple', NVDA: 'NVIDIA', TSLA: 'Tesla', MSFT: 'Microsoft',
+    GOOGL: 'Alphabet', META: 'Meta', AMZN: 'Amazon', JPM: 'JPMorgan',
+  };
+  const LOGO_SLUGS = {
+    AAPL: 'apple', NVDA: 'nvidia', TSLA: 'tesla', MSFT: 'microsoft',
+    GOOGL: 'alphabet', META: 'meta-platforms', AMZN: 'amazon', JPM: 'jpmorgan',
+  };
 
   const HOLDINGS = [
-    { t: 'AAPL', qty: 12, buy: 21500 },
-    { t: 'NVDA', qty: 4,  buy: 26800 },
-    { t: 'TSLA', qty: 8,  buy: 19600 },
+    { t: 'AAPL', qty: 12, buy: 185 },
+    { t: 'NVDA', qty: 4,  buy: 120 },
+    { t: 'TSLA', qty: 8,  buy: 245 },
   ];
 
-  const fmtArs = new Intl.NumberFormat('es-AR', {
-    style: 'currency', currency: 'ARS', maximumFractionDigits: 0,
+  const fmtUsd = new Intl.NumberFormat('en-US', {
+    style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2,
   });
 
   function fmtPct(v) {
@@ -28,19 +27,48 @@ window.FM = window.FM || {};
   }
 
   const state = {};
-  ASSETS.forEach(a => { state[a.t] = a.base * (1 + a.init / 100); });
+  let isLive = false;
+
+  async function fetchQuotes() {
+    try {
+      const query = SYMBOLS.join(',');
+      const res = await fetch(`/api/quote?symbols=${encodeURIComponent(query)}`);
+      if (!res.ok) return false;
+      const data = await res.json();
+      const quotes = data?.quoteResponse?.result || [];
+      let count = 0;
+      for (const q of quotes) {
+        const sym = q.symbol;
+        if (SYMBOLS.includes(sym)) {
+          state[sym] = {
+            price: q.regularMarketPrice || 0,
+            changePct: q.regularMarketChangePercent || 0,
+          };
+          count++;
+        }
+      }
+      return count > 0;
+    } catch {
+      return false;
+    }
+  }
 
   function buildTickerRows() {
+    const assets = SYMBOLS.map(t => ({ t, n: NAMES[t] }));
     const item = a => {
-      const pct = (state[a.t] / a.base - 1) * 100;
-      const cls = pct >= 0 ? 'pos' : 'neg';
+      const s = state[a.t];
+      const price = s ? fmtUsd.format(s.price) : '—';
+      const pct = s ? s.changePct : 0;
+      const cls = s ? (pct >= 0 ? 'pos' : 'neg') : '';
       const arrow = pct >= 0 ? '▲' : '▼';
-      return `<span class="ticker__item"><span class="t">${a.t}</span><span class="n">${a.n}</span>` +
-        `<span class="p" data-price="${a.t}">${fmtArs.format(state[a.t])}</span>` +
-        `<span class="${cls}" data-change="${a.t}">${arrow} ${fmtPct(pct)}</span></span>`;
+      const pctText = s ? `${arrow} ${fmtPct(pct)}` : '—';
+      const logoUrl = `https://s3-symbol-logo.tradingview.com/${LOGO_SLUGS[a.t]}.svg`;
+      return `<span class="ticker__item"><img class="ticker__logo" src="${logoUrl}" width="18" height="18" alt="${a.t}" loading="lazy"><span class="t">${a.t}</span><span class="n">${a.n}</span>` +
+        `<span class="p" data-price="${a.t}">${price}</span>` +
+        `<span class="${cls}" data-change="${a.t}">${pctText}</span></span>`;
     };
     document.querySelectorAll('[data-ticker-row]').forEach((row, i) => {
-      const list = i === 0 ? ASSETS : ASSETS.slice().reverse();
+      const list = i === 0 ? assets : assets.slice().reverse();
       const content = list.map(item).join('');
       const dup = content.replace(/data-price=/g, 'data-price-dup=').replace(/data-change=/g, 'data-change-dup=');
       row.innerHTML =
@@ -49,35 +77,28 @@ window.FM = window.FM || {};
     });
   }
 
-  function tick() {
-    ASSETS.forEach(a => {
-      state[a.t] *= 1 + (Math.random() - 0.5) * 0.001;
-    });
-    render();
-  }
-
   function render() {
-    ASSETS.forEach(a => {
-      const price = state[a.t];
-      const pct = (price / a.base - 1) * 100;
-      const cls = pct >= 0 ? 'pos' : 'neg';
-      const arrow = pct >= 0 ? '▲' : '▼';
+    SYMBOLS.forEach(t => {
+      const s = state[t];
+      if (!s) return;
+      const cls = s.changePct >= 0 ? 'pos' : 'neg';
+      const arrow = s.changePct >= 0 ? '▲' : '▼';
 
-      document.querySelectorAll(`[data-price="${a.t}"], [data-price-dup="${a.t}"]`).forEach(el => {
-        el.textContent = fmtArs.format(price);
+      document.querySelectorAll(`[data-price="${t}"], [data-price-dup="${t}"]`).forEach(el => {
+        el.textContent = fmtUsd.format(s.price);
       });
-      document.querySelectorAll(`[data-change="${a.t}"], [data-change-dup="${a.t}"]`).forEach(el => {
+      document.querySelectorAll(`[data-change="${t}"], [data-change-dup="${t}"]`).forEach(el => {
         const inTicker = el.closest('.ticker');
-        el.textContent = (inTicker ? arrow + ' ' : '') + fmtPct(pct);
+        el.textContent = (inTicker ? arrow + ' ' : '') + fmtPct(s.changePct);
         el.classList.remove('pos', 'neg');
         el.classList.add(cls);
       });
     });
 
     const invested = HOLDINGS.reduce((s, h) => s + h.buy * h.qty, 0);
-    const current = HOLDINGS.reduce((s, h) => s + state[h.t] * h.qty, 0);
+    const current = HOLDINGS.reduce((s, h) => s + (state[h.t]?.price || h.buy) * h.qty, 0);
     const totalPct = (current / invested - 1) * 100;
-    document.querySelectorAll('[data-total-ars]').forEach(el => { el.textContent = fmtArs.format(current); });
+    document.querySelectorAll('[data-total-ars]').forEach(el => { el.textContent = fmtUsd.format(current); });
     document.querySelectorAll('[data-total-pct]').forEach(el => {
       el.textContent = fmtPct(totalPct);
       el.classList.remove('pos', 'neg');
@@ -103,10 +124,20 @@ window.FM = window.FM || {};
   }
 
   window.FM.ticker = {
-    start() {
+    async start() {
       buildTickerRows();
-      render();
-      setInterval(tick, 1000);
+      isLive = await fetchQuotes();
+      if (isLive) {
+        render();
+        buildTickerRows();
+      }
+      setInterval(async () => {
+        const ok = await fetchQuotes();
+        if (ok) {
+          isLive = true;
+          render();
+        }
+      }, 60_000);
     },
   };
 })();
