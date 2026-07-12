@@ -44,6 +44,23 @@ http.createServer((req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   const pathname = url.pathname;
 
+  if (pathname === '/api/validate-code') {
+    const crypto = require('crypto');
+    const secret = process.env.FM_CODE_SECRET || 'dev-secret';
+    const ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+    const raw = (url.searchParams.get('code') || '').trim().toUpperCase();
+    const match = /^FM-([A-Z0-9]{4})-([A-Z0-9]{4})$/.exec(raw);
+    let valid = false;
+    if (match) {
+      const h = crypto.createHmac('sha256', secret).update('FMv1:' + match[1]).digest();
+      let sig = '';
+      for (let i = 0; i < 4; i++) sig += ALPHABET[h[i] % ALPHABET.length];
+      valid = sig === match[2];
+    }
+    res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+    res.end(JSON.stringify({ valid }));
+    return;
+  }
   if (pathname === '/api/search') {
     const q = url.searchParams.get('q') || '';
     const target = `https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(q)}&quotesCount=15&newsCount=0`;

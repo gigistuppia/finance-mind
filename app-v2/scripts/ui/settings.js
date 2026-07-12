@@ -30,10 +30,16 @@ export function initSettings() {
     updateDolarSelected();
   });
 
-  activateBtn?.addEventListener('click', () => {
+  activateBtn?.addEventListener('click', async () => {
     const c = code.value.trim();
-    if (!c) return;
-    if (activatePaid(c)) {
+    if (!c || activateBtn.disabled) return;
+    const label = activateBtn.textContent;
+    activateBtn.disabled = true;
+    activateBtn.textContent = 'Verificando…';
+    const ok = await activatePaid(c);
+    activateBtn.disabled = false;
+    activateBtn.textContent = label;
+    if (ok) {
       planStatus.textContent = '✓ Plan Pro activo';
       code.value = '';
       toast('Plan Pro activado. Gracias!', 'success', 4000);

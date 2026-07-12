@@ -4,7 +4,7 @@ const TRIAL_DAYS = 30;
 const DAY_MS = 86_400_000;
 
 const MASTER_CODE = 'FM-GROW-MARK';
-const VALID_CODES = new Set([
+const LEGACY_CODES = new Set([
   MASTER_CODE,
   'FM-PRO1-2026',
   'FM-PRO2-2026',
@@ -17,6 +17,8 @@ const VALID_CODES = new Set([
   'FM-BETA-VIP4',
   'FM-BETA-VIP5',
 ]);
+
+const CODE_PATTERN = /^FM-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
 
 export function getTrialStatus() {
   const paidCode = localStorage.getItem(PAID_KEY);
@@ -37,15 +39,30 @@ export function getTrialStatus() {
   return { status: 'expired', daysLeft: 0 };
 }
 
-const CODE_PATTERN = /^FM-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
+async function validateCodeServer(code) {
+  try {
+    const res = await fetch(`/api/validate-code?code=${encodeURIComponent(code)}`);
+    if (!res.ok) return false;
+    const { valid } = await res.json();
+    return valid === true;
+  } catch {
+    return false;
+  }
+}
 
-export function activatePaid(code) {
+export async function activatePaid(code) {
   if (!code) return false;
   const clean = code.trim().toUpperCase();
   if (!CODE_PATTERN.test(clean)) return false;
-  if (!VALID_CODES.has(clean)) return false;
-  localStorage.setItem(PAID_KEY, clean);
-  return true;
+
+  if (LEGACY_CODES.has(clean)) {
+    localStorage.setItem(PAID_KEY, clean);
+    return true;
+  }
+
+  const valid = await validateCodeServer(clean);
+  if (valid) localStorage.setItem(PAID_KEY, clean);
+  return valid;
 }
 
 export function isMaster() {

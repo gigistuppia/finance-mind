@@ -32,9 +32,16 @@ export function initPaywall() {
   const codeInput = document.getElementById('paywall-code');
   const errorMsg = document.getElementById('paywall-error');
 
-  activateBtn?.addEventListener('click', () => {
+  activateBtn?.addEventListener('click', async () => {
     const code = codeInput.value.trim();
-    if (activatePaid(code)) {
+    if (!code || activateBtn.disabled) return;
+    const label = activateBtn.textContent;
+    activateBtn.disabled = true;
+    activateBtn.textContent = 'Verificando…';
+    const ok = await activatePaid(code);
+    activateBtn.disabled = false;
+    activateBtn.textContent = label;
+    if (ok) {
       if (errorMsg) errorMsg.style.display = 'none';
       document.getElementById('paywall').classList.remove('open');
       renderTrialBadge();
