@@ -1,4 +1,4 @@
-import { getState, subscribe, setQuotes, addToWatchlist } from './state.js';
+import { getState, subscribe, setQuotes, setFxRates, addToWatchlist } from './state.js';
 import { getQuotes, getLastMarketState } from './api.js';
 import { initRouter, onRouteChange, currentRoute } from './router.js';
 import { initSearchOverlay } from './ui/search-overlay.js';
@@ -38,12 +38,35 @@ function scheduleRender(route) {
 
 async function refreshQuotes() {
   const { portfolio, watchlist } = getState();
-  const symbols = [...new Set([...portfolio, ...watchlist].map(p => p.symbol))];
-  if (symbols.length === 0) return;
+  const items = [...portfolio, ...watchlist];
+  const symbols = [...new Set(items.map(p => p.symbol))];
+
+  // Detectar monedas no-USD, no-ARS para traer sus tasas cruzadas
+  const currencies = new Set();
+  for (const item of items) {
+    const cur = item.currency || 'USD';
+    if (cur !== 'USD' && cur !== 'ARS') {
+      // GBp (peniques) necesita la tasa de GBP
+      currencies.add(cur === 'GBp' ? 'GBP' : cur);
+    }
+  }
+  const fxSymbols = [...currencies].map(c => `${c}USD=X`);
+  const allSymbols = [...new Set([...symbols, ...fxSymbols])];
+
+  if (allSymbols.length === 0) return;
   try {
-    const quotes = await getQuotes(symbols);
-    if (Object.keys(quotes).length > 0) setQuotes(quotes);
-  } catch (e) {
+    const quotes = await getQuotes(allSymbols);
+    if (Object.keys(quotes).length > 0) {
+      // Extraer tasas FX antes de setQuotes para que computeHoldings ya las tenga
+      const fxRates = {};
+      for (const cur of currencies) {
+        const q = quotes[`${cur}USD=X`];
+        if (q?.price > 0) fxRates[cur] = q.price;
+      }
+      if (Object.keys(fxRates).length > 0) setFxRates(fxRates);
+      setQuotes(quotes);
+    }
+  } catch {
     // silently fail — cache servirá hasta que la red vuelva
   }
 }

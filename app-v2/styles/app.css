@@ -1069,6 +1069,37 @@ a { color: inherit; text-decoration: none; }
 .market-badge[data-market="EUR"] { background: rgba(167,139,250,0.16); color: var(--color-index); }
 .market-badge[data-market="BTC"] { background: rgba(245,197,24,0.14); color: var(--color-yellow); }
 
+/* Badges pre/post market en tabla de holdings */
+.market-badge.pre {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  background: rgba(245,197,24,0.18);
+  color: var(--color-yellow);
+  vertical-align: middle;
+  margin-left: 4px;
+}
+.market-badge.post {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  background: rgba(160,160,160,0.14);
+  color: var(--color-text-2);
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+/* Precio con cotización vieja (> 5 min) */
+.price-cell.stale {
+  opacity: 0.55;
+}
+
 .search-empty {
   padding: var(--s5) var(--s3);
   text-align: center;

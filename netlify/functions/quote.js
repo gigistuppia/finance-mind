@@ -56,10 +56,11 @@ async function fetchQuotesV7(symbols) {
 
   return results.map((q) => ({
     symbol: q.symbol,
-    regularMarketPrice: q.regularMarketPrice ?? 0,
-    regularMarketPreviousClose: q.regularMarketPreviousClose ?? 0,
-    regularMarketChange: q.regularMarketChange ?? 0,
-    regularMarketChangePercent: q.regularMarketChangePercent ?? 0,
+    // null = sin precio real; nunca 0 (evita P&L −100% falso)
+    regularMarketPrice: q.regularMarketPrice != null ? q.regularMarketPrice : null,
+    regularMarketPreviousClose: q.regularMarketPreviousClose != null ? q.regularMarketPreviousClose : null,
+    regularMarketChange: q.regularMarketChange != null ? q.regularMarketChange : null,
+    regularMarketChangePercent: q.regularMarketChangePercent != null ? q.regularMarketChangePercent : null,
     regularMarketDayHigh: q.regularMarketDayHigh ?? 0,
     regularMarketDayLow: q.regularMarketDayLow ?? 0,
     regularMarketOpen: q.regularMarketOpen ?? 0,
@@ -67,6 +68,13 @@ async function fetchQuotesV7(symbols) {
     marketCap: q.marketCap ?? 0,
     fiftyTwoWeekHigh: q.fiftyTwoWeekHigh ?? 0,
     fiftyTwoWeekLow: q.fiftyTwoWeekLow ?? 0,
+    // Pre/post market (null = no disponible)
+    preMarketPrice: q.preMarketPrice != null ? q.preMarketPrice : null,
+    preMarketChange: q.preMarketChange != null ? q.preMarketChange : null,
+    preMarketChangePercent: q.preMarketChangePercent != null ? q.preMarketChangePercent : null,
+    postMarketPrice: q.postMarketPrice != null ? q.postMarketPrice : null,
+    postMarketChange: q.postMarketChange != null ? q.postMarketChange : null,
+    postMarketChangePercent: q.postMarketChangePercent != null ? q.postMarketChangePercent : null,
     currency: q.currency || 'USD',
     exchange: q.exchange || '',
     exchangeTimezoneName: q.exchangeTimezoneName || '',
@@ -84,19 +92,26 @@ async function fetchChart(symbol) {
     const data = await res.json();
     const m = data.chart?.result?.[0]?.meta;
     if (!m) return null;
-    const price = m.regularMarketPrice ?? 0;
-    const prev = m.chartPreviousClose ?? m.previousClose ?? price;
+    const price = m.regularMarketPrice != null ? m.regularMarketPrice : null;
+    if (price === null) return null; // sin precio no vale la pena el fallback
+    const prev = m.chartPreviousClose ?? m.previousClose ?? null;
     return {
       symbol: m.symbol,
       regularMarketPrice: price,
       regularMarketPreviousClose: prev,
-      regularMarketChange: price - prev,
-      regularMarketChangePercent: prev ? ((price - prev) / prev) * 100 : 0,
+      regularMarketChange: prev != null ? price - prev : null,
+      regularMarketChangePercent: prev != null && prev !== 0 ? ((price - prev) / prev) * 100 : null,
       regularMarketDayHigh: m.regularMarketDayHigh ?? 0,
       regularMarketDayLow: m.regularMarketDayLow ?? 0,
       regularMarketVolume: m.regularMarketVolume ?? 0,
       fiftyTwoWeekHigh: m.fiftyTwoWeekHigh ?? 0,
       fiftyTwoWeekLow: m.fiftyTwoWeekLow ?? 0,
+      preMarketPrice: null,
+      preMarketChange: null,
+      preMarketChangePercent: null,
+      postMarketPrice: null,
+      postMarketChange: null,
+      postMarketChangePercent: null,
       currency: m.currency || 'USD',
       exchange: m.exchangeName || '',
       quoteType: m.instrumentType || 'EQUITY',

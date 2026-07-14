@@ -3,8 +3,10 @@ const CCL_KEY = 'fm2_ccl';
 const DOLAR_TIPO_KEY = 'fm2_dolar_tipo';
 const WATCHLIST_KEY = 'fm2_watchlist';
 const QUOTES_CACHE_KEY = 'fm2_quotes_cache';
+const FX_RATES_KEY = 'fm2_fx_rates';
 const MOVEMENTS_KEY = 'fm2_movements';
 const MAX_MOVEMENTS = 500;
+const FX_RATES_TTL = 30 * 60_000; // 30 min — tasas FX cambian lento
 
 const listeners = new Set();
 
@@ -12,9 +14,11 @@ const state = {
   portfolio: load(PORTFOLIO_KEY, []),
   watchlist: load(WATCHLIST_KEY, []),
   movements: load(MOVEMENTS_KEY, []),
-  ccl: parseFloat(localStorage.getItem(CCL_KEY)) || 1000,
+  // null hasta que dolarapi confirme el valor real (evita valuar con tasa inventada)
+  ccl: (() => { const v = parseFloat(localStorage.getItem(CCL_KEY)); return isFinite(v) && v > 0 ? v : null; })(),
   dolarTipo: localStorage.getItem(DOLAR_TIPO_KEY) || 'contadoconliqui',
   quotes: load(QUOTES_CACHE_KEY, {}),
+  fxRates: loadFxRates(), // { EUR: 1.08, GBP: 1.27, ... } — USD por unidad de cada moneda
   loading: false,
   online: navigator.onLine,
 };
@@ -51,6 +55,19 @@ function load(key, fallback) {
   }
 }
 
+function loadFxRates() {
+  try {
+    const raw = localStorage.getItem(FX_RATES_KEY);
+    if (!raw) return {};
+    const { rates, ts } = JSON.parse(raw);
+    // Descartar si es más viejo que el TTL
+    if (!rates || Date.now() - ts > FX_RATES_TTL) return {};
+    return rates;
+  } catch {
+    return {};
+  }
+}
+
 /* Persist crítico (portfolio, watchlist, CCL) — sincrónico inmediato */
 function persistCritical() {
   try {
@@ -75,6 +92,23 @@ function persistQuotesDeferred() {
     quotesPersistTimer = requestIdleCallback(doIt, { timeout: 2000 });
   } else {
     quotesPersistTimer = setTimeout(doIt, 1500);
+  }
+}
+
+/* Persist fxRates — diferido, con timestamp para el TTL */
+let fxRatesPersistTimer = null;
+function persistFxRatesDeferred() {
+  if (fxRatesPersistTimer) return;
+  const doIt = () => {
+    fxRatesPersistTimer = null;
+    try {
+      localStorage.setItem(FX_RATES_KEY, JSON.stringify({ rates: state.fxRates, ts: Date.now() }));
+    } catch {}
+  };
+  if ('requestIdleCallback' in window) {
+    fxRatesPersistTimer = requestIdleCallback(doIt, { timeout: 2000 });
+  } else {
+    fxRatesPersistTimer = setTimeout(doIt, 1500);
   }
 }
 
@@ -162,6 +196,12 @@ export function setQuotes(quotesBySymbol) {
   emit();
 }
 
+export function setFxRates(rates) {
+  Object.assign(state.fxRates, rates);
+  persistFxRatesDeferred();
+  emit();
+}
+
 export function setCCL(value) {
   state.ccl = value;
   persistCritical();
@@ -213,8 +253,10 @@ export function clearAll() {
   state.portfolio = [];
   state.watchlist = [];
   state.quotes = {};
+  state.fxRates = {};
   persistCritical();
   try { localStorage.removeItem(QUOTES_CACHE_KEY); } catch {}
+  try { localStorage.removeItem(FX_RATES_KEY); } catch {}
   emit();
 }
 

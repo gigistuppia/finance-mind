@@ -92,10 +92,15 @@ export async function getQuotes(symbols) {
 }
 
 function normalizeQuote(q) {
-  const price = q.regularMarketPrice ?? 0;
-  const prevClose = q.regularMarketPreviousClose ?? 0;
-  const change = q.regularMarketChange ?? (prevClose ? price - prevClose : 0);
-  const changePct = q.regularMarketChangePercent ?? (prevClose ? ((price - prevClose) / prevClose) * 100 : 0);
+  // null = sin dato real; nunca 0 (0 dispara P&L −100% falso)
+  const price = q.regularMarketPrice != null ? q.regularMarketPrice : null;
+  const prevClose = q.regularMarketPreviousClose != null ? q.regularMarketPreviousClose : null;
+  const change = q.regularMarketChange != null
+    ? q.regularMarketChange
+    : (price != null && prevClose != null ? price - prevClose : null);
+  const changePct = q.regularMarketChangePercent != null
+    ? q.regularMarketChangePercent
+    : (price != null && prevClose != null && prevClose !== 0 ? ((price - prevClose) / prevClose) * 100 : null);
 
   return {
     symbol: q.symbol,
@@ -115,6 +120,10 @@ function normalizeQuote(q) {
     open: q.regularMarketOpen ?? 0,
     prevClose,
     marketState: q.marketState || 'CLOSED',
+    preMarketPrice: q.preMarketPrice ?? null,
+    preMarketChangePercent: q.preMarketChangePercent ?? null,
+    postMarketPrice: q.postMarketPrice ?? null,
+    postMarketChangePercent: q.postMarketChangePercent ?? null,
     updatedAt: Date.now(),
   };
 }

@@ -148,17 +148,35 @@ function toggleSummarySkeleton(loading) {
 }
 
 function renderSummary(s) {
-  setText('sum-value-ars', s.count > 0 ? formatARS(s.totalValueARS) : '$0');
+  // Si no hay CCL real todavía, mostrar skeleton/guión en métricas ARS
+  const arsReady = s.hasCCL;
+  setText('sum-value-ars', s.count > 0 ? (arsReady ? formatARS(s.totalValueARS) : '—') : '$0');
   setText('sum-value-usd', s.count > 0 ? formatUSD(s.totalValueUSD) : '$0');
+
   const pnl = document.getElementById('sum-pnl');
   if (pnl) {
-    pnl.textContent = s.count > 0 ? `${s.totalPnL >= 0 ? '+' : ''}${formatARS(s.totalPnL)}` : '$0';
-    pnl.className = 'value mono ' + (s.count > 0 ? (s.totalPnL >= 0 ? 'pnl-pos' : 'pnl-neg') : '');
+    if (s.count === 0) {
+      pnl.textContent = '$0';
+      pnl.className = 'value mono';
+    } else if (!arsReady) {
+      pnl.textContent = '—';
+      pnl.className = 'value mono';
+    } else {
+      const v = s.totalPnL;
+      pnl.textContent = `${v >= 0 ? '+' : ''}${formatARS(v)}`;
+      pnl.className = 'value mono ' + (v >= 0 ? 'pnl-pos' : 'pnl-neg');
+    }
   }
+
   const pct = document.getElementById('sum-pnl-pct');
   if (pct) {
-    pct.textContent = s.count > 0 ? `${s.totalPnLPct >= 0 ? '+' : ''}${s.totalPnLPct.toFixed(2)}%` : '';
-    pct.className = 'delta mono ' + (s.count > 0 ? (s.totalPnL >= 0 ? 'pos' : 'neg') : '');
+    if (s.count === 0 || !arsReady) {
+      pct.textContent = '';
+      pct.className = 'delta mono';
+    } else {
+      pct.textContent = formatPct(s.totalPnLPct);
+      pct.className = 'delta mono ' + pctClass(s.totalPnLPct);
+    }
   }
   setText('sum-count', String(s.count));
 }
@@ -186,7 +204,19 @@ function renderHoldings(rows) {
   }
   if (emptyState) emptyState.style.display = 'none';
 
-  tbody.innerHTML = rows.map(r => `
+  tbody.innerHTML = rows.map(r => {
+    const priceDisplay = r.price != null
+      ? formatPrice(r.displayPrice ?? r.price, r.currency)
+      : '<span class="skeleton" style="display:inline-block;width:60px;height:14px;"></span>';
+    const marketBadge = r.marketState === 'PRE'
+      ? ' <span class="market-badge pre" title="Horario pre-market">PRE</span>'
+      : (r.marketState === 'POST' || r.marketState === 'POSTPOST')
+        ? ' <span class="market-badge post" title="Horario post-market">POST</span>'
+        : '';
+    const staleTitle = r.quoteAge != null && r.quoteAge > 5 * 60_000
+      ? ` title="Cotización de hace ${Math.round(r.quoteAge / 60_000)} min"`
+      : '';
+    return `
     <tr data-symbol="${r.symbol}">
       <td>
         <div class="ticker-cell">
@@ -200,18 +230,14 @@ function renderHoldings(rows) {
       <td><span class="type-badge" data-type="${r.quoteType || 'EQUITY'}">${shortType(r.quoteType)}</span></td>
       <td>${formatNum(r.quantity)}</td>
       <td>${formatPrice(r.avgPrice, r.currency)}</td>
-      <td class="price-cell" data-symbol="${r.symbol}">${r.price ? formatPrice(r.price, r.currency) : '<span class="skeleton" style="display:inline-block;width:60px;height:14px;"></span>'}</td>
+      <td class="price-cell${r.quoteAge != null && r.quoteAge > 5 * 60_000 ? ' stale' : ''}" data-symbol="${r.symbol}"${staleTitle}>${priceDisplay}${marketBadge}</td>
       <td>${holdingsFilter === 'USD' ? formatUSD(r.valueUSD) : formatARS(r.valueARS)}</td>
       <td>${r.weight.toFixed(1)}%</td>
-      <td class="${r.pnlNative >= 0 ? 'pnl-pos' : 'pnl-neg'}">
-        ${r.pnlNative >= 0 ? '+' : ''}${r.pnlPct.toFixed(2)}%
-      </td>
-      <td class="${r.changePercent >= 0 ? 'pnl-pos' : 'pnl-neg'}">
-        ${r.changePercent >= 0 ? '+' : ''}${r.changePercent.toFixed(2)}%
-      </td>
+      <td class="${pctClass(r.pnlPct)}">${formatPct(r.pnlPct)}</td>
+      <td class="${pctClass(r.changePercent)}">${formatPct(r.changePercent)}</td>
       <td><button class="delete-btn" data-id="${r.id}" data-symbol="${r.symbol}" aria-label="Eliminar">×</button></td>
     </tr>
-  `).join('');
+  `;}).join('');
 
   tbody.querySelectorAll('.delete-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -249,6 +275,8 @@ function renderCards(rows) {
   bindCardsToggle();
   cards.innerHTML = rows.map(r => {
     const isOpen = expandedCards.has(r.symbol);
+    const pnlArrow = r.pnlPct == null ? '' : (parseFloat(r.pnlPct.toFixed(2)) >= 0 ? '▲' : '▼');
+    const pnlCls = r.pnlPct == null ? '' : pctClass(r.pnlPct);
     return `
     <div class="holding-card hc ${isOpen ? 'expanded' : ''}" data-symbol="${r.symbol}">
       <button class="hc-main" aria-expanded="${isOpen}">
@@ -259,7 +287,7 @@ function renderCards(rows) {
         </div>
         <div class="hc-right">
           <span class="hc-value">${holdingsFilter === 'USD' ? formatUSD(r.valueUSD) : formatARS(r.valueARS)}</span>
-          <span class="hc-pnl ${r.pnlNative >= 0 ? 'pos' : 'neg'}">${r.pnlNative >= 0 ? '▲' : '▼'} ${r.pnlNative >= 0 ? '+' : ''}${r.pnlPct.toFixed(2)}%</span>
+          <span class="hc-pnl ${pnlCls}">${pnlArrow} ${formatPct(r.pnlPct)}</span>
         </div>
         <svg class="hc-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
       </button>
@@ -268,7 +296,7 @@ function renderCards(rows) {
           <div class="hc-details-grid">
             <div class="hc-detail">
               <span class="label">Precio actual</span>
-              <span class="v price-cell" data-symbol="${r.symbol}">${r.price ? formatPrice(r.price, r.currency) : '—'}</span>
+              <span class="v price-cell" data-symbol="${r.symbol}">${formatPrice(r.displayPrice ?? r.price, r.currency)}</span>
             </div>
             <div class="hc-detail">
               <span class="label">Cantidad</span>
@@ -280,7 +308,7 @@ function renderCards(rows) {
             </div>
             <div class="hc-detail">
               <span class="label">Variación día</span>
-              <span class="v ${r.changePercent >= 0 ? 'pnl-pos' : 'pnl-neg'}">${r.changePercent >= 0 ? '+' : ''}${r.changePercent.toFixed(2)}%</span>
+              <span class="v ${pctClass(r.changePercent)}">${formatPct(r.changePercent)}</span>
             </div>
             <button class="hc-delete delete-btn" data-id="${r.id}" data-symbol="${r.symbol}">Eliminar del portfolio</button>
           </div>
@@ -401,17 +429,54 @@ function setText(id, v) {
   const el = document.getElementById(id);
   if (el) el.textContent = v;
 }
+
 function formatARS(n) {
-  return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n || 0);
+  if (n == null) return '—';
+  return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n);
 }
+
 function formatUSD(n) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(n || 0);
+  if (n == null) return '—';
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(n);
 }
+
 function formatPrice(n, currency) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency || 'USD', maximumFractionDigits: 2 }).format(n || 0);
+  if (n == null) return '—';
+  // Decimales dinámicos según magnitud del precio (crypto < $0.01 necesita 8 decimales)
+  const abs = Math.abs(n);
+  const decimals = abs > 0 && abs < 0.01 ? 8 : abs > 0 && abs < 1 ? 4 : 2;
+  // GBp (peniques) no es un código ISO válido — mostrar como GBP
+  const intlCur = currency === 'GBp' ? 'GBP' : (currency || 'USD');
+  try {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: intlCur,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: decimals,
+    }).format(n);
+  } catch {
+    return n.toFixed(decimals);
+  }
 }
+
 function formatNum(n) {
-  return new Intl.NumberFormat('es-AR', { maximumFractionDigits: 4 }).format(n || 0);
+  if (n == null) return '—';
+  const abs = Math.abs(n);
+  const decimals = abs > 0 && abs < 0.0001 ? 8 : 4;
+  return new Intl.NumberFormat('es-AR', { maximumFractionDigits: decimals }).format(n);
+}
+
+/** Formatea un porcentaje con signo. null → '—'. Evita '−0.00%' decidiendo signo post-redondeo. */
+function formatPct(n) {
+  if (n == null) return '—';
+  const v = parseFloat(n.toFixed(2));
+  return `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`;
+}
+
+/** Clase CSS para un porcentaje. null → '' (color neutro). */
+function pctClass(n) {
+  if (n == null) return '';
+  return parseFloat(n.toFixed(2)) >= 0 ? 'pnl-pos' : 'pnl-neg';
 }
 function shortType(t) {
   return ({

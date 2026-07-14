@@ -61,13 +61,15 @@ export function renderAssets() {
   if (empty) empty.style.display = 'none';
 
   list.innerHTML = rows.map(r => {
-    const invested = r.quantity * r.avgPrice;
-    const currentValue = (r.price || r.avgPrice) * r.quantity;
-    const pnl = currentValue - invested;
-    const pnlCls = pnl >= 0 ? 'pos' : 'neg';
-    const sign = pnl >= 0 ? '+' : '';
+    const invested = r.costNative;
     const cur = r.currency || 'USD';
     const isOpen = expandedAssets.has(r.symbol);
+    // Si no hay cotización real, no inventamos un P&L
+    const hasPnl = r.hasQuote && r.pnlNative != null;
+    const pnlCls = hasPnl ? (r.pnlNative >= 0 ? 'pos' : 'neg') : '';
+    const pnlText = hasPnl
+      ? `${r.pnlNative >= 0 ? '+' : ''}${formatCurrency(r.pnlNative, cur)}`
+      : '—';
     return `
       <div class="asset-row ${isOpen ? 'expanded' : ''}" data-symbol="${r.symbol}">
         <button class="ar-main" aria-expanded="${isOpen}">
@@ -78,7 +80,7 @@ export function renderAssets() {
           </div>
           <div class="asset-meta ar-pnl">
             <span class="lbl">Ganancia / Pérdida</span>
-            <span class="v ${pnlCls}">${sign}${formatCurrency(pnl, cur)}</span>
+            <span class="v ${pnlCls}">${pnlText}</span>
           </div>
           <svg class="ar-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
         </button>
@@ -154,10 +156,12 @@ function getExportData() {
   const today = new Date();
   const fechaCorte = today.toLocaleDateString('es-AR');
   const data = rows.map(r => {
-    const invested = r.quantity * r.avgPrice;
-    const currentValue = (r.price || r.avgPrice) * r.quantity;
-    const pnl = currentValue - invested;
-    const pnlPct = invested > 0 ? (pnl / invested) * 100 : 0;
+    const invested = r.costNative;
+    // Si no hay cotización real se exporta el costo como valor actual y P&L en 0
+    const hasPnl = r.hasQuote && r.pnlNative != null;
+    const currentValue = hasPnl ? r.valueNative : invested;
+    const pnl = hasPnl ? r.pnlNative : 0;
+    const pnlPct = hasPnl && r.pnlPct != null ? r.pnlPct : 0;
     return {
       'Ticker': r.symbol,
       'Etiqueta': r.name || '',
@@ -165,7 +169,8 @@ function getExportData() {
       'Moneda': r.currency || 'USD',
       'Cantidad': r.quantity,
       'Precio de compra': r.avgPrice,
-      'Precio actual': r.price || r.avgPrice,
+      'Precio actual': r.price ?? r.avgPrice,
+      'Sin cotización': r.hasQuote ? 'No' : 'Sí',
       'Dinero invertido': Number(invested.toFixed(2)),
       'Valor actual': Number(currentValue.toFixed(2)),
       'Ganancia / Pérdida': Number(pnl.toFixed(2)),
@@ -352,9 +357,18 @@ async function exportPDF() {
 }
 
 function formatCurrency(n, currency) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency', currency: currency || 'USD', maximumFractionDigits: 2
-  }).format(n || 0);
+  if (n == null) return '—';
+  const abs = Math.abs(n);
+  const decimals = abs > 0 && abs < 0.01 ? 8 : abs > 0 && abs < 1 ? 4 : 2;
+  const intlCur = currency === 'GBp' ? 'GBP' : (currency || 'USD');
+  try {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency', currency: intlCur,
+      minimumFractionDigits: 2, maximumFractionDigits: decimals,
+    }).format(n);
+  } catch {
+    return n.toFixed(decimals);
+  }
 }
 function escapeHTML(s) {
   return String(s).replace(/[&<>"']/g, c => ({
