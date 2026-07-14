@@ -1,4 +1,4 @@
-import { getState, getPortfolioItems, subscribe, setQuotes, setFxRates, addToWatchlist } from './state.js';
+import { getState, getPortfolioItems, subscribe, setQuotes, setFxRates, setTransactions, addToWatchlist } from './state.js';
 import { getQuotes, getLastMarketState } from './api.js';
 import { initRouter, onRouteChange, currentRoute } from './router.js';
 import { initSearchOverlay } from './ui/search-overlay.js';
@@ -12,6 +12,8 @@ import { initDolar } from './dolar.js';
 import { toast } from './ui/toast.js';
 import { renderMovements, initMovements } from './ui/movements.js';
 import { renderAssets, initAssets } from './ui/assets.js';
+import { checkSplits } from './splits.js';
+import { initStaleness, onQuotesRefreshed } from './staleness.js';
 
 const REFRESH_LIVE = 10_000;
 const REFRESH_CLOSED = 60_000;
@@ -64,6 +66,7 @@ async function refreshQuotes() {
       }
       if (Object.keys(fxRates).length > 0) setFxRates(fxRates);
       setQuotes(quotes);
+      onQuotesRefreshed();
     }
   } catch {
     // silently fail — cache servirá hasta que la red vuelva
@@ -210,6 +213,7 @@ function init() {
   renderTrialBadge();
   checkPaywall();
   initDolar();
+  initStaleness();
   initHeaderScroll();
   initMobileNav();
   initOnlineIndicator();
@@ -266,6 +270,11 @@ function init() {
 
   refreshQuotes();
   scheduleAdaptiveRefresh();
+
+  // Chequeo de splits: una vez por día por símbolo, en background
+  setTimeout(() => {
+    checkSplits((adjustedTxs) => setTransactions(adjustedTxs));
+  }, 5000);
 
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {

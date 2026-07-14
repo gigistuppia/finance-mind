@@ -220,6 +220,13 @@ export function removeAsset(symbol) {
   emit();
 }
 
+/** Reemplaza el array completo de transacciones (usado por splits.js tras ajustar). */
+export function setTransactions(txs) {
+  state.transactions = txs;
+  persistTransactions();
+  emit();
+}
+
 export function setQuotes(quotesBySymbol) {
   Object.assign(state.quotes, quotesBySymbol);
   persistQuotesDeferred();
