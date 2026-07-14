@@ -1,9 +1,9 @@
-import { getState, subscribe, setQuotes, setFxRates, addToWatchlist } from './state.js';
+import { getState, getPortfolioItems, subscribe, setQuotes, setFxRates, addToWatchlist } from './state.js';
 import { getQuotes, getLastMarketState } from './api.js';
 import { initRouter, onRouteChange, currentRoute } from './router.js';
 import { initSearchOverlay } from './ui/search-overlay.js';
 import { initAddAsset } from './ui/add-asset.js';
-import { renderDashboard } from './ui/dashboard.js';
+import { renderDashboard, setAddAssetUI } from './ui/dashboard.js';
 import { renderTrialBadge, checkPaywall, initPaywall } from './ui/paywall.js';
 import { initMarkets, loadMarkets } from './ui/markets.js';
 import { renderWatchlist, refreshWatchlistQuotes } from './ui/watchlist.js';
@@ -37,16 +37,16 @@ function scheduleRender(route) {
 }
 
 async function refreshQuotes() {
-  const { portfolio, watchlist } = getState();
-  const items = [...portfolio, ...watchlist];
-  const symbols = [...new Set(items.map(p => p.symbol))];
+  const { watchlist } = getState();
+  const portfolioItems = getPortfolioItems();
+  const allItems = [...portfolioItems, ...watchlist];
+  const symbols = [...new Set(allItems.map(p => p.symbol))];
 
   // Detectar monedas no-USD, no-ARS para traer sus tasas cruzadas
   const currencies = new Set();
-  for (const item of items) {
+  for (const item of portfolioItems) {
     const cur = item.currency || 'USD';
     if (cur !== 'USD' && cur !== 'ARS') {
-      // GBp (peniques) necesita la tasa de GBP
       currencies.add(cur === 'GBp' ? 'GBP' : cur);
     }
   }
@@ -57,7 +57,6 @@ async function refreshQuotes() {
   try {
     const quotes = await getQuotes(allSymbols);
     if (Object.keys(quotes).length > 0) {
-      // Extraer tasas FX antes de setQuotes para que computeHoldings ya las tenga
       const fxRates = {};
       for (const cur of currencies) {
         const q = quotes[`${cur}USD=X`];
@@ -181,8 +180,9 @@ function initOnlineIndicator() {
 }
 
 function hasLiveSymbols() {
-  const { portfolio, watchlist } = getState();
-  return [...portfolio, ...watchlist].some(p =>
+  const { watchlist } = getState();
+  const portfolioItems = getPortfolioItems();
+  return [...portfolioItems, ...watchlist].some(p =>
     p.symbol.endsWith('-USD') || p.symbol.endsWith('-EUR') ||
     p.symbol.endsWith('-BTC') || p.symbol.endsWith('=X')
   );
@@ -220,6 +220,7 @@ function init() {
       toast(`${asset.symbol} agregado al portfolio`, 'success');
     }
   });
+  setAddAssetUI(addAssetUI);
 
   const searchUI = initSearchOverlay({ onSelect: (item) => addAssetUI.open(item) });
 

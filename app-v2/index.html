@@ -135,6 +135,10 @@
             <div class="label">P&amp;L Total</div>
             <div class="value mono" id="sum-pnl">—</div>
             <div class="delta mono" id="sum-pnl-pct"></div>
+            <div id="sum-realized-line" style="display:none;margin-top:6px;border-top:1px solid var(--color-border);padding-top:6px;">
+              <div class="label" style="font-size:0.72rem;margin-bottom:2px;">Realizado</div>
+              <div class="value mono" id="sum-realized-pnl" style="font-size:0.88rem;"></div>
+            </div>
           </div>
           <div class="summary-card">
             <div class="label">Activos</div>
@@ -156,10 +160,13 @@
         <section class="holdings">
           <div class="holdings-head">
             <h3>Tenencias</h3>
-            <div class="holdings-filter" id="holdings-filter" role="group" aria-label="Filtrar por moneda">
-              <button class="hfilter-btn active" data-filter="all">Todo</button>
-              <button class="hfilter-btn" data-filter="USD">USD</button>
-              <button class="hfilter-btn" data-filter="ARS">$ ARS</button>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <button class="hfilter-btn" id="pnl-mode-toggle" title="Alternar entre P&amp;L en moneda nativa y P&amp;L en ARS reales (captura devaluación)">ARS real</button>
+              <div class="holdings-filter" id="holdings-filter" role="group" aria-label="Filtrar por moneda">
+                <button class="hfilter-btn active" data-filter="all">Todo</button>
+                <button class="hfilter-btn" data-filter="USD">USD</button>
+                <button class="hfilter-btn" data-filter="ARS">$ ARS</button>
+              </div>
             </div>
           </div>
           <div class="table-scroll">
@@ -468,6 +475,11 @@
         <label>Fecha</label>
         <input type="date" id="add-date" />
       </div>
+      <div class="field">
+        <label id="add-fee-label">Comisión (opcional)</label>
+        <input type="number" id="add-fee" min="0" step="any" placeholder="0" inputmode="decimal" />
+      </div>
+      <div class="add-realized-preview" id="add-realized-preview" style="display:none;"></div>
       <div class="modal-actions">
         <button class="btn" id="add-cancel">Cancelar</button>
         <button class="btn primary" id="add-confirm">Agregar</button>

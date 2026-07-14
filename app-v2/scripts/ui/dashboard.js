@@ -3,11 +3,16 @@ import { removeAsset } from '../state.js';
 import { toast } from './toast.js';
 import { logoImg } from '../logos.js';
 
+let addAssetUIRef = null;
+export function setAddAssetUI(ui) { addAssetUIRef = ui; }
+
 let pieChart = null;
 let barChart = null;
 let lastChartSignature = '';
 let chartLibPromise = null;
-let prevPrices = new Map(); // symbol -> last seen price (for flash effect)
+let prevPrices = new Map();
+
+let pnlMode = localStorage.getItem('fm2_pnl_mode') || 'native'; // 'native' | 'arsReal'
 
 const CHART_COLORS = [
   '#7C8AFF', '#5BC9FF', '#22D67A', '#F5C518', '#FF4D5E',
@@ -15,15 +20,15 @@ const CHART_COLORS = [
 ];
 
 const SORTABLE_COLS = [
-  { key: 'symbol',        label: 'Activo',       th: 0, type: 'str',  default: 'asc' },
-  { key: 'quoteType',     label: 'Tipo',         th: 1, type: 'str' },
-  { key: 'quantity',      label: 'Cantidad',     th: 2, type: 'num' },
-  { key: 'avgPrice',      label: 'Precio compra',th: 3, type: 'num' },
-  { key: 'price',         label: 'Precio actual',th: 4, type: 'num' },
-  { key: 'valueARS',      label: 'Valor ARS',    th: 5, type: 'num', default: 'desc' },
-  { key: 'weight',        label: 'Peso',         th: 6, type: 'num' },
-  { key: 'pnlPct',        label: 'P&L',          th: 7, type: 'num' },
-  { key: 'changePercent', label: 'Día',          th: 8, type: 'num' },
+  { key: 'symbol',        label: 'Activo',        th: 0, type: 'str',  default: 'asc' },
+  { key: 'quoteType',     label: 'Tipo',          th: 1, type: 'str' },
+  { key: 'quantity',      label: 'Cantidad',      th: 2, type: 'num' },
+  { key: 'avgPrice',      label: 'Precio compra', th: 3, type: 'num' },
+  { key: 'price',         label: 'Precio actual', th: 4, type: 'num' },
+  { key: 'valueARS',      label: 'Valor ARS',     th: 5, type: 'num', default: 'desc' },
+  { key: 'weight',        label: 'Peso',          th: 6, type: 'num' },
+  { key: 'pnlPct',        label: 'P&L',           th: 7, type: 'num' },
+  { key: 'changePercent', label: 'Día',           th: 8, type: 'num' },
 ];
 
 let sortKey = 'valueARS';
@@ -37,6 +42,7 @@ mobileMq.addEventListener('change', () => {
 let sortableBound = false;
 let holdingsFilter = 'all';
 let filterBound = false;
+let pnlToggleBound = false;
 
 function bindSortable() {
   if (sortableBound) return;
@@ -53,7 +59,6 @@ function bindSortable() {
         sortKey = col.key;
         sortDir = col.default || (col.type === 'num' ? 'desc' : 'asc');
       }
-      // Trigger re-render via state subscribe (no-op directly, dashboard.renderDashboard handles it)
       renderDashboard();
     });
   });
@@ -61,7 +66,7 @@ function bindSortable() {
 }
 
 function updateSortIndicators() {
-  document.querySelectorAll('.holdings thead th.sortable').forEach((th, i) => {
+  document.querySelectorAll('.holdings thead th.sortable').forEach(th => {
     th.classList.remove('sort-asc', 'sort-desc');
   });
   const col = SORTABLE_COLS.find(c => c.key === sortKey);
@@ -73,16 +78,36 @@ function updateSortIndicators() {
 
 function bindFilter() {
   if (filterBound) return;
-  document.querySelectorAll('.hfilter-btn').forEach(btn => {
+  document.querySelectorAll('.hfilter-btn[data-filter]').forEach(btn => {
     btn.addEventListener('click', () => {
       holdingsFilter = btn.dataset.filter;
-      document.querySelectorAll('.hfilter-btn').forEach(b =>
+      document.querySelectorAll('.hfilter-btn[data-filter]').forEach(b =>
         b.classList.toggle('active', b.dataset.filter === holdingsFilter)
       );
       renderDashboard();
     });
   });
   filterBound = true;
+}
+
+function bindPnlModeToggle() {
+  if (pnlToggleBound) return;
+  const toggle = document.getElementById('pnl-mode-toggle');
+  if (!toggle) return;
+  updatePnlToggleLabel(toggle);
+  toggle.addEventListener('click', () => {
+    pnlMode = pnlMode === 'native' ? 'arsReal' : 'native';
+    localStorage.setItem('fm2_pnl_mode', pnlMode);
+    updatePnlToggleLabel(toggle);
+    renderDashboard();
+  });
+  pnlToggleBound = true;
+}
+
+function updatePnlToggleLabel(btn) {
+  if (!btn) return;
+  btn.textContent = pnlMode === 'arsReal' ? 'P&L nativo' : 'ARS real';
+  btn.classList.toggle('active', pnlMode === 'arsReal');
 }
 
 function filterRows(rows) {
@@ -120,6 +145,11 @@ function sortRows(rows) {
   return sorted;
 }
 
+function getPnlPct(r) {
+  if (pnlMode === 'arsReal') return r.pnlARSRealPct ?? r.pnlPct;
+  return r.pnlPct;
+}
+
 export function renderDashboard() {
   const { rows, summary } = computeHoldings();
 
@@ -130,6 +160,7 @@ export function renderDashboard() {
   const filtered = filterRows(sorted);
 
   bindFilter();
+  bindPnlModeToggle();
   bindSortable();
   updateSortIndicators();
   updateValueColHeader();
@@ -148,7 +179,6 @@ function toggleSummarySkeleton(loading) {
 }
 
 function renderSummary(s) {
-  // Si no hay CCL real todavía, mostrar skeleton/guión en métricas ARS
   const arsReady = s.hasCCL;
   setText('sum-value-ars', s.count > 0 ? (arsReady ? formatARS(s.totalValueARS) : '—') : '$0');
   setText('sum-value-usd', s.count > 0 ? formatUSD(s.totalValueUSD) : '$0');
@@ -178,7 +208,22 @@ function renderSummary(s) {
       pct.className = 'delta mono ' + pctClass(s.totalPnLPct);
     }
   }
+
   setText('sum-count', String(s.count));
+
+  // P&L realizado (solo si hay ventas registradas)
+  const realizedLine = document.getElementById('sum-realized-line');
+  const realizedEl = document.getElementById('sum-realized-pnl');
+  if (realizedLine && realizedEl) {
+    const rp = s.totalRealizedPnL;
+    if (rp && Math.abs(rp) > 0.001) {
+      realizedLine.style.display = 'block';
+      realizedEl.textContent = `${rp >= 0 ? '+' : ''}${formatUSD(rp)}`;
+      realizedEl.className = 'value mono ' + (rp >= 0 ? 'pnl-pos' : 'pnl-neg');
+    } else {
+      realizedLine.style.display = 'none';
+    }
+  }
 }
 
 function renderHoldings(rows) {
@@ -216,6 +261,10 @@ function renderHoldings(rows) {
     const staleTitle = r.quoteAge != null && r.quoteAge > 5 * 60_000
       ? ` title="Cotización de hace ${Math.round(r.quoteAge / 60_000)} min"`
       : '';
+    const pnlVal = getPnlPct(r);
+    const approxMark = pnlMode === 'arsReal' && r.fxApproximate
+      ? ' <span title="FX histórico aproximado" style="color:var(--color-yellow);font-size:0.7rem;">~</span>'
+      : '';
     return `
     <tr data-symbol="${r.symbol}">
       <td>
@@ -233,16 +282,32 @@ function renderHoldings(rows) {
       <td class="price-cell${r.quoteAge != null && r.quoteAge > 5 * 60_000 ? ' stale' : ''}" data-symbol="${r.symbol}"${staleTitle}>${priceDisplay}${marketBadge}</td>
       <td>${holdingsFilter === 'USD' ? formatUSD(r.valueUSD) : formatARS(r.valueARS)}</td>
       <td>${r.weight.toFixed(1)}%</td>
-      <td class="${pctClass(r.pnlPct)}">${formatPct(r.pnlPct)}</td>
+      <td class="${pctClass(pnlVal)}">${formatPct(pnlVal)}${approxMark}</td>
       <td class="${pctClass(r.changePercent)}">${formatPct(r.changePercent)}</td>
-      <td><button class="delete-btn" data-id="${r.id}" data-symbol="${r.symbol}" aria-label="Eliminar">×</button></td>
+      <td class="row-actions">
+        <button class="sell-btn" data-symbol="${r.symbol}" aria-label="Vender ${r.symbol}" title="Registrar venta">↓</button>
+        <button class="delete-btn" data-id="${r.id}" data-symbol="${r.symbol}" aria-label="Eliminar ${r.symbol}">×</button>
+      </td>
     </tr>
   `;}).join('');
+
+  tbody.querySelectorAll('.sell-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const sym = btn.dataset.symbol;
+      const row = rows.find(r => r.symbol === sym);
+      if (!row || !addAssetUIRef) return;
+      addAssetUIRef.openSell({
+        symbol: row.symbol, name: row.name,
+        quoteType: row.quoteType, exchange: row.exchange, currency: row.currency,
+      });
+    });
+  });
 
   tbody.querySelectorAll('.delete-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const sym = btn.dataset.symbol;
-      removeAsset(btn.dataset.id);
+      removeAsset(sym);
       toast(`${sym} eliminado del portfolio`, 'info');
     });
   });
@@ -256,7 +321,7 @@ function bindCardsToggle() {
   const cards = document.getElementById('holdings-cards');
   if (!cards) return;
   cards.addEventListener('click', (e) => {
-    if (e.target.closest('.delete-btn')) return;
+    if (e.target.closest('.delete-btn') || e.target.closest('.sell-btn')) return;
     const main = e.target.closest('.hc-main');
     if (!main) return;
     const card = main.closest('.holding-card');
@@ -275,8 +340,10 @@ function renderCards(rows) {
   bindCardsToggle();
   cards.innerHTML = rows.map(r => {
     const isOpen = expandedCards.has(r.symbol);
-    const pnlArrow = r.pnlPct == null ? '' : (parseFloat(r.pnlPct.toFixed(2)) >= 0 ? '▲' : '▼');
-    const pnlCls = r.pnlPct == null ? '' : pctClass(r.pnlPct);
+    const pnlVal = getPnlPct(r);
+    const pnlArrow = pnlVal == null ? '' : (parseFloat(pnlVal.toFixed(2)) >= 0 ? '▲' : '▼');
+    const pnlCls = pnlVal == null ? '' : pctClass(pnlVal);
+    const approxMark = pnlMode === 'arsReal' && r.fxApproximate ? '~' : '';
     return `
     <div class="holding-card hc ${isOpen ? 'expanded' : ''}" data-symbol="${r.symbol}">
       <button class="hc-main" aria-expanded="${isOpen}">
@@ -287,7 +354,7 @@ function renderCards(rows) {
         </div>
         <div class="hc-right">
           <span class="hc-value">${holdingsFilter === 'USD' ? formatUSD(r.valueUSD) : formatARS(r.valueARS)}</span>
-          <span class="hc-pnl ${pnlCls}">${pnlArrow} ${formatPct(r.pnlPct)}</span>
+          <span class="hc-pnl ${pnlCls}">${pnlArrow} ${formatPct(pnlVal)}${approxMark}</span>
         </div>
         <svg class="hc-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
       </button>
@@ -310,7 +377,10 @@ function renderCards(rows) {
               <span class="label">Variación día</span>
               <span class="v ${pctClass(r.changePercent)}">${formatPct(r.changePercent)}</span>
             </div>
-            <button class="hc-delete delete-btn" data-id="${r.id}" data-symbol="${r.symbol}">Eliminar del portfolio</button>
+            <div class="hc-detail-actions">
+              <button class="sell-btn hc-sell" data-symbol="${r.symbol}" aria-label="Vender ${r.symbol}">↓ Vender</button>
+              <button class="hc-delete delete-btn" data-id="${r.id}" data-symbol="${r.symbol}">Eliminar</button>
+            </div>
           </div>
         </div>
       </div>
@@ -318,11 +388,24 @@ function renderCards(rows) {
   `;
   }).join('');
 
+  cards.querySelectorAll('.sell-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const sym = btn.dataset.symbol;
+      const row = rows.find(r => r.symbol === sym);
+      if (!row || !addAssetUIRef) return;
+      addAssetUIRef.openSell({
+        symbol: row.symbol, name: row.name,
+        quoteType: row.quoteType, exchange: row.exchange, currency: row.currency,
+      });
+    });
+  });
+
   cards.querySelectorAll('.delete-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const sym = btn.dataset.symbol;
       expandedCards.delete(sym);
-      removeAsset(btn.dataset.id);
+      removeAsset(sym);
       toast(`${sym} eliminado del portfolio`, 'info');
     });
   });
@@ -336,7 +419,6 @@ function trackPriceFlash(rows) {
       const dir = r.price > prev ? 'up' : 'down';
       document.querySelectorAll(`.price-cell[data-symbol="${r.symbol}"]`).forEach(el => {
         el.classList.remove('cell-flash-up', 'cell-flash-down');
-        // restart animation
         void el.offsetWidth;
         el.classList.add(`cell-flash-${dir}`);
       });
@@ -371,8 +453,8 @@ async function renderCharts(rows) {
     return;
   }
 
-  // Firma para evitar rebuilds innecesarios
-  const signature = rows.map(r => `${r.symbol}:${r.valueARS.toFixed(0)}:${r.pnlPct.toFixed(2)}`).join('|');
+  const pnlValues = rows.map(r => getPnlPct(r) ?? 0);
+  const signature = rows.map((r, i) => `${r.symbol}:${(r.valueARS ?? 0).toFixed(0)}:${pnlValues[i].toFixed(2)}`).join('|') + pnlMode;
   if (signature === lastChartSignature && pieChart && barChart) return;
   lastChartSignature = signature;
 
@@ -381,7 +463,7 @@ async function renderCharts(rows) {
   if (!Chart) return;
 
   const labels = rows.map(r => r.symbol);
-  const values = rows.map(r => r.valueARS);
+  const values = rows.map(r => r.valueARS ?? 0);
   const colors = labels.map((_, i) => CHART_COLORS[i % CHART_COLORS.length]);
 
   if (pieChart) pieChart.destroy();
@@ -405,10 +487,10 @@ async function renderCharts(rows) {
     data: {
       labels,
       datasets: [{
-        label: 'P&L %',
-        data: rows.map(r => r.pnlPct),
-        backgroundColor: rows.map(r => r.pnlPct >= 0 ? 'rgba(34,214,122,0.7)' : 'rgba(255,77,94,0.7)'),
-        borderColor: rows.map(r => r.pnlPct >= 0 ? '#22D67A' : '#FF4D5E'),
+        label: pnlMode === 'arsReal' ? 'P&L ARS real %' : 'P&L %',
+        data: pnlValues,
+        backgroundColor: pnlValues.map(v => v >= 0 ? 'rgba(34,214,122,0.7)' : 'rgba(255,77,94,0.7)'),
+        borderColor: pnlValues.map(v => v >= 0 ? '#22D67A' : '#FF4D5E'),
         borderWidth: 1
       }]
     },
@@ -442,17 +524,13 @@ function formatUSD(n) {
 
 function formatPrice(n, currency) {
   if (n == null) return '—';
-  // Decimales dinámicos según magnitud del precio (crypto < $0.01 necesita 8 decimales)
   const abs = Math.abs(n);
   const decimals = abs > 0 && abs < 0.01 ? 8 : abs > 0 && abs < 1 ? 4 : 2;
-  // GBp (peniques) no es un código ISO válido — mostrar como GBP
   const intlCur = currency === 'GBp' ? 'GBP' : (currency || 'USD');
   try {
     return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: intlCur,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: decimals,
+      style: 'currency', currency: intlCur,
+      minimumFractionDigits: 2, maximumFractionDigits: decimals,
     }).format(n);
   } catch {
     return n.toFixed(decimals);
@@ -466,24 +544,24 @@ function formatNum(n) {
   return new Intl.NumberFormat('es-AR', { maximumFractionDigits: decimals }).format(n);
 }
 
-/** Formatea un porcentaje con signo. null → '—'. Evita '−0.00%' decidiendo signo post-redondeo. */
 function formatPct(n) {
   if (n == null) return '—';
   const v = parseFloat(n.toFixed(2));
   return `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`;
 }
 
-/** Clase CSS para un porcentaje. null → '' (color neutro). */
 function pctClass(n) {
   if (n == null) return '';
   return parseFloat(n.toFixed(2)) >= 0 ? 'pnl-pos' : 'pnl-neg';
 }
+
 function shortType(t) {
   return ({
     EQUITY: 'STOCK', ETF: 'ETF', CRYPTOCURRENCY: 'CRYPTO',
     CURRENCY: 'FX', INDEX: 'INDEX', FUTURE: 'FUT', MUTUALFUND: 'FUND'
   })[t] || 'OTHER';
 }
+
 function escapeHTML(s) {
   return String(s).replace(/[&<>"']/g, c => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
