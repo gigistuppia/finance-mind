@@ -25,6 +25,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/events"
+  to = "/.netlify/functions/events"
+  status = 200
+
+[[redirects]]
   from = "/app-v2/*"
   to = "/app-v2/:splat"
   status = 200
