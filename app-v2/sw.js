@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fm-v2-cache-v1';
+const CACHE_NAME = 'fm-v2-cache-v4';
 const PRECACHE_URLS = [
   '/app-v2/',
   '/app-v2/index.html',
@@ -13,6 +13,19 @@ const PRECACHE_URLS = [
   '/app-v2/scripts/portfolio.js',
   '/app-v2/scripts/auth.js',
   '/app-v2/scripts/router.js',
+  '/app-v2/scripts/splits.js',
+  '/app-v2/scripts/staleness.js',
+  '/app-v2/scripts/logos.js',
+  '/app-v2/scripts/ui/dashboard.js',
+  '/app-v2/scripts/ui/add-asset.js',
+  '/app-v2/scripts/ui/assets.js',
+  '/app-v2/scripts/ui/markets.js',
+  '/app-v2/scripts/ui/movements.js',
+  '/app-v2/scripts/ui/paywall.js',
+  '/app-v2/scripts/ui/search-overlay.js',
+  '/app-v2/scripts/ui/settings.js',
+  '/app-v2/scripts/ui/toast.js',
+  '/app-v2/scripts/ui/watchlist.js',
   '/app-v2/icons/icon-192.svg',
   '/app-v2/icons/icon-512.svg',
 ];
