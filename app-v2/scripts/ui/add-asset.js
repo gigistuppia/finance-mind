@@ -19,15 +19,54 @@ export function initAddAsset({ onAdd }) {
   const confirmBtn = document.getElementById('add-confirm');
   const currencyToggle = document.getElementById('add-currency-toggle');
   const realizedPreview = document.getElementById('add-realized-preview');
+  const conversionPreview = document.getElementById('add-conversion-preview');
 
   currencyToggle?.querySelectorAll('.ctoggle-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       inputCurrency = btn.dataset.cur;
       currencyToggle.querySelectorAll('.ctoggle-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      updateConversionPreview();
       updateRealizedPreview();
     });
   });
+
+  // Muestra al usuario cómo se convierte su precio antes de confirmar
+  function updateConversionPreview() {
+    if (!conversionPreview || !pendingAsset) { conversionPreview.style.display = 'none'; return; }
+    const rawPrice = parseFloat(priceInput.value);
+    const assetCurrency = pendingAsset.currency || 'USD';
+    const { ccl } = getState();
+
+    const needsConversion =
+      (inputCurrency === 'ARS' && assetCurrency !== 'ARS') ||
+      (inputCurrency === 'USD' && assetCurrency === 'ARS');
+
+    if (!needsConversion || !rawPrice || rawPrice <= 0 || ccl == null) {
+      conversionPreview.style.display = 'none';
+      return;
+    }
+
+    const cclFmt = ccl.toLocaleString('es-AR', { maximumFractionDigits: 0 });
+    if (inputCurrency === 'ARS') {
+      const usdEquiv = rawPrice / ccl;
+      const usdFmt = usdEquiv < 0.01
+        ? usdEquiv.toFixed(6)
+        : usdEquiv < 1
+          ? usdEquiv.toFixed(4)
+          : usdEquiv.toFixed(2);
+      const arsFmt = rawPrice.toLocaleString('es-AR', { maximumFractionDigits: 0 });
+      conversionPreview.style.display = 'block';
+      conversionPreview.innerHTML =
+        `Al CCL $${cclFmt}: $${arsFmt} ARS → <span class="conv-usd">$${usdFmt} ${assetCurrency}</span> por acción guardado`;
+    } else {
+      const arsEquiv = rawPrice * ccl;
+      const arsFmt = arsEquiv.toLocaleString('es-AR', { maximumFractionDigits: 0 });
+      conversionPreview.style.display = 'block';
+      conversionPreview.innerHTML =
+        `Al CCL $${cclFmt}: $${rawPrice} USD → <span class="conv-usd">$${arsFmt} ARS</span> por acción guardado`;
+    }
+  }
 
   // Actualiza el preview de P&L realizado en modo venta
   function updateRealizedPreview() {
@@ -59,7 +98,7 @@ export function initAddAsset({ onAdd }) {
   }
 
   qtyInput.addEventListener('input', updateRealizedPreview);
-  priceInput.addEventListener('input', updateRealizedPreview);
+  priceInput.addEventListener('input', () => { updateConversionPreview(); updateRealizedPreview(); });
   feeInput.addEventListener('input', updateRealizedPreview);
 
   cancelBtn.addEventListener('click', close);
@@ -181,6 +220,7 @@ export function initAddAsset({ onAdd }) {
     feeInput.value = '';
     dateInput.value = new Date().toISOString().slice(0, 10);
     realizedPreview.style.display = 'none';
+    conversionPreview.style.display = 'none';
     overlay.classList.add('open');
     setTimeout(() => qtyInput.focus(), 50);
   }

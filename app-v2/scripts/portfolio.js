@@ -174,6 +174,10 @@ export function computeHoldings() {
       pnlARSRealPct,
       costARShistorico: costARShistoricoFinal,
       fxApproximate: pos.fxApproximate,
+      // Precio promedio de compra en ARS histórico (solo si el usuario ingresó en ARS)
+      avgPriceInputARS: (!pos.fxApproximate && costARShistoricoFinal > 0 && pos.quantity > 0 && pos.currency !== 'ARS')
+        ? costARShistoricoFinal / pos.quantity
+        : null,
       // Ganancia realizada (ventas previas de este símbolo)
       realizedPnL: pos.realizedPnL,
       totalFees: pos.totalFees,

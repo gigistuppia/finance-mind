@@ -278,7 +278,7 @@ function renderHoldings(rows) {
       </td>
       <td><span class="type-badge" data-type="${r.quoteType || 'EQUITY'}">${shortType(r.quoteType)}</span></td>
       <td>${formatNum(r.quantity)}</td>
-      <td>${formatPrice(r.avgPrice, r.currency)}</td>
+      <td>${formatPrice(r.avgPrice, r.currency)}${r.avgPriceInputARS ? `<div class="price-ars-hint">${formatARS(r.avgPriceInputARS)}</div>` : ''}</td>
       <td class="price-cell${r.quoteAge != null && r.quoteAge > 5 * 60_000 ? ' stale' : ''}" data-symbol="${r.symbol}"${staleTitle}>${priceDisplay}${marketBadge}</td>
       <td>${holdingsFilter === 'USD' ? formatUSD(r.valueUSD) : formatARS(r.valueARS)}</td>
       <td>${r.weight.toFixed(1)}%</td>
@@ -371,7 +371,7 @@ function renderCards(rows) {
             </div>
             <div class="hc-detail">
               <span class="label">Precio compra</span>
-              <span class="v">${formatPrice(r.avgPrice, r.currency)}</span>
+              <span class="v">${formatPrice(r.avgPrice, r.currency)}${r.avgPriceInputARS ? `<span class="price-ars-hint">${formatARS(r.avgPriceInputARS)}</span>` : ''}</span>
             </div>
             <div class="hc-detail">
               <span class="label">Variación día</span>
