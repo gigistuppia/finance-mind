@@ -1293,6 +1293,25 @@ a { color: inherit; text-decoration: none; }
 }
 .conversion-preview .conv-usd { color: var(--color-accent); font-weight: 600; }
 
+.price-warning {
+  margin-top: var(--s1);
+  padding: var(--s2);
+  background: rgba(255, 23, 68, 0.08);
+  border: 1px solid rgba(255, 23, 68, 0.35);
+  border-radius: var(--r-sm);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-red);
+  line-height: 1.5;
+}
+.price-warning strong { color: var(--color-red); }
+.price-warning.mild {
+  background: rgba(244, 180, 0, 0.08);
+  border-color: rgba(244, 180, 0, 0.35);
+  color: var(--color-yellow);
+}
+.price-warning.mild strong { color: var(--color-yellow); }
+
 /* ── CURRENCY TOGGLE (modal add-asset) ── */
 .currency-toggle {
   display: flex;

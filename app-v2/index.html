@@ -167,10 +167,10 @@
             <h3>Tenencias</h3>
             <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
               <button class="hfilter-btn" id="pnl-mode-toggle" title="Alternar entre P&amp;L en moneda nativa y P&amp;L en ARS reales (captura devaluación)">ARS real</button>
-              <div class="holdings-filter" id="holdings-filter" role="group" aria-label="Filtrar por moneda">
-                <button class="hfilter-btn active" data-filter="all">Todo</button>
-                <button class="hfilter-btn" data-filter="USD">USD</button>
-                <button class="hfilter-btn" data-filter="ARS">$ ARS</button>
+              <div class="holdings-filter" id="holdings-filter" role="group" aria-label="Ver precios en">
+                <button class="hfilter-btn active" data-filter="all" title="Cada activo en su moneda original">Nativo</button>
+                <button class="hfilter-btn" data-filter="USD" title="Todo convertido a USD al CCL actual">USD</button>
+                <button class="hfilter-btn" data-filter="ARS" title="Todo convertido a ARS al CCL actual">$ ARS</button>
               </div>
             </div>
           </div>
@@ -468,12 +468,14 @@
       <div class="field">
         <label>Precio de compra</label>
         <input type="number" id="add-price" min="0" step="any" placeholder="0" inputmode="decimal" />
+        <div id="add-market-hint" class="conversion-preview" style="display:none;"></div>
+        <div id="add-price-warning" class="price-warning" style="display:none;"></div>
       </div>
       <div class="field">
         <label>Moneda del precio ingresado</label>
         <div class="currency-toggle" id="add-currency-toggle" role="group" aria-label="Moneda de compra">
-          <button class="ctoggle-btn active" data-cur="USD">USD</button>
-          <button class="ctoggle-btn" data-cur="ARS">Pesos ARS</button>
+          <button class="ctoggle-btn active" data-cur="USD" title="Comprar la acción original en su moneda nativa">Cotización nativa</button>
+          <button class="ctoggle-btn" data-cur="ARS" title="Comprar el CEDEAR argentino en pesos">Pesos ARS</button>
         </div>
         <div id="add-conversion-preview" class="conversion-preview" style="display:none;"></div>
       </div>

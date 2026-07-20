@@ -1,5 +1,5 @@
 import { computeHoldings } from '../portfolio.js';
-import { removeAsset } from '../state.js';
+import { removeAsset, getState } from '../state.js';
 import { toast } from './toast.js';
 import { logoImg } from '../logos.js';
 
@@ -110,10 +110,52 @@ function updatePnlToggleLabel(btn) {
   btn.classList.toggle('active', pnlMode === 'arsReal');
 }
 
-function filterRows(rows) {
-  if (holdingsFilter === 'USD') return rows.filter(r => r.currency !== 'ARS');
-  if (holdingsFilter === 'ARS') return rows.filter(r => r.currency === 'ARS');
-  return rows;
+// Modo de moneda para la vista: null = nativa de cada activo, 'USD' o 'ARS' = todo convertido
+function displayMode() {
+  if (holdingsFilter === 'USD') return 'USD';
+  if (holdingsFilter === 'ARS') return 'ARS';
+  return null;
+}
+
+// Precio actual del activo en la moneda de vista
+function displayPrice(r) {
+  const mode = displayMode();
+  if (mode == null) return { value: r.displayPrice ?? r.price, currency: r.currency };
+  if (r.quantity > 0 && r.valueUSD != null && mode === 'USD') {
+    return { value: r.valueUSD / r.quantity, currency: 'USD' };
+  }
+  if (r.quantity > 0 && r.valueARS != null && mode === 'ARS') {
+    return { value: r.valueARS / r.quantity, currency: 'ARS' };
+  }
+  return { value: null, currency: mode };
+}
+
+// Precio promedio de compra en la moneda de vista (usa CCL actual, no histórico)
+function displayAvgPrice(r) {
+  const mode = displayMode();
+  if (mode == null) return { value: r.avgPrice, currency: r.currency, hintARS: r.avgPriceInputARS };
+  const { ccl } = getState();
+  if (r.quantity > 0 && r.costARS != null && mode === 'ARS') {
+    return { value: r.costARS / r.quantity, currency: 'ARS', hintARS: null };
+  }
+  if (r.quantity > 0 && r.costARS != null && ccl != null && ccl > 0 && mode === 'USD') {
+    return { value: (r.costARS / ccl) / r.quantity, currency: 'USD', hintARS: null };
+  }
+  return { value: null, currency: mode, hintARS: null };
+}
+
+// Valor total actual del activo en la moneda de vista
+function displayValue(r) {
+  const mode = displayMode();
+  if (mode === 'USD') return { value: r.valueUSD, currency: 'USD' };
+  if (mode === 'ARS') return { value: r.valueARS, currency: 'ARS' };
+  return { value: r.valueNative, currency: r.currency };
+}
+
+function formatValueCell(r) {
+  const { value, currency } = displayValue(r);
+  if (value == null) return '—';
+  return currency === 'USD' ? formatUSD(value) : currency === 'ARS' ? formatARS(value) : formatPrice(value, currency);
 }
 
 function updateValueColHeader() {
@@ -121,7 +163,7 @@ function updateValueColHeader() {
   if (!col) return;
   const th = document.querySelectorAll('.holdings thead th')[col.th];
   if (!th) return;
-  const label = holdingsFilter === 'USD' ? 'Valor USD' : 'Valor ARS';
+  const label = holdingsFilter === 'USD' ? 'Valor USD' : holdingsFilter === 'ARS' ? 'Valor ARS' : 'Valor';
   col.label = label;
   const arrowSpan = th.querySelector('.sort-arrow');
   th.textContent = label;
@@ -157,7 +199,6 @@ export function renderDashboard() {
   toggleSummarySkeleton(allMissing);
 
   const sorted = sortRows(rows);
-  const filtered = filterRows(sorted);
 
   bindFilter();
   bindPnlModeToggle();
@@ -166,8 +207,8 @@ export function renderDashboard() {
   updateValueColHeader();
 
   renderSummary(summary);
-  renderHoldings(filtered);
-  renderCards(filtered);
+  renderHoldings(sorted);
+  renderCards(sorted);
   trackPriceFlash(sorted);
   renderCharts(sorted);
 }
@@ -250,8 +291,10 @@ function renderHoldings(rows) {
   if (emptyState) emptyState.style.display = 'none';
 
   tbody.innerHTML = rows.map(r => {
-    const priceDisplay = r.price != null
-      ? formatPrice(r.displayPrice ?? r.price, r.currency)
+    const dp = displayPrice(r);
+    const dap = displayAvgPrice(r);
+    const priceDisplay = dp.value != null
+      ? formatPrice(dp.value, dp.currency)
       : '<span class="skeleton" style="display:inline-block;width:60px;height:14px;"></span>';
     const marketBadge = r.marketState === 'PRE'
       ? ' <span class="market-badge pre" title="Horario pre-market">PRE</span>'
@@ -278,9 +321,9 @@ function renderHoldings(rows) {
       </td>
       <td><span class="type-badge" data-type="${r.quoteType || 'EQUITY'}">${shortType(r.quoteType)}</span></td>
       <td>${formatNum(r.quantity)}</td>
-      <td>${formatPrice(r.avgPrice, r.currency)}${r.avgPriceInputARS ? `<div class="price-ars-hint">${formatARS(r.avgPriceInputARS)}</div>` : ''}</td>
+      <td>${dap.value != null ? formatPrice(dap.value, dap.currency) : '—'}${dap.hintARS ? `<div class="price-ars-hint">${formatARS(dap.hintARS)}</div>` : ''}</td>
       <td class="price-cell${r.quoteAge != null && r.quoteAge > 5 * 60_000 ? ' stale' : ''}" data-symbol="${r.symbol}"${staleTitle}>${priceDisplay}${marketBadge}</td>
-      <td>${holdingsFilter === 'USD' ? formatUSD(r.valueUSD) : formatARS(r.valueARS)}</td>
+      <td>${formatValueCell(r)}</td>
       <td>${r.weight.toFixed(1)}%</td>
       <td class="${pctClass(pnlVal)}">${formatPct(pnlVal)}${approxMark}</td>
       <td class="${pctClass(r.changePercent)}">${formatPct(r.changePercent)}</td>
@@ -344,6 +387,8 @@ function renderCards(rows) {
     const pnlArrow = pnlVal == null ? '' : (parseFloat(pnlVal.toFixed(2)) >= 0 ? '▲' : '▼');
     const pnlCls = pnlVal == null ? '' : pctClass(pnlVal);
     const approxMark = pnlMode === 'arsReal' && r.fxApproximate ? '~' : '';
+    const dp = displayPrice(r);
+    const dap = displayAvgPrice(r);
     return `
     <div class="holding-card hc ${isOpen ? 'expanded' : ''}" data-symbol="${r.symbol}">
       <button class="hc-main" aria-expanded="${isOpen}">
@@ -353,7 +398,7 @@ function renderCards(rows) {
           <div class="ticker-name">${escapeHTML(r.name || '')}</div>
         </div>
         <div class="hc-right">
-          <span class="hc-value">${holdingsFilter === 'USD' ? formatUSD(r.valueUSD) : formatARS(r.valueARS)}</span>
+          <span class="hc-value">${formatValueCell(r)}</span>
           <span class="hc-pnl ${pnlCls}">${pnlArrow} ${formatPct(pnlVal)}${approxMark}</span>
         </div>
         <svg class="hc-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
@@ -363,7 +408,7 @@ function renderCards(rows) {
           <div class="hc-details-grid">
             <div class="hc-detail">
               <span class="label">Precio actual</span>
-              <span class="v price-cell" data-symbol="${r.symbol}">${formatPrice(r.displayPrice ?? r.price, r.currency)}</span>
+              <span class="v price-cell" data-symbol="${r.symbol}">${dp.value != null ? formatPrice(dp.value, dp.currency) : '—'}</span>
             </div>
             <div class="hc-detail">
               <span class="label">Cantidad</span>
@@ -371,7 +416,7 @@ function renderCards(rows) {
             </div>
             <div class="hc-detail">
               <span class="label">Precio compra</span>
-              <span class="v">${formatPrice(r.avgPrice, r.currency)}${r.avgPriceInputARS ? `<span class="price-ars-hint">${formatARS(r.avgPriceInputARS)}</span>` : ''}</span>
+              <span class="v">${dap.value != null ? formatPrice(dap.value, dap.currency) : '—'}${dap.hintARS ? `<span class="price-ars-hint">${formatARS(dap.hintARS)}</span>` : ''}</span>
             </div>
             <div class="hc-detail">
               <span class="label">Variación día</span>
