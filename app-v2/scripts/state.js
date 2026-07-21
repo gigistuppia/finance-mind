@@ -220,6 +220,42 @@ export function removeAsset(symbol) {
   emit();
 }
 
+/**
+ * Reemplaza TODAS las transacciones de un símbolo por una única compra corregida.
+ * Usado por el modal de edición para ajustar cantidad/precio sin borrar y recargar.
+ * Consolida el historial: si había varias compras/ventas, quedan en una sola posición.
+ */
+export function editPosition(edit) {
+  const prev = state.transactions.filter(t => t.symbol === edit.symbol);
+  if (prev.length === 0) return;
+  const base = prev[0];
+  state.transactions = state.transactions.filter(t => t.symbol !== edit.symbol);
+  const tx = {
+    id: crypto.randomUUID(),
+    type: 'buy',
+    symbol: edit.symbol,
+    name: edit.name || base.name || edit.symbol,
+    quoteType: edit.quoteType || base.quoteType || 'EQUITY',
+    exchange: edit.exchange || base.exchange || '',
+    currency: edit.currency || base.currency || 'USD',
+    quantity: edit.quantity,
+    price: edit.avgPrice,        // precio unitario en moneda NATIVA
+    fee: 0,                      // el avgPrice ya consolida comisiones previas
+    date: edit.date || base.date || new Date().toISOString().slice(0, 10),
+    inputPrice: edit.inputPrice ?? edit.avgPrice,
+    inputCurrency: edit.inputCurrency ?? edit.currency ?? 'USD',
+    fxRateUsed: edit.fxRateUsed ?? null,
+    createdAt: Date.now(),
+  };
+  state.transactions.push(tx);
+  logMovement('update', {
+    symbol: tx.symbol, name: tx.name, quoteType: tx.quoteType,
+    currency: tx.currency, quantity: tx.quantity, price: tx.price, fee: tx.fee,
+  });
+  persistTransactions();
+  emit();
+}
+
 /** Reemplaza el array completo de transacciones (usado por splits.js tras ajustar). */
 export function setTransactions(txs) {
   state.transactions = txs;

@@ -6,6 +6,19 @@ import { logoImg } from '../logos.js';
 let addAssetUIRef = null;
 export function setAddAssetUI(ui) { addAssetUIRef = ui; }
 
+// Abre el modal de edición pre-llenado con la posición actual del símbolo
+function openEditFor(sym, rows) {
+  const row = rows.find(r => r.symbol === sym);
+  if (!row || !addAssetUIRef?.openEdit) return;
+  const txCount = getState().transactions.filter(t => t.symbol === sym).length;
+  addAssetUIRef.openEdit({
+    symbol: row.symbol, name: row.name, quoteType: row.quoteType,
+    exchange: row.exchange, currency: row.currency,
+    quantity: row.quantity, avgPrice: row.avgPrice,
+    firstBuyDate: row.firstBuyDate, txCount,
+  });
+}
+
 let pieChart = null;
 let barChart = null;
 let lastChartSignature = '';
@@ -328,11 +341,19 @@ function renderHoldings(rows) {
       <td class="${pctClass(pnlVal)}">${formatPct(pnlVal)}${approxMark}</td>
       <td class="${pctClass(r.changePercent)}">${formatPct(r.changePercent)}</td>
       <td class="row-actions">
+        <button class="edit-btn" data-symbol="${r.symbol}" aria-label="Editar ${r.symbol}" title="Editar cantidad o precio">✎</button>
         <button class="sell-btn" data-symbol="${r.symbol}" aria-label="Vender ${r.symbol}" title="Registrar venta">↓</button>
         <button class="delete-btn" data-id="${r.id}" data-symbol="${r.symbol}" aria-label="Eliminar ${r.symbol}">×</button>
       </td>
     </tr>
   `;}).join('');
+
+  tbody.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openEditFor(btn.dataset.symbol, rows);
+    });
+  });
 
   tbody.querySelectorAll('.sell-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -364,7 +385,7 @@ function bindCardsToggle() {
   const cards = document.getElementById('holdings-cards');
   if (!cards) return;
   cards.addEventListener('click', (e) => {
-    if (e.target.closest('.delete-btn') || e.target.closest('.sell-btn')) return;
+    if (e.target.closest('.delete-btn') || e.target.closest('.sell-btn') || e.target.closest('.edit-btn')) return;
     const main = e.target.closest('.hc-main');
     if (!main) return;
     const card = main.closest('.holding-card');
@@ -423,6 +444,7 @@ function renderCards(rows) {
               <span class="v ${pctClass(r.changePercent)}">${formatPct(r.changePercent)}</span>
             </div>
             <div class="hc-detail-actions">
+              <button class="edit-btn hc-edit" data-symbol="${r.symbol}" aria-label="Editar ${r.symbol}">✎ Editar</button>
               <button class="sell-btn hc-sell" data-symbol="${r.symbol}" aria-label="Vender ${r.symbol}">↓ Vender</button>
               <button class="hc-delete delete-btn" data-id="${r.id}" data-symbol="${r.symbol}">Eliminar</button>
             </div>
@@ -432,6 +454,13 @@ function renderCards(rows) {
     </div>
   `;
   }).join('');
+
+  cards.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openEditFor(btn.dataset.symbol, rows);
+    });
+  });
 
   cards.querySelectorAll('.sell-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {

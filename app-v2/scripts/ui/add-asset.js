@@ -1,11 +1,12 @@
-import { addAsset, addSell, getState } from '../state.js';
+import { addAsset, addSell, editPosition, getState } from '../state.js';
 import { logoImg } from '../logos.js';
 import { computePositions } from '../portfolio.js';
 import { getQuotes } from '../api.js';
 
 let pendingAsset = null;
 let inputCurrency = 'USD';    // Moneda en la que el usuario ingresa/sigue el precio: 'USD' | 'ARS'
-let modalMode = 'buy';        // 'buy' | 'sell'
+let modalMode = 'buy';        // 'buy' | 'sell' | 'edit'
+let editTxCount = 0;          // cantidad de transacciones que consolida la edición
 let marketPrice = null;       // Precio actual del asset en su moneda nativa
 let marketCurrency = null;    // Moneda nativa según Yahoo
 
@@ -35,6 +36,7 @@ export function initAddAsset({ onAdd }) {
   const priceInput = document.getElementById('add-price');
   const feeInput = document.getElementById('add-fee');
   const feeLabelEl = document.getElementById('add-fee-label');
+  const feeField = feeInput?.closest('.field');
   const dateInput = document.getElementById('add-date');
   const cancelBtn = document.getElementById('add-cancel');
   const confirmBtn = document.getElementById('add-confirm');
@@ -240,7 +242,24 @@ export function initAddAsset({ onAdd }) {
       fxRateUsed = ccl;
     }
 
-    if (modalMode === 'buy') {
+    if (modalMode === 'edit') {
+      if (editTxCount > 1 && !confirm(
+        `Esta posición tiene ${editTxCount} movimientos registrados. Al guardar se consolidan en una sola compra corregida (se pierde el detalle de compras y ventas de ${pendingAsset.symbol}). ¿Continuar?`
+      )) return;
+      editPosition({
+        symbol: pendingAsset.symbol,
+        name: pendingAsset.name,
+        quoteType: pendingAsset.quoteType,
+        exchange: pendingAsset.exchange,
+        currency: assetCurrency,
+        quantity: qty,
+        avgPrice: price,
+        date: dateInput.value,
+        inputPrice,
+        inputCurrency: inputCur,
+        fxRateUsed,
+      });
+    } else if (modalMode === 'buy') {
       addAsset({
         symbol: pendingAsset.symbol,
         name: pendingAsset.name,
@@ -279,14 +298,18 @@ export function initAddAsset({ onAdd }) {
       });
     }
 
+    const finishedMode = modalMode;
+    const finishedAsset = pendingAsset;
     close();
-    onAdd?.(pendingAsset);
+    onAdd?.(finishedAsset, finishedMode);
   });
 
   function close() {
     overlay.classList.remove('open');
     pendingAsset = null;
     modalMode = 'buy';
+    editTxCount = 0;
+    if (feeField) feeField.style.display = '';
     realizedPreview.style.display = 'none';
   }
 
@@ -311,10 +334,20 @@ export function initAddAsset({ onAdd }) {
       inputCurrency = assetCurrency;
     }
 
-    titleEl.textContent = mode === 'sell' ? `Vender ${asset.symbol}` : 'Agregar al portfolio';
-    confirmBtn.textContent = mode === 'sell' ? 'Vender' : 'Agregar';
-    priceInput.previousElementSibling.textContent = mode === 'sell' ? 'Precio de venta' : 'Precio de compra';
+    editTxCount = mode === 'edit' ? (asset.txCount ?? 1) : 0;
+
+    titleEl.textContent = mode === 'sell' ? `Vender ${asset.symbol}`
+      : mode === 'edit' ? `Editar ${asset.symbol}`
+      : 'Agregar al portfolio';
+    confirmBtn.textContent = mode === 'sell' ? 'Vender'
+      : mode === 'edit' ? 'Guardar cambios'
+      : 'Agregar';
+    priceInput.previousElementSibling.textContent = mode === 'sell' ? 'Precio de venta'
+      : mode === 'edit' ? 'Precio promedio de compra'
+      : 'Precio de compra';
     feeLabelEl.textContent = mode === 'sell' ? 'Comisión de venta (opcional)' : 'Comisión (opcional)';
+    // En edición la comisión ya está consolidada en el precio promedio → ocultamos el campo
+    if (feeField) feeField.style.display = mode === 'edit' ? 'none' : '';
 
     // En venta, mostrar máximo vendible
     if (mode === 'sell') {
@@ -329,10 +362,13 @@ export function initAddAsset({ onAdd }) {
     }
 
     renderSelectedAsset(asset);
-    qtyInput.value = '';
-    priceInput.value = '';
+    // En edición, pre-llenamos con la cantidad y el precio promedio actuales
+    qtyInput.value = mode === 'edit' && asset.quantity != null ? String(asset.quantity) : '';
+    priceInput.value = mode === 'edit' && asset.avgPrice != null ? String(+asset.avgPrice.toFixed(6)) : '';
     feeInput.value = '';
-    dateInput.value = new Date().toISOString().slice(0, 10);
+    dateInput.value = mode === 'edit' && asset.firstBuyDate
+      ? asset.firstBuyDate
+      : new Date().toISOString().slice(0, 10);
     realizedPreview.style.display = 'none';
     conversionPreview.style.display = 'none';
     if (marketHint) marketHint.style.display = 'none';
@@ -371,6 +407,7 @@ export function initAddAsset({ onAdd }) {
   return {
     open: (asset) => openModal(asset, 'buy'),
     openSell: (asset) => openModal(asset, 'sell'),
+    openEdit: (asset) => openModal(asset, 'edit'),
   };
 }
 

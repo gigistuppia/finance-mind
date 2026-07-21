@@ -219,9 +219,12 @@ function init() {
   initOnlineIndicator();
 
   addAssetUI = initAddAsset({
-    onAdd: (asset) => {
+    onAdd: (asset, mode) => {
       refreshQuotes();
-      toast(`${asset.symbol} agregado al portfolio`, 'success');
+      const msg = mode === 'edit' ? `${asset.symbol} actualizado`
+        : mode === 'sell' ? `Venta de ${asset.symbol} registrada`
+        : `${asset.symbol} agregado al portfolio`;
+      toast(msg, 'success');
     }
   });
   setAddAssetUI(addAssetUI);

@@ -153,6 +153,7 @@ export function computeHoldings() {
       quoteType: pos.quoteType,
       exchange: pos.exchange,
       currency,
+      firstBuyDate: pos.firstBuyDate,
       quantity: pos.quantity,
       avgPrice: pos.avgPrice,
       price,
