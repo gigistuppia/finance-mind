@@ -94,7 +94,7 @@ function renderCategory(cat, quotes) {
         <div class="holding-card-row"><span class="label">Precio</span><span class="v">—</span></div>
         <div class="holding-card-row"><span class="label">Variación</span><span class="v">—</span></div>
         <div class="holding-card-actions">
-          <button class="icon-btn" data-action="watch" data-symbol="${s}" title="Agregar a watchlist">★</button>
+          <button class="icon-btn" data-action="watch" data-symbol="${s}" title="Agregar a watchlist"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
           <button class="icon-btn primary" data-action="add" data-symbol="${s}" title="Agregar al portfolio">+</button>
         </div>
       </div>`;
@@ -110,7 +110,7 @@ function renderCategory(cat, quotes) {
         <div class="holding-card-row"><span class="label">Variación</span><span class="v mono ${chgClass}">${sign}${q.changePercent.toFixed(2)}%</span></div>
         ${q.dayLow ? `<div class="holding-card-row"><span class="label">Día</span><span class="v mono">${formatPrice(q.dayLow, q.currency)} / ${formatPrice(q.dayHigh, q.currency)}</span></div>` : ''}
         <div class="holding-card-actions">
-          <button class="icon-btn" data-action="watch" data-symbol="${s}" title="Agregar a watchlist">★</button>
+          <button class="icon-btn" data-action="watch" data-symbol="${s}" title="Agregar a watchlist"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
           <button class="icon-btn primary" data-action="add" data-symbol="${s}" title="Agregar al portfolio">+</button>
         </div>
       </div>

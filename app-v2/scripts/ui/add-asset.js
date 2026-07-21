@@ -84,17 +84,17 @@ export function initAddAsset({ onAdd }) {
 
     if (inputCurrency === marketCurrency) {
       marketHint.style.display = 'block';
-      marketHint.innerHTML = `📊 Precio de mercado: <span class="conv-usd">${nativeFmt}</span>`;
+      marketHint.innerHTML = `Precio de mercado: <span class="conv-usd">${nativeFmt}</span>`;
       return;
     }
 
     const shown = convertUsdArs(marketPrice, marketCurrency, inputCurrency, ccl);
     marketHint.style.display = 'block';
     if (shown == null) {
-      marketHint.innerHTML = `📊 Precio de mercado: <span class="conv-usd">${nativeFmt}</span>`;
+      marketHint.innerHTML = `Precio de mercado: <span class="conv-usd">${nativeFmt}</span>`;
     } else {
       marketHint.innerHTML =
-        `📊 Precio de mercado: <span class="conv-usd">${formatPriceLocal(shown, inputCurrency)}</span> ` +
+        `Precio de mercado: <span class="conv-usd">${formatPriceLocal(shown, inputCurrency)}</span> ` +
         `<span style="color:var(--color-text-3);">(${nativeFmt} nativo)</span>`;
     }
   }
@@ -143,7 +143,7 @@ export function initAddAsset({ onAdd }) {
       : '';
 
     priceWarning.innerHTML = `
-      <strong>⚠ Precio inusual.</strong> Estás ingresando <strong>${inputFmt}</strong> (${equivFmt} en moneda nativa), pero <strong>${pendingAsset.symbol}</strong> cotiza a <strong>${marketFmt}</strong>.
+      <strong>Precio inusual.</strong> Estás ingresando <strong>${inputFmt}</strong> (${equivFmt} en moneda nativa), pero <strong>${pendingAsset.symbol}</strong> cotiza a <strong>${marketFmt}</strong>.
       ${hint}
     `;
   }

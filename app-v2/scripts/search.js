@@ -93,12 +93,7 @@ export function groupByType(results) {
 
 export function typeIcon(quoteType) {
   return {
-    EQUITY: '📈',
-    ETF: '📊',
-    CRYPTOCURRENCY: '₿',
-    CURRENCY: '💱',
-    INDEX: '🔢',
-    FUTURE: '🛢️',
-    MUTUALFUND: '🏦',
-  }[quoteType] || '•';
+    EQUITY: 'STOCK', ETF: 'ETF', CRYPTOCURRENCY: 'CRYPTO',
+    CURRENCY: 'FX', INDEX: 'INDEX', FUTURE: 'FUT', MUTUALFUND: 'FUND',
+  }[quoteType] || '—';
 }

@@ -341,8 +341,8 @@ function renderHoldings(rows) {
       <td class="${pctClass(pnlVal)}">${formatPct(pnlVal)}${approxMark}</td>
       <td class="${pctClass(r.changePercent)}">${formatPct(r.changePercent)}</td>
       <td class="row-actions">
-        <button class="edit-btn" data-symbol="${r.symbol}" aria-label="Editar ${r.symbol}" title="Editar cantidad o precio">✎</button>
-        <button class="sell-btn" data-symbol="${r.symbol}" aria-label="Vender ${r.symbol}" title="Registrar venta">↓</button>
+        <button class="edit-btn" data-symbol="${r.symbol}" aria-label="Editar ${r.symbol}" title="Editar cantidad o precio"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="sell-btn" data-symbol="${r.symbol}" aria-label="Vender ${r.symbol}" title="Registrar venta"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg></button>
         <button class="delete-btn" data-id="${r.id}" data-symbol="${r.symbol}" aria-label="Eliminar ${r.symbol}">×</button>
       </td>
     </tr>
@@ -444,8 +444,8 @@ function renderCards(rows) {
               <span class="v ${pctClass(r.changePercent)}">${formatPct(r.changePercent)}</span>
             </div>
             <div class="hc-detail-actions">
-              <button class="edit-btn hc-edit" data-symbol="${r.symbol}" aria-label="Editar ${r.symbol}">✎ Editar</button>
-              <button class="sell-btn hc-sell" data-symbol="${r.symbol}" aria-label="Vender ${r.symbol}">↓ Vender</button>
+              <button class="edit-btn hc-edit" data-symbol="${r.symbol}" aria-label="Editar ${r.symbol}">Editar</button>
+              <button class="sell-btn hc-sell" data-symbol="${r.symbol}" aria-label="Vender ${r.symbol}">Vender</button>
               <button class="hc-delete delete-btn" data-id="${r.id}" data-symbol="${r.symbol}">Eliminar</button>
             </div>
           </div>
