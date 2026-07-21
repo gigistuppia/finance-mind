@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fm-v2-cache-v4';
+const CACHE_NAME = 'fm-v2-cache-v5';
 const PRECACHE_URLS = [
   '/app-v2/',
   '/app-v2/index.html',
