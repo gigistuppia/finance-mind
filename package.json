@@ -5,5 +5,8 @@
   "description": "Analista diario automático de activos globales",
   "engines": {
     "node": ">=20"
+  },
+  "scripts": {
+    "test": "node test/indicators.test.cjs"
   }
 }
