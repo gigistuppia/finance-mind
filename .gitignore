@@ -4,3 +4,7 @@ node_modules/
 *.lnk
 .DS_Store
 Thumbs.db
+
+# Apps legacy — viven solo en local, nunca deben entrar al repo (215 MB)
+finance-app/
+app/
