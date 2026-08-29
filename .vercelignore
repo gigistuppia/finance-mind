@@ -1,0 +1,11 @@
+finance-app/
+app/
+netlify/
+.netlify/
+.wrangler/
+claude-image-generation/
+worker.js
+wrangler.toml
+netlify.toml
+*.md
+*.lnk

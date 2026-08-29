@@ -1,0 +1,9 @@
+{
+  "name": "finance-mind",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Analista diario automático de activos globales",
+  "engines": {
+    "node": ">=20"
+  }
+}
