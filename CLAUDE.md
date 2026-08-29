@@ -859,7 +859,8 @@ el proyecto, y juntas son poco trabajo comparadas con lo que evitan.
 
 ### Estado — 29/08/2026
 
-**Fase 00: código listo, falta el deploy.**
+**Fase 00: ✅ COMPLETADA Y VERIFICADA EN PRODUCCIÓN.** Veredicto `OK_COMPLETO`.
+**El riesgo §14.1 queda cerrado: Yahoo le responde a Vercel, crumb incluido.**
 
 | Archivo | Qué es |
 |---------|--------|
@@ -873,14 +874,32 @@ chart como fallback, y velas 1y para `AAPL` (251), `BTC-USD` (365), `GGAL.BA` (2
 `^GSPC` (251). Los handlers cumplen el contrato de Vercel: casos felices, 400 por parámetro
 faltante, CORS y `Cache-Control` correctos.
 
-**Falta:** confirmar que Yahoo responde desde las **IPs de Vercel**, que es la pregunta real de
-§14.1 y solo se contesta con un deploy. `GET /api/diag?symbol=AAPL` devuelve el veredicto:
+**Verificado en el preview de Vercel** (`iad1`, rama `vercel-migracion`):
 
-| Veredicto | Significado |
-|-----------|-------------|
-| `OK_COMPLETO` | v7 + chart + velas funcionan. Migración limpia. |
-| `OK_PARA_EL_BOT` | Las velas funcionan pero el crumb no. El bot va; la app pierde `marketCap` y pre/post market. |
-| `BLOQUEADO` | Yahoo rechaza a Vercel. Fallback a Stooq. |
+```json
+{ "veredicto": "OK_COMPLETO",
+  "v7_quote_con_crumb": { "ok": true, "ms": 313, "price": 319.7, "marketCap": 4665759498240 },
+  "v8_chart_precio":    { "ok": true, "ms": 111 },
+  "v8_chart_velas_1y":  { "ok": true, "ms": 178, "velas": 251 } }
+```
 
-**Dato que ya cambió el diseño:** `BTC-USD` devuelve 365 velas contra 251 de las acciones — el
-riesgo §14.10 confirmado con datos. La ventana temporal debe definirse por tipo de activo.
+El sitio entero responde: `/` → landing (el rewrite funciona), `/app-v2/` → la app, y 8 lotes de
+`/api/quote` en 200 cubriendo **todos los sufijos raros** — `.DE`, `.SW`, `.PA`, `^GSPC`,
+`^MERV`, `GC=F`, `USDARS=X`, `BTC-USD`. Sin errores de consola. Todo bajo 600ms.
+
+**Conclusión: la migración a Vercel es limpia.** No hace falta el fallback a Stooq y la app no
+necesita ningún cambio de código.
+
+**Dato que ya cambió el diseño:** `BTC-USD` devuelve **365 velas contra 251** de las acciones —
+riesgo §14.10 confirmado con datos, tanto local como en producción. La ventana temporal del
+informe debe definirse por tipo de activo, no globalmente.
+
+### Deuda visible detectada en el preview
+
+El sidebar muestra **"TRIAL · 30 DÍAS"**. El flag `MONETIZACION_ACTIVA` de §10 todavía no existe
+— es tarea de la fase 1, y es requisito de §14.15 (uso comercial en Hobby).
+
+### Pendiente antes de mergear a `main`
+
+Mergear dispara **también** el deploy de Cloudflare (`.github/workflows/deploy.yml`) y el de
+producción de Netlify. Decisión consciente, no efecto secundario.
