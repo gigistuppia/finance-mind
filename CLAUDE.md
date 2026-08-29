@@ -75,9 +75,12 @@ proyecto-finance-mind/
 │   └── schema.sql         ← Esquema Postgres
 ├── netlify/functions/     ← LEGACY tras migrar a Vercel (no borrar aún)
 ├── worker.js              ← LEGACY, Cloudflare (no borrar aún)
-├── finance-app/           ← App v1 (legacy, no tocar)
-└── app/                   ← App v1 vanilla (legacy, no tocar)
+└── finance-app/           ← App v1 (legacy). 215 MB, SOLO local — nunca estuvo en git
 ```
+
+> `app/` figuraba acá como app v1 vanilla, pero **ya no existe en disco**.
+> `finance-app/` y `app/` están en `.gitignore` para que un `git add .` no meta
+> 215 MB en el repo. El repo real son **65 archivos, 1.3 MB**.
 
 ### Servidores de desarrollo
 
