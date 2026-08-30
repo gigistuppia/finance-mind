@@ -894,6 +894,50 @@ necesita ningún cambio de código.
 riesgo §14.10 confirmado con datos, tanto local como en producción. La ventana temporal del
 informe debe definirse por tipo de activo, no globalmente.
 
+---
+
+### Fase 0 — pipeline completo, esperando la API key
+
+```bash
+npm test                              # 129 aserciones en 5 suites
+npm run informe -- NVDA --solo-datos  # pipeline sin LLM, no necesita ninguna key
+npm run informe -- NVDA               # informe completo (degradado sin key)
+```
+
+| Módulo | Qué hace |
+|--------|----------|
+| `lib/yahoo.js` | Cotizaciones, búsqueda, velas + **validación de símbolos fantasma** |
+| `lib/indicators.js` | RSI, MACD, SMA/EMA, ATR, Bollinger, volumen relativo, drawdown, niveles |
+| `lib/patterns.js` | 8 detectores + régimen de mercado |
+| `lib/news.js` | 3 fuentes, ventana 72h, dedupe, filtro de relevancia |
+| `lib/analyst.js` | Prompt, llamada al modelo, validación, informe degradado |
+| `lib/pipeline.js` | Orquestador de un símbolo |
+| `scripts/informe.cjs` | Prototipo por consola |
+
+**Para activar el redactor** — key gratuita en https://aistudio.google.com/apikey
+(cuenta de Google, sin tarjeta):
+
+```bash
+export GEMINI_API_KEY="tu-key"      # local
+```
+En Vercel: Settings → Environment Variables → `GEMINI_API_KEY`.
+
+Opcional, mejora las noticias de acciones US: `FINNHUB_API_KEY` (gratis, 60 req/min).
+
+**Las tres barreras contra la invención** (§12.1, §14.4), todas testeadas sin necesidad de key:
+
+1. **Cita por índice.** El modelo nunca escribe una URL: recibe las noticias numeradas y solo
+   puede citar `[0]`, `[3]`. Las URLs las resuelve el servidor. Inventar una fuente es imposible
+   por construcción, no por obediencia al prompt. Test: *"el prompt NO contiene ninguna URL"*.
+2. **Validación estricta.** Causa sin fuente → rechazada. Índice inexistente → rechazado. Causas
+   con cero noticias disponibles → rechazado. Lenguaje imperativo ("comprá", "recomendamos") →
+   rechazado (§14.14). Un reintento con reparación y, si falla otra vez, informe degradado.
+3. **Permiso de no saber.** `dia_sin_novedades` es un campo del esquema. El prompt dice que un
+   informe que admite que no pasó nada vale más que uno que inventa una explicación.
+
+**El informe degradado nunca deja al usuario sin nada:** muestra todos los datos deterministas,
+se marca como degradado y explica qué falló. `redactar()` no lanza nunca.
+
 ### Deuda visible detectada en el preview
 
 El sidebar muestra **"TRIAL · 30 DÍAS"**. El flag `MONETIZACION_ACTIVA` de §10 todavía no existe
