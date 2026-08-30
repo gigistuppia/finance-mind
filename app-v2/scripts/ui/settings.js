@@ -1,5 +1,5 @@
 import { getState, setCCL, clearAll } from '../state.js';
-import { getTrialStatus, activatePaid } from '../auth.js';
+import { getTrialStatus, activatePaid, MONETIZACION_ACTIVA } from '../auth.js';
 import { toast } from './toast.js';
 import { getDolarTypes, getSelectedTipo, setActiveDolar } from '../dolar.js';
 
@@ -12,7 +12,11 @@ export function initSettings() {
   const dolarToggle = document.getElementById('settings-dolar-toggle');
   const dolarPanel = document.getElementById('settings-dolar-panel');
 
-  if (planStatus) {
+  // Con la monetización apagada se saca la card "Plan" entera. Ocultar solo el
+  // botón dejaría un título huérfano y un hueco en la grilla de ajustes.
+  if (!MONETIZACION_ACTIVA) {
+    planStatus?.closest('.settings-card')?.remove();
+  } else if (planStatus) {
     const { status, daysLeft } = getTrialStatus();
     if (status === 'paid') planStatus.textContent = '✓ Plan Pro activo';
     else if (status === 'trial') planStatus.textContent = `Trial activo · ${daysLeft} días restantes`;

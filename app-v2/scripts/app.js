@@ -5,6 +5,7 @@ import { initSearchOverlay } from './ui/search-overlay.js';
 import { initAddAsset } from './ui/add-asset.js';
 import { renderDashboard, setAddAssetUI } from './ui/dashboard.js';
 import { renderTrialBadge, checkPaywall, initPaywall } from './ui/paywall.js';
+import { MONETIZACION_ACTIVA } from './auth.js';
 import { initMarkets, loadMarkets } from './ui/markets.js';
 import { renderWatchlist, refreshWatchlistQuotes } from './ui/watchlist.js';
 import { initSettings } from './ui/settings.js';
@@ -286,10 +287,15 @@ function init() {
     }
   });
 
-  setInterval(() => {
-    renderTrialBadge();
-    checkPaywall();
-  }, 60_000 * 30);
+  // Solo tiene sentido re-evaluar el trial si la monetización está activa.
+  // Sin esta guarda, el badge y el paywall reaparecían a la media hora aunque
+  // el flag estuviera apagado.
+  if (MONETIZACION_ACTIVA) {
+    setInterval(() => {
+      renderTrialBadge();
+      checkPaywall();
+    }, 60_000 * 30);
+  }
 }
 
 if (document.readyState === 'loading') {

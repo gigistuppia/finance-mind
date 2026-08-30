@@ -1084,3 +1084,11 @@ footer {
   .mockup__pie { width: 100%; height: 80px; border-radius: var(--r-md); background: var(--color-surface-2); }
   .bento__liverow { font-size: 11px; padding: 6px 10px; }
 }
+
+/* ════════ INTERRUPTOR DE MONETIZACIÓN ════════
+   Controlado por MONETIZACION_ACTIVA (script inline en el <head>).
+   Con la monetización apagada se oculta todo lo que anuncie una venta.
+   Ver CLAUDE.md §10 y §14.15. No borrar: es un interruptor, no un parche. */
+.sin-monetizacion [data-monetizacion] { display: none !important; }
+.sin-monetizacion [data-sin-monetizacion] { display: block !important; }
+:root:not(.sin-monetizacion) [data-sin-monetizacion] { display: none !important; }

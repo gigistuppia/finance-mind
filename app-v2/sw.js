@@ -1,4 +1,7 @@
-const CACHE_NAME = 'fm-v2-cache-v5';
+// v6: apaga la monetización (MONETIZACION_ACTIVA). Subir la versión es
+// OBLIGATORIO al cambiar el HTML o los scripts: sin esto, los usuarios que ya
+// instalaron la PWA siguen sirviendo el paywall viejo desde caché para siempre.
+const CACHE_NAME = 'fm-v2-cache-v6';
 const PRECACHE_URLS = [
   '/app-v2/',
   '/app-v2/index.html',

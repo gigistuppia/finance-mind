@@ -77,7 +77,10 @@
         </a>
       </nav>
 
-      <div class="sidebar-footer" id="trial-badge">
+      <!-- Arranca oculto: lo revela paywall.js SOLO si MONETIZACION_ACTIVA
+           está en true. Sin el `hidden`, el texto "TRIAL · 30 días" se pinta
+           un instante antes de que corra el JS. No borrar (CLAUDE.md §10). -->
+      <div class="sidebar-footer" id="trial-badge" hidden>
         <div class="trial-badge">TRIAL · 30 días</div>
         <div>Probando Finance Mind</div>
       </div>

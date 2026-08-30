@@ -40,6 +40,17 @@
     </style>
   </noscript>
 
+  <!-- Interruptor de monetización. Tiene que ir ANTES de que el body pinte,
+       para que la sección de precios no aparezca ni por un instante.
+       Debe coincidir con MONETIZACION_ACTIVA de app-v2/scripts/auth.js.
+       Ver CLAUDE.md §10 y §14.15. -->
+  <script>
+    window.MONETIZACION_ACTIVA = false;
+    if (!window.MONETIZACION_ACTIVA) {
+      document.documentElement.classList.add('sin-monetizacion');
+    }
+  </script>
+
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -48,10 +59,14 @@
     "applicationCategory": "FinanceApplication",
     "operatingSystem": "Web",
     "description": "Portfolio tracker de CEDEARs en tiempo real con estadísticas y exportación a Excel, PDF y Word.",
-    "inLanguage": "es-AR",
-    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "ARS" }
+    "inLanguage": "es-AR"
   }
   </script>
+  <!-- Se quitó la clave "offers" del JSON-LD. Era markup de oferta comercial
+       que Google indexa como rich result, y además estaba desincronizado:
+       declaraba price 0 mientras la página mostraba $1.500/mes.
+       Para reactivar la venta, agregar dentro del objeto de arriba:
+         "offers": { "@type": "Offer", "price": "1500", "priceCurrency": "ARS" } -->
 </head>
 <body class="grain is-loading">
 
@@ -98,7 +113,7 @@
           <li><a href="#producto" class="nav__link">Producto</a></li>
           <li><a href="#como-funciona" class="nav__link">Cómo funciona</a></li>
           <li><a href="#privacidad" class="nav__link">Privacidad</a></li>
-          <li><a href="#precio" class="nav__link">Precio</a></li>
+          <li data-monetizacion><a href="#precio" class="nav__link">Precio</a></li>
         </ul>
         <!-- TODO: reemplazar con URL de producción de la app -->
         <a href="/app-v2/" class="btn btn--solid nav__cta"><span>Abrir Finance Mind</span></a>
@@ -114,7 +129,7 @@
       <li><a href="#producto" class="mobile-menu__link">Producto</a></li>
       <li><a href="#como-funciona" class="mobile-menu__link">Cómo funciona</a></li>
       <li><a href="#privacidad" class="mobile-menu__link">Privacidad</a></li>
-      <li><a href="#precio" class="mobile-menu__link">Precio</a></li>
+      <li data-monetizacion><a href="#precio" class="mobile-menu__link">Precio</a></li>
       <li><a href="/app-v2/" class="btn btn--solid"><span>Abrir Finance Mind</span></a></li>
     </ul>
   </div>
@@ -432,7 +447,7 @@
     </section>
 
     <!-- ════════ 9 · PRECIO — split asimétrico 45/55 ════════ -->
-    <section id="precio" class="pricing" aria-labelledby="pricing-title">
+    <section id="precio" class="pricing" aria-labelledby="pricing-title" data-monetizacion>
       <div class="container pricing__inner">
         <div class="pricing__copy">
           <span class="label section-tag" data-reveal>El precio</span>
@@ -479,7 +494,8 @@
       </div>
       <div class="cta__content">
         <h2 id="cta-title" class="cta__title" data-reveal>Empezá a trackear <span class="gem-text">hoy</span>.</h2>
-        <p class="cta__sub" data-reveal data-delay="100">Probalo gratis por 30 días y después seguí por el precio de 2 medialunas.</p>
+        <p class="cta__sub" data-reveal data-delay="100" data-monetizacion>Probalo gratis por 30 días y después seguí por el precio de 2 medialunas.</p>
+        <p class="cta__sub" data-reveal data-delay="100" data-sin-monetizacion hidden>Gratis, sin cuenta y sin tarjeta. Tus datos quedan en tu dispositivo.</p>
         <a href="/app-v2/" class="btn btn--solid btn--xl" data-reveal data-delay="200"><span>Abrir Finance Mind →</span></a>
       </div>
     </section>
