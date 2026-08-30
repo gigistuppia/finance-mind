@@ -158,6 +158,20 @@ eq(m('^GSPC'), '^GSPC', 'índice ya formateado');
 eq(m('GC=F'), 'GC=F', 'futuro ya formateado');
 eq(S.mapear('AAPL').confianza, 'media', 'sin prefijo, la confianza baja a media');
 
+console.log('\n=== El punto es ambiguo: sufijo de exchange vs clase de acción ===');
+// REGRESIÓN: `GGAL.BA` se convertía en `GGAL-BA`, que no existe. Rompía el
+// campo de corrección manual de la vista Conectar, donde el usuario escribe
+// un símbolo de Yahoo, y también a quien pegara símbolos de Yahoo en vez del
+// formato de TradingView.
+for (const s of ['GGAL.BA', 'SM.AX', '7203.T', 'MC.PA', '0700.HK', 'PETR4.SA',
+                 'NESN.SW', 'ERIC-B.ST', 'BTC-USD', '^GSPC', 'GC=F', 'EURUSD=X']) {
+  eq(m(s), s, `${s} ya está en formato Yahoo: pasa intacto`);
+}
+// `.B` no es un sufijo de exchange conocido, así que ahí el punto SÍ separa clase.
+eq(m('BRK.B'), 'BRK-B', 'BRK.B es clase de acción, no exchange');
+eq(m('BF.B'), 'BF-B', 'BF.B idem');
+eq(S.mapear('GGAL.BA').confianza, 'alta', 'un símbolo de Yahoo reconocido va con confianza alta');
+
 console.log('\n=== Parseo del .txt de TradingView ===');
 {
   const txt = 'NASDAQ:AAPL,NYSE:IBM,BCBA:GGAL';

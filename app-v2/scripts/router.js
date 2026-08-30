@@ -1,4 +1,4 @@
-const ROUTES = ['dashboard', 'mercados', 'watchlist', 'activos', 'movimientos', 'ajustes'];
+const ROUTES = ['dashboard', 'mercados', 'watchlist', 'conectar', 'activos', 'movimientos', 'ajustes'];
 const listeners = new Set();
 
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';

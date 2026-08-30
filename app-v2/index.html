@@ -67,6 +67,10 @@
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="15" r="4"/><circle cx="17" cy="15" r="4"/><path d="M10 15h4"/><path d="M7 11V7M17 11V7"/></svg>
           Watchlist
         </a>
+        <a class="nav-item" href="#/conectar" data-route="conectar">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M8 11l4 4 4-4"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+          Conectar
+        </a>
         <a class="nav-item" href="#/movimientos" data-route="movimientos">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M15.5 9.5c0-1.38-1.57-2.5-3.5-2.5S8.5 8.12 8.5 9.5c0 1.38 1.57 2.5 3.5 2.5s3.5 1.12 3.5 2.5c0 1.38-1.57 2.5-3.5 2.5s-3.5-1.12-3.5-2.5"/></svg>
           Actividad
@@ -288,6 +292,62 @@
               <p>Agregá activos para seguirlos sin agregarlos al portfolio.</p>
             </div>
           </div>
+        </div>
+
+        <!-- VIEW: CONECTAR -->
+        <div class="view" data-view="conectar" hidden>
+          <div class="page-head">
+            <div>
+              <div class="sub">Conectar</div>
+              <h1><span class="gradient-text">Cargá tu lista de activos</span></h1>
+            </div>
+          </div>
+
+          <p class="conectar-intro">
+            Estos son los activos que el analista va a revisar todos los días.
+            Traelos de TradingView o pegalos a mano.
+          </p>
+
+          <div class="conectar-metodos">
+            <div class="glass-card conectar-metodo">
+              <h3>Desde TradingView</h3>
+              <ol class="conectar-pasos">
+                <li>Abrí tu watchlist y entrá en <strong>Advanced view</strong>.</li>
+                <li>Tocá <strong>Export list</strong>. Se baja un archivo <code>.txt</code>.</li>
+                <li>Soltalo acá abajo.</li>
+              </ol>
+              <div class="conectar-dropzone" id="conectar-dropzone" tabindex="0"
+                   role="button" aria-label="Soltá o elegí tu archivo .txt de TradingView">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                  <path d="M12 16V4"/><path d="M7 9l5-5 5 5"/>
+                  <path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/>
+                </svg>
+                <strong>Soltá tu archivo acá</strong>
+                <span>o hacé clic para elegirlo</span>
+              </div>
+              <input type="file" id="conectar-file" accept=".txt,text/plain" hidden />
+            </div>
+
+            <div class="glass-card conectar-metodo">
+              <h3>Pegar a mano</h3>
+              <p class="conectar-hint">
+                Un símbolo por línea o separados por coma. Con prefijo de exchange
+                (<code class="mono">NASDAQ:AAPL</code>) o sin él (<code class="mono">AAPL</code>).
+              </p>
+              <textarea id="conectar-texto" class="conectar-textarea" rows="7"
+                        placeholder="NASDAQ:AAPL, BCBA:GGAL, BINANCE:BTCUSDT&#10;TSE:7203&#10;^GSPC"></textarea>
+              <button class="btn primary" id="conectar-procesar">Procesar lista</button>
+              <p class="conectar-hint mono">Ctrl + Enter</p>
+            </div>
+          </div>
+
+          <div id="conectar-resultado" aria-live="polite"></div>
+
+          <p class="conectar-nota">
+            Cada símbolo se valida contra Yahoo Finance antes de entrar. Si alguno no
+            se puede resolver, te lo mostramos para que lo corrijas — nunca se descarta
+            en silencio.
+          </p>
         </div>
 
         <!-- VIEW: ACTIVOS -->

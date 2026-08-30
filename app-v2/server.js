@@ -7,6 +7,28 @@ const { URL } = require('url');
 const PORT = process.env.PORT || 4175;
 const ROOT = __dirname;
 
+/**
+ * ⚠ SOLO DESARROLLO LOCAL. NUNCA en producción.
+ *
+ * En máquinas con antivirus o proxy corporativo que intercepta TLS, el `fetch`
+ * global falla contra Yahoo con UNABLE_TO_VERIFY_LEAF_SIGNATURE: el certificado
+ * que llega está firmado por una CA local que Node no conoce.
+ *
+ * Este archivo es exclusivamente el servidor de desarrollo (nunca se despliega:
+ * está en .vercelignore) y ya venía deshabilitando la verificación en su propio
+ * agente de Yahoo. Se extiende a `fetch` para que /api/map, que reusa
+ * lib/yahoo.js, funcione igual que en Vercel.
+ *
+ * En Vercel NO hace falta y NO se aplica: allá el TLS valida sin problema
+ * (verificado en la fase 00, veredicto OK_COMPLETO). lib/yahoo.js queda intacto.
+ */
+if (!process.env.FM_TLS_ESTRICTO) {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+  console.warn('[dev] Verificación TLS desactivada para este servidor local.');
+  console.warn('[dev] Es por la interceptación TLS de tu máquina. En Vercel no aplica.');
+  console.warn('[dev] Para restaurarla: FM_TLS_ESTRICTO=1 node app-v2/server.js');
+}
+
 const MIME = {
   '.html': 'text/html',
   '.css': 'text/css',
@@ -61,6 +83,28 @@ http.createServer((req, res) => {
     res.end(JSON.stringify({ valid }));
     return;
   }
+  // Reusa la MISMA función de Vercel (api/map.js), que a su vez reusa
+  // lib/symbols.js. Una sola fuente de verdad para las reglas de mapeo:
+  // en dev y en producción se ejecuta exactamente el mismo código.
+  if (pathname === '/api/map') {
+    const handler = require('../api/map.js');
+    const shim = {
+      status(code) { this._code = code; return this; },
+      setHeader(k, v) { this._headers = { ...this._headers, [k]: v }; },
+      json(obj) {
+        res.writeHead(this._code || 200,
+          { 'Content-Type': 'application/json', ...this._headers });
+        res.end(JSON.stringify(obj));
+      },
+      end() { res.writeHead(this._code || 200, this._headers || {}); res.end(); },
+    };
+    handler(req, shim).catch((e) => {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: e.message }));
+    });
+    return;
+  }
+
   if (pathname === '/api/search') {
     const q = url.searchParams.get('q') || '';
     const target = `https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(q)}&quotesCount=15&newsCount=0`;
