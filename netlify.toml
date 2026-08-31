@@ -1,5 +1,24 @@
+# ══════════════════════════════════════════════════════════════════
+# NETLIFY RETIRADO — 30/08/2026. El host es Vercel (CLAUDE.md §1).
+#
+# `ignore` con salida 0 cancela el build: "An exit code of 0 indicates
+# that there are no changes and the build should stop" (docs de Netlify).
+# Con esto Netlify deja de redesplegarse en cada push a main.
+#
+# POR QUÉ: las vistas nuevas llaman a /api/map y /api/informe, que acá no
+# existen — no hay funciones de Netlify para ellas ni redirects. El sitio
+# cargaba pero esas pantallas devolvían 404. Antes que mantener dos copias
+# sincronizadas de cada endpoint, se retira el host.
+#
+# NADA SE BORRA: netlify/functions/ sigue en el repo y esta config también.
+# Para reactivar: sacar la línea `ignore` de abajo.
+# (Ojo: esto no cancela builds disparados por build hooks; ésos se apagan
+#  desde el panel de Netlify, en Build & deploy.)
+# ══════════════════════════════════════════════════════════════════
+
 [build]
   functions = "netlify/functions"
+  ignore = "exit 0"
 
 [functions]
   node_bundler = "esbuild"

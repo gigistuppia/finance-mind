@@ -1,8 +1,23 @@
-name: Deploy to Cloudflare Workers
+# ══════════════════════════════════════════════════════════════════
+# CLOUDFLARE WORKERS RETIRADO — 30/08/2026. El host es Vercel (CLAUDE.md §1).
+#
+# Este workflow venía FALLANDO desde antes de la migración: las tres últimas
+# corridas dieron error, incluida la del commit "UI: reemplazar emojis por SVG",
+# anterior a todo el trabajo de Vercel. O sea que no desplegaba nada y además
+# marcaba en rojo cada push.
+#
+# Ya no corre en push. Queda como disparo manual desde la pestaña Actions, así
+# que reactivarlo es devolver el bloque `push:` de abajo — no hay que
+# reconstruir nada. `worker.js` y `wrangler.toml` siguen en el repo.
+# ══════════════════════════════════════════════════════════════════
+
+name: Deploy to Cloudflare Workers (retirado — manual)
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
+  # Retirado el 30/08/2026. Para reactivar, descomentar:
+  # push:
+  #   branches: [main]
 
 jobs:
   deploy:

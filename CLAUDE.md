@@ -122,8 +122,38 @@ una base dormida.
 
 ⚠️ **Ver §14.15 — Hobby prohíbe uso comercial.** Afecta directamente al paywall.
 
-Netlify y el Worker de Cloudflare quedan como están hasta que la migración esté verificada.
-No borrar `netlify/functions/` ni `worker.js`.
+### ⚠ La URL del sitio
+
+```
+https://finance-mind-gigistuppias-projects.vercel.app/
+```
+
+**`finance-mind.vercel.app` NO es este proyecto.** Ese subdominio ya estaba tomado por otra
+cuenta: es una app Next.js en inglés. Devuelve 200 en `/` —por eso confunde— pero 404 en
+`/api/*` y en todos los assets. Si algo "da 404 en Vercel", lo primero es confirmar que la URL
+lleve el sufijo `-gigistuppias-projects`.
+
+### Netlify y Cloudflare: RETIRADOS (30/08/2026)
+
+Vercel quedó verificado en producción, así que los dos hosts viejos se apagaron. **No se borró
+nada** — solo dejaron de desplegarse:
+
+| Host | Cómo se apagó | Cómo se reactiva |
+|------|---------------|------------------|
+| Netlify | `ignore = "exit 0"` en `netlify.toml` (salida 0 cancela el build) | Sacar esa línea |
+| Cloudflare | El workflow pasó a `workflow_dispatch` solamente | Devolver el bloque `push:` |
+
+Motivos concretos:
+
+- **Netlify servía una versión rota a medias.** Las vistas Conectar e Informe llaman a
+  `/api/map` y `/api/informe`, que ahí no existen: no hay funciones ni redirects. El sitio
+  cargaba y esas pantallas devolvían 404. Mantener dos copias sincronizadas de cada endpoint
+  no vale la pena.
+- **El Action de Cloudflare venía fallando desde antes de la migración.** Las tres últimas
+  corridas dieron error, incluida la del commit `UI: reemplazar emojis por SVG`, anterior a
+  todo este trabajo. No desplegaba nada y marcaba en rojo cada push.
+
+`netlify/functions/`, `worker.js` y `wrangler.toml` siguen en el repo.
 
 ---
 
