@@ -2,6 +2,11 @@
 
 > Fuente de verdad para toda sesión de Claude Code en este proyecto.
 > Última actualización: agosto 2026 — pivote a analista diario (§12–15).
+>
+> ⚠ **`AGENTS.md` está DESACTUALIZADO a propósito.** Es una foto del CLAUDE.md
+> anterior al pivote: describe un portfolio tracker en Netlify y no menciona el
+> bot, el informe diario ni Vercel. Se conserva como referencia histórica.
+> **Ante cualquier contradicción, manda este archivo.**
 
 ---
 

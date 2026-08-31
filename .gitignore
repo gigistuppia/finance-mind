@@ -8,3 +8,7 @@ Thumbs.db
 # Apps legacy — viven solo en local, nunca deben entrar al repo (215 MB)
 finance-app/
 app/
+
+# Plugin de terceros clonado dentro del proyecto: trae su propio .git
+# (github.com/hex/claude-image-generation). Commitearlo metería un gitlink roto.
+claude-image-generation/
