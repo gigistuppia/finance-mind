@@ -86,8 +86,10 @@ http.createServer((req, res) => {
   // Reusa la MISMA función de Vercel (api/map.js), que a su vez reusa
   // lib/symbols.js. Una sola fuente de verdad para las reglas de mapeo:
   // en dev y en producción se ejecuta exactamente el mismo código.
-  if (pathname === '/api/map') {
-    const handler = require('../api/map.js');
+  if (pathname === '/api/map' || pathname === '/api/informe') {
+    const handler = require(pathname === '/api/map' ? '../api/map.js' : '../api/informe.js');
+    // Vercel entrega req.query ya parseado; el http de Node no.
+    req.query = Object.fromEntries(url.searchParams);
     const shim = {
       status(code) { this._code = code; return this; },
       setHeader(k, v) { this._headers = { ...this._headers, [k]: v }; },

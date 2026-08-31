@@ -14,6 +14,7 @@ import { toast } from './ui/toast.js';
 import { renderMovements, initMovements } from './ui/movements.js';
 import { renderAssets, initAssets } from './ui/assets.js';
 import { initConectar, renderConectar } from './ui/conectar.js';
+import { initInforme, entrarInforme, renderInforme } from './ui/informe.js';
 import { checkSplits } from './splits.js';
 import { initStaleness, onQuotesRefreshed } from './staleness.js';
 
@@ -38,6 +39,7 @@ function scheduleRender(route) {
     else if (r === 'movimientos') renderMovements();
     else if (r === 'activos') renderAssets();
     else if (r === 'conectar') renderConectar();
+    else if (r === 'informe') renderInforme();
   });
 }
 
@@ -81,6 +83,7 @@ async function onRouteEnter(route) {
     marketsLoaded = true;
     loadMarkets();
   }
+  if (route === 'informe') entrarInforme();
   if (route === 'watchlist') {
     refreshWatchlistQuotes();
   }
@@ -246,6 +249,7 @@ function init() {
   initMovements();
   initAssets();
   initConectar();
+  initInforme();
 
   document.getElementById('watchlist-add')?.addEventListener('click', () => {
     searchUI.open((item) => {
@@ -271,6 +275,9 @@ function init() {
   else if (route === 'activos') renderAssets();
   else if (route === 'movimientos') renderMovements();
   else if (route === 'conectar') renderConectar();
+  // Si la app arranca directamente en #/informe (recarga o link directo),
+  // onRouteEnter puede no haber disparado todavía: hay que entrar acá también.
+  else if (route === 'informe') entrarInforme();
   // y refresh del bnav active
   document.querySelectorAll('#bottom-nav .bnav-item').forEach(el => {
     if (el.dataset.route) el.classList.toggle('active', el.dataset.route === route);

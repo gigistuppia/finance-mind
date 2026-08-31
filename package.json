@@ -7,7 +7,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "test": "node test/yahoo.test.cjs && node test/indicators.test.cjs && node test/patterns.test.cjs && node test/news.test.cjs && node test/analyst.test.cjs && node test/symbols.test.cjs",
+    "test": "node test/yahoo.test.cjs && node test/indicators.test.cjs && node test/patterns.test.cjs && node test/news.test.cjs && node test/analyst.test.cjs && node test/symbols.test.cjs && node test/pipeline.test.cjs",
     "informe": "node scripts/informe.cjs"
   }
 }
