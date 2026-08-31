@@ -59,7 +59,13 @@ http.createServer((req, res) => {
   } else if (urlPath === '/' || urlPath === '/index.html') {
     filePath = path.join(PROJECT_ROOT, 'landing', 'index.html');
   } else {
-    filePath = path.join(PROJECT_ROOT, 'landing', urlPath);
+    // El HTML referencia sus assets como /landing/styles/... (absolutas) porque
+    // en Vercel la landing se sirve reescrita en "/", y ahí una ruta relativa
+    // resolvería a /styles/... y daría 404. Acá el servidor ya tiene su raíz en
+    // landing/, así que se saca el prefijo para que la misma URL funcione en
+    // desarrollo y en producción.
+    const sinPrefijo = urlPath.startsWith('/landing/') ? urlPath.slice('/landing'.length) : urlPath;
+    filePath = path.join(PROJECT_ROOT, 'landing', sinPrefijo);
   }
 
   const ext = path.extname(filePath);
