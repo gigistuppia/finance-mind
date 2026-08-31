@@ -133,10 +133,27 @@ una base dormida.
 https://finance-mind-gigistuppias-projects.vercel.app/
 ```
 
-**`finance-mind.vercel.app` NO es este proyecto.** Ese subdominio ya estaba tomado por otra
+Hay **dos formas de equivocarse de URL**, y las dos ya costaron tiempo:
+
+**1. `finance-mind.vercel.app` NO es este proyecto.** Ese subdominio ya estaba tomado por otra
 cuenta: es una app Next.js en inglés. Devuelve 200 en `/` —por eso confunde— pero 404 en
-`/api/*` y en todos los assets. Si algo "da 404 en Vercel", lo primero es confirmar que la URL
-lleve el sufijo `-gigistuppias-projects`.
+`/api/*` y en todos los assets.
+
+**2. Las URLs con hash son deploys CONGELADOS.**
+`finance-mind-bw4n2cjsh-gigistuppias-projects.vercel.app` y similares apuntan a un deploy
+puntual y **no se actualizan nunca**, por diseño. Vercel genera una por cada deploy, y el botón
+**Visit** del panel lleva a esa, no a la estable. Si el sitio "no toma los cambios" por más que
+recargues, mirá si la URL tiene un hash de ~9 caracteres entre el nombre y el scope.
+
+**Cómo distinguirlas rápido:**
+
+```bash
+curl -sI URL/ | grep -i last-modified   # un deploy viejo tiene fecha vieja
+curl -s  URL/ | grep -o 'href="[^"]*tokens.css"'
+```
+
+La versión actual dice `href="/landing/styles/tokens.css"` (absoluta). Si dice
+`href="styles/tokens.css"` (relativa), es anterior al 31/08/2026 y la landing se ve sin estilos.
 
 ### Netlify y Cloudflare: RETIRADOS (30/08/2026)
 
